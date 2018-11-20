@@ -1,0 +1,19 @@
+
+@font-face {
+  font-family: 'Audiowide';
+  src: url('assets/Audiowide-Regular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.logo {
+  font-family: Audiowide;
+  font-size: 32px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: #fff;
+  text-align: center;
+}
+
+.logo img {
+    width: 200px;
+}

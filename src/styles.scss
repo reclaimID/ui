@@ -1,0 +1,57 @@
+@import "node_modules/bootstrap/scss/bootstrap";
+$fa-font-path: "../node_modules/font-awesome/fonts";
+@import "node_modules/font-awesome/scss/font-awesome.scss";
+
+html {
+  /*font-family: Roboto, Helvetica, Arial, sans-serif;*/
+  margin: 0 auto;
+  font-size: 14px;
+}
+
+body {
+  background-color: #fafafa;
+}
+
+
+div.card {
+  //box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  border-radius: 0;
+}
+
+.btn:disabled {
+  background-color: lightgray;
+}
+
+.btn {
+  border-radius: 0.25rem;
+}
+
+.btn-primary {
+  background-color: #fff;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.btn-primary:hover {
+  background-color: #777;
+  border: 1px solid #777;
+}
+
+.btn-primary:disabled {
+  border: 1px solid #ccc;
+}
+
+.btn-primary:disabled:hover {
+  background-color: lightgrey;
+}
+
+.alert a.buttonlink {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #777;
+}
+
+.alert {
+  border-radius: 0;
+  margin-bottom: 0;
+}

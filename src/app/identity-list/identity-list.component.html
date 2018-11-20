@@ -1,0 +1,214 @@
+<div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
+  <span class="fa fa-openid"></span>  <strong>"{{ clientName }}"</strong> asks you to share personal information.<br/>
+  Choose an identity to let it access the following information:
+  <ul>
+    <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
+  </ul>
+  <button class="btn btn-danger">
+    <span class="fa fa-ban"></span> Do not share information and return to website
+  </button>
+</div>
+<div *ngIf="0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
+  You don't have any identities yet.<br/><br/>
+  <button class="btn btn-primary" (click)="addIdentity()">
+    <span class="fa fa-plus"></span> Add your first identity!
+  </button>
+</div>
+
+<div class="card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
+  <div class="card-avatar card-img-top">
+    <div class="card-avatar-character text-dark">
+      Manage identity: {{ identityInEdit.name }}
+    </div>
+  </div>
+  <div class="card-body">
+    <div>
+
+      <h6 class="card-subtitle mb-2">Attributes:
+      </h6>
+
+
+      <table class="table pb-1" *ngIf="isAttributeMissing(identityInEdit)">
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttribute.name === missing.name" class="text-primary" *ngFor="let missing of missingAttributes[identityInEdit.pubkey]">
+            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+            <td>
+              <input placeholder="Value" [(ngModel)]="missing.value">
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table pb-1" style="">
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identityInEdit, attribute)" [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes[identityInEdit.pubkey]">
+            <td><div style="min-width: 15em">{{attribute.name}}</div></td>
+            <td>
+              <input placeholder="Value" [(ngModel)]="attribute.value">
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(attribute)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <tr [class.alert-danger]="isInConflict(identityInEdit,newAttribute)">
+            <td>
+              <input [class.text-danger]="!attributeNameValid(identityInEdit,newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
+            </td>
+            <td>
+              <input placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
+            </td>
+            <td>
+              <button [disabled]="!canAddAttribute(identityInEdit,newAttribute)" class="btn btn-primary"  (click)="addAttribute(newAttribute)">
+                <span class="fa fa-plus"></span> 
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="!attributeNameValid(identityInEdit,newAttribute) || !attributeValueValid(newAttribute)" class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> Note:
+      <ul>
+        <li>Only use alphanumeric attribute names.</li>
+        <li>You cannot define the same name twice.</li>
+        <li>Attribute values may not be empty!</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 1.5em;">
+      <h6 class="card-subtitle mb-2" *ngIf="identityInEdit == showTicketsIdentity">Authorized Entities:
+      </h6>
+
+      <table class="table pb-1" *ngIf="identityInEdit == showTicketsIdentity">
+        <tbody>
+          <tr *ngFor="let ticket of tickets[identityInEdit.pubkey]">
+            <td><div style="min-width: 15em">{{identityNameMapper[ticket.audience]}}</div></td>
+            <td>
+              <button class="btn btn-primary" (click)="revokeTicket(identityInEdit, ticket)">
+                <span class="fa fa-unlink"></span> Revoke
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div>
+      <button class="btn btn-primary" (click)="saveIdentityAttributes(identityInEdit)" [disabled]="!canSaveIdentity(identityInEdit)">
+        <span class="fa fa-save"></span> Save and Back
+      </button>
+      <button *ngIf="(0 < tickets[identityInEdit.pubkey]?.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets(identityInEdit)" [style.float]="'right'">
+        <span class="fa fa-openid"></span><span *ngIf="identityInEdit == showTicketsIdentity"> Hide</span><span *ngIf="identityInEdit != showTicketsIdentity"> Show</span> Authorizations
+      </button>
+    </div>
+  </div>
+
+</div>
+<div class="card-columns p-2" *ngIf="(null == identityInEdit) && !isAddIdentity()">
+  <div class="card" *ngFor="let identity of identities">
+    <div class="card-avatar card-img-top">
+      <div class="card-avatar-character text-dark">
+        <div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>
+        <span class="m-1" styl="display: inline-block">{{ identity.name}}</span>
+        <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
+          <span class="fa fa-trash"></span>
+        </button>
+                <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="editIdentity(identity)">
+          <span class="fa fa-edit"></span>
+        </button>
+      </div>
+    </div>
+    <div class="alert alert-danger fade show" *ngIf="showConfirmDelete == identity">
+      Do you really want to delete this identity?<br/><br/>
+      <button class="btn btn-primary" (click)="deleteIdentity(identity)">
+        <span class="fa fa-trash"></span> Delete
+      </button>
+      <button class="btn btn-primary" (click)="hideConfirmDelete()">
+        <span class="fa fa-close"></span> Cancel
+      </button>
+    </div>
+    <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
+      This identity has no attributes. Maybe try <a class="buttonlink" (click)="editIdentity(identity)">adding some?</a>
+    </div>
+    <div *ngIf="isAttributeMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span class="fa fa-openid"></span> This identity cannot be used because it's missing requested attributes: 
+      <ul>
+        <li *ngFor="let attr of getMissing(identity)">{{attr}}</li>
+      </ul>
+      <button class="btn btn-primary" (click)="editIdentity(identity)">
+        <span class="fa fa-plus"></span> Add
+      </button>
+    </div>
+    <div class="card-body">
+      <div>
+        <h6 class="card-subtitle mb-2" *ngIf="hasAttributes(identity)">
+          <strong>Attributes:</strong>
+        </h6>
+        <h6 class="card-subtitle mb-2" *ngIf="!hasAttributes(identity)">
+          This identity has no attributes
+        </h6>
+        <table class="table pb-1">
+          <tbody>
+            <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute)"
+               [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes[identity.pubkey]">
+              <td>
+                <div style="min-width: 15em">{{attribute.name}}</div>
+              </td>
+              <td>
+                <div style="min-width: 15em">{{attribute.value}}</div>
+              </td>
+              <td>
+                <div style="min-width: 8em;">
+                  <span *ngIf="isRequested(identity, attribute)" [style.float]="'right'" class="fa fa-openid" ></span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-bottom: 1em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()" class="text-primary">
+        Only attributes marked with <span class="fa fa-openid" ></span> will be shared.
+      </div>
+
+      <div>
+        <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+          <span class="fa fa-openid"></span> Share from this identity</button>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+<div *ngIf="isAddIdentity()" class="card" style="text-align:center;">
+  <div class="card-avatar card-img-top">
+    <div class="card-avatar-character text-dark">
+      New Identity        </div>
+  </div>
+  <div *ngIf="'' !== newIdentity.name && !canSave()" class="alert alert-danger alert-dismissible fade show" role="alert">
+    Only Alphanumeric input. No spaces or special characters allowed.
+  </div>
+  <div *ngIf="'' === newIdentity.name || canSave()" class="alert alert-secondary alert-dismissible fade show" role="alert">
+    Enter a username for your new identity
+  </div>
+  <div class="card-body">
+    <input [class.text-danger]="'' !== newIdentity.name && !canSave()" style="text-align: center; border: 1px solid #111;" (keyup.enter)="saveIdentity()" pattern="^[a-zA-Z0-9-]+" placeholder="Username" title="Only Alphanumeric input. No spaces or special characters allowed." class="mr-2" [(ngModel)]="newIdentity.name" autofocus>
+    <br/>
+    <br/>
+    <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="btn btn-primary" (click)="saveIdentity()">
+      <span class="fa fa-save"></span> Save
+    </button>
+    <button class="btn btn-danger" (click)="cancelAddIdentity()">
+      <span class="fa fa-close"></span> Cancel
+    </button>
+  </div>
+</div>
+<div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
+  <button class="btn btn-primary" (click)="addIdentity()">
+    <span class="fa fa-plus"></span> Add identity
+  </button>
+</div>
+
+
