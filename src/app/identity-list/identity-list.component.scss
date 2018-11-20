@@ -1,0 +1,46 @@
+.card table {
+  table-layout: fixed;
+}
+
+.card table input {
+  width: 100%;
+}
+
+div.card-avatar {
+    text-align: center;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+    //min-height: 50px;
+}
+
+div.card-avatar-character {
+    font-size: 2em;
+    border: 1px solid white;
+}
+
+div.card-avatar-id {
+    font-size: 1em;
+}
+
+.card.selected {
+    box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+    //border-color: #343a40;
+}
+
+.card tr.openid.text-dimmed {
+   color: #eee;
+}
+
+.card-avatar .btn-primary {
+  border: none;
+  background-color: rgba(0,0,0,0);
+  color: #555;
+  font-size: 0.75em;
+  float: right;
+}
+
+.card-avatar div.icon {
+  border-radius: 5em;
+  width: 1.5em;
+  color: white;
+  display: inline-block;
+}
