@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Identity } from './identity';
 import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
@@ -13,7 +14,10 @@ export class OpenIdService {
     private router: Router) { }
 
   login(identity: Identity) {
-    return this.http.post(this.config.get().apiUrl + '/openid/login', { 'identity': identity.pubkey});
+    const httpOptions = {
+      withCredentials: true
+    };
+    return this.http.post(this.config.get().apiUrl + '/openid/login', { 'identity': identity.pubkey}, httpOptions);
   }
 
   parseRouteParams(params: any): any {
