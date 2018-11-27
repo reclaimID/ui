@@ -7,12 +7,11 @@ EXPOSE 80
 WORKDIR /tmp
 
 # this should hopefully trigger Docker to only update yarn if dependencies have changed
-ADD *.json ./
-ADD *.lock ./
-RUN yarn install
+COPY package.json yarn.lock ./
+RUN yarn --pure-lockfile
 
 # add the rest of the files
-ADD . .
+COPY . .
 
 # set environment to production
 ENV NODE_ENV production
