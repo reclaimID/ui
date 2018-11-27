@@ -4,7 +4,7 @@
   <ul>
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
-  <button class="btn btn-danger">
+  <button class="btn btn-danger" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Do not share information and return to website
   </button>
 </div>
