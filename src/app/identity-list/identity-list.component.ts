@@ -16,6 +16,7 @@ import 'rxjs/add/observable/forkJoin';
   templateUrl: './identity-list.component.html',
   styleUrls: ['./identity-list.component.scss']
 })
+
 export class IdentityListComponent implements OnInit {
 
   requestedAttributes: any;
@@ -55,7 +56,7 @@ export class IdentityListComponent implements OnInit {
     this.identityNameMapper = {};
     this.updateIdentities();
   }
-  
+
   confirmDelete(identity) {
     this.showConfirmDelete = identity;
   }
@@ -117,7 +118,7 @@ export class IdentityListComponent implements OnInit {
 
   addIdentity() {
     this.newIdentity = new Identity ('','');
-  }
+}
 
   editIdentity(identity) {
     this.identityInEdit = identity;
@@ -130,11 +131,11 @@ export class IdentityListComponent implements OnInit {
 
   saveIdentityAttributes(identity) {
     this.storeAttributes(identity)
-    .finally(() => this.updateAttributes(identity))  
+    .finally(() => this.updateAttributes(identity))
     .subscribe(
-      res => console.log(res), 
+      res => console.log(res),
       error => {return Observable.empty()},
-      () => { 
+      () => {
         this.identityInEdit = null;
         this.updateAttributes(identity);
       }
@@ -225,7 +226,7 @@ export class IdentityListComponent implements OnInit {
 
   saveAttribute(identity, attribute) {
     return this.reclaimService.addAttribute(identity, attribute).subscribe (data => {
-      //this.updateAttributes(identity);
+        this.updateAttributes(identity);
     });
   }
 
@@ -243,17 +244,17 @@ export class IdentityListComponent implements OnInit {
     }
     if (this.newAttribute.value !== "") {
       promises.push(this.saveAttribute(identity, this.newAttribute));
-    }
+      }
     return Observable.forkJoin(promises)
   }
 
   addAttribute(attribute) {
     this.storeAttributes(this.identityInEdit)
-      .finally(() => this.updateAttributes(this.identityInEdit))  
+      .finally(() => this.updateAttributes(this.identityInEdit))
       .subscribe(
-        res => console.log(res), 
+        res => console.log(res),
         error => {return Observable.empty()},
-        () => { 
+        () => {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = "STRING";
@@ -303,7 +304,7 @@ export class IdentityListComponent implements OnInit {
   inOpenIdFlow() {
     return this.oidcService.inOpenIdFlow();
   }
-  
+
   canAddAttribute(identity,attribute) {
     if ((attribute.name === "") || (attribute.value == "")) {
       return false;
