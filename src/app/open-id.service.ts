@@ -38,6 +38,7 @@ export class OpenIdService {
 
   cancelAuthorization(): any {
   window.location.href = this.params['redirect_uri'] + '?error=access_denied' +
+    '&error_description=user denied access' +
     '&state=' + this.params['state'];
   }
 
