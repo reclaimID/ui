@@ -36,6 +36,11 @@ export class OpenIdService {
     '&nonce=' + this.params['nonce'];
   }
 
+  cancelAuthorization(): any {
+  window.location.href = this.params['redirect_uri'] + '?error=access_denied' +
+    '&state=' + this.params['state'];
+  }
+
   inOpenIdFlow(): any {
     return this.params['redirect_uri'] !== undefined;
   }

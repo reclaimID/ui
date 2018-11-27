@@ -289,6 +289,9 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
+  cancelRequest() {
+    this.oidcService.cancelAuthorization()
+  }
 
   loginIdentity(identity) {
     this.oidcService.login(identity).subscribe(data => {
