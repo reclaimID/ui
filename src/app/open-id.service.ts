@@ -37,9 +37,10 @@ export class OpenIdService {
   }
 
   cancelAuthorization(): any {
-  window.location.href = this.params['redirect_uri'] + '?error=access_denied' +
-    '&error_description=user denied access' +
-    '&state=' + this.params['state'];
+    const httpOptions = {
+      withCredentials: true
+    };
+    return this.http.post(this.config.get().apiUrl + '/openid/login', { 'identity': 'Denied'}, httpOptions);
   }
 
   inOpenIdFlow(): any {
