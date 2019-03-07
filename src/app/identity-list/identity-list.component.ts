@@ -49,8 +49,39 @@ export class IdentityListComponent implements OnInit {
     this.newAttribute = new Attribute('', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
+    this.clientName = "-";
 
     // On opening the options page, fetch stored settings and update the UI with them.
+    browser.storage.local.get().then(uaSettings => {
+      var uaParams = {};
+      if (true == <boolean>uaSettings["request"]) {
+        var searchStr = <string>uaSettings["search"];
+        var keyVals = searchStr.split("&");
+        for (var i = 0; i < keyVals.length; i++)
+        {
+          uaParams[keyVals[i].split("=")[0]] = keyVals[i].split("=")[1];
+        }
+        console.log (uaParams);
+        this.oidcService.parseRouteParams(uaParams);
+      }
+      this.getClientName();
+      //this.newIdentity = new Identity('', '', {});
+      this.identityInEditName = "";
+      this.identityNameMapper = {};
+      this.updateIdentities();
+      console.log("processed localstorage");
+    });
+    this.getClientName();
+    //this.newIdentity = new Identity('', '', {});
+    this.identityInEditName = "";
+    this.identityNameMapper = {};
+    this.updateIdentities();
+    console.log("processed nginit");
+    //browser.storage.onChanged.addListener(this.handleStorageChange);
+  }
+
+  handleStorageChange(uaSettings, areaName) : void {
+    //Greedy
     browser.storage.local.get().then(uaSettings => {
       var uaParams = {};
       var searchStr = <string>uaSettings["search"];
@@ -61,28 +92,6 @@ export class IdentityListComponent implements OnInit {
       }
       console.log (uaParams);
       this.oidcService.parseRouteParams(uaParams);
-    });
-    browser.storage.onChanged.addListener(this.handleStorageChange);
-    //this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
-    this.getClientName();
-    //this.newIdentity = new Identity('', '', {});
-    this.identityInEditName = "";
-    this.identityNameMapper = {};
-    this.updateIdentities();
-  }
-
-  handleStorageChange(uaSettings, areaName) : void {
-    //Greedy
-    browser.storage.local.get().then(uaSettings => {
-      var uaParams = {};
-      var searchStr = <string>uaSettings["search"];
-        var keyVals = searchStr.split("&");
-        for (var i = 0; i < keyVals.length; i++)
-        {
-          uaParams[keyVals[i].split("=")[0]] = keyVals[i].split("=")[1];
-        }
-        console.log (uaParams);
-        this.oidcService.parseRouteParams(uaParams);
     });
   }
 
@@ -147,7 +156,7 @@ export class IdentityListComponent implements OnInit {
 
   addIdentity() {
     this.newIdentity = new Identity ('','');
-}
+  }
 
   editIdentity(identity) {
     this.identityInEdit = identity;
@@ -160,15 +169,15 @@ export class IdentityListComponent implements OnInit {
 
   saveIdentityAttributes(identity) {
     this.storeAttributes(identity)
-    .finally(() => this.updateAttributes(identity))
-    .subscribe(
-      res => console.log(res),
-      error => {return Observable.empty()},
-      () => {
-        this.identityInEdit = null;
-        this.updateAttributes(identity);
-      }
-    );
+      .finally(() => this.updateAttributes(identity))
+      .subscribe(
+        res => console.log(res),
+        error => {return Observable.empty()},
+        () => {
+          this.identityInEdit = null;
+          this.updateAttributes(identity);
+        }
+      );
     this.newAttribute.name = '';
     this.newAttribute.value = '';
     this.newAttribute.type = "STRING";
@@ -255,7 +264,7 @@ export class IdentityListComponent implements OnInit {
 
   saveAttribute(identity, attribute) {
     return this.reclaimService.addAttribute(identity, attribute).subscribe (data => {
-        this.updateAttributes(identity);
+      this.updateAttributes(identity);
     });
   }
 
@@ -273,7 +282,7 @@ export class IdentityListComponent implements OnInit {
     }
     if (this.newAttribute.value !== "") {
       promises.push(this.saveAttribute(identity, this.newAttribute));
-      }
+    }
     return Observable.forkJoin(promises)
   }
 
