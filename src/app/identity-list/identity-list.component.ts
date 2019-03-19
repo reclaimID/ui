@@ -69,6 +69,20 @@ export class IdentityListComponent implements OnInit {
       this.identityInEditName = "";
       this.identityNameMapper = {};
       this.updateIdentities();
+      browser.storage.local.remove("request").then(() => {
+          console.log("Local storage request removed.");
+        },
+        (e) => {
+          console.log(e);
+        }
+      );
+      browser.storage.local.remove("search").then(() => {
+          console.log("Local storage request removed.");
+        },
+        (e) => {
+          console.log(e);
+        }
+      );
       console.log("processed localstorage");
     });
     this.getClientName();
