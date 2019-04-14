@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { IdentityService } from '../identity.service';
-import { OpenIdService } from '../open-id.service';
-import { Identity } from '../identity';
-import { Attribute } from '../attribute';
-import { Ticket } from '../ticket';
-import { ReclaimService } from '../reclaim.service';
-import { NamestoreService } from '../namestore.service';
-import { GnsService } from '../gns.service';
-import { Observable } from 'rxjs/Rx'
 import 'rxjs/add/observable/forkJoin';
 
-@Component({
-  selector: 'app-identity-list',
-  templateUrl: './identity-list.component.html',
-  styleUrls: ['./identity-list.component.scss']
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Observable} from 'rxjs/Rx'
+
+import {Attribute} from '../attribute';
+import {GnsService} from '../gns.service';
+import {Identity} from '../identity';
+import {IdentityService} from '../identity.service';
+import {NamestoreService} from '../namestore.service';
+import {OpenIdService} from '../open-id.service';
+import {ReclaimService} from '../reclaim.service';
+import {Ticket} from '../ticket';
+
+@Component ({
+  selector : 'app-identity-list',
+  templateUrl : './identity-list.component.html',
+  styleUrls : [ './identity-list.component.scss' ]
 })
 
 export class IdentityListComponent implements OnInit {
@@ -33,65 +35,66 @@ export class IdentityListComponent implements OnInit {
   showTicketsIdentity: Identity;
   showConfirmDelete: any;
 
-  constructor(private route: ActivatedRoute,
-    private router: Router,
-    private oidcService: OpenIdService,
-    private identityService: IdentityService,
-    private reclaimService: ReclaimService,
-    private namestoreService: NamestoreService,
-    private gnsService: GnsService) { }
+  constructor(private route: ActivatedRoute, private router: Router,
+              private oidcService: OpenIdService,
+              private identityService: IdentityService,
+              private reclaimService: ReclaimService,
+              private namestoreService: NamestoreService,
+              private gnsService: GnsService)
+  {
+  }
 
-  ngOnInit() {
+  ngOnInit()
+  {
     this.attributes = {};
     this.tickets = {};
     this.identities = [];
     this.showConfirmDelete = null;
-    this.newAttribute = new Attribute('', '', 'STRING');
+    this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     this.getClientName();
-    //this.newIdentity = new Identity('', '', {});
+    // this.newIdentity = new Identity('', '', {});
     this.identityInEditName = "";
     this.identityNameMapper = {};
     this.updateIdentities();
   }
 
-  confirmDelete(identity) {
-    this.showConfirmDelete = identity;
-  }
+  confirmDelete(identity) { this.showConfirmDelete = identity; }
 
-  hideConfirmDelete() {
-    this.showConfirmDelete = null;
-  }
+  hideConfirmDelete() { this.showConfirmDelete = null; }
 
-  getClientName() {
+  getClientName()
+  {
     if (!this.inOpenIdFlow()) {
       this.clientName = "-";
       return;
     }
     this.clientName = this.oidcService.getClientId();
-    this.gnsService.getClientName(this.oidcService.getClientId()).subscribe (records => {
-      console.log (records);
-      for (var i = 0; i < records.length; i++) {
-        if (records[i].record_type !== "RECLAIM_OIDC_CLIENT")
-          continue;
-        this.clientName = records[i].value;
-        break;
-      }
-    });
+    this.gnsService.getClientName(this.oidcService.getClientId())
+        .subscribe(records => {
+          console.log(records);
+          for (var i = 0; i < records.length; i++) {
+            if (records[i].record_type !== "RECLAIM_OIDC_CLIENT")
+              continue;
+            this.clientName = records[i].value;
+            break;
+          }
+        });
   }
 
-  intToRGB(i) {
+  intToRGB(i)
+  {
     i = this.hashCode(i);
-    const c = (i & 0x00FFFFFF)
-      .toString(16)
-      .toUpperCase();
+    const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
 
-    return '#' + '00000'.substring(0, 6 - c.length) + c;
+    return '#' +
+           '00000'.substring(0, 6 - c.length) + c;
   }
 
-  hashCode(str) {
+  hashCode(str)
+  {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -99,11 +102,10 @@ export class IdentityListComponent implements OnInit {
     return hash;
   }
 
-  isAddIdentity() {
-    return null != this.newIdentity;
-  }
+  isAddIdentity() { return null != this.newIdentity; }
 
-  canSave() {
+  canSave()
+  {
     if (this.newIdentity.name == null) {
       return false;
     }
@@ -116,59 +118,57 @@ export class IdentityListComponent implements OnInit {
     return true;
   }
 
-  addIdentity() {
-    this.newIdentity = new Identity ('','');
-}
+  addIdentity() { this.newIdentity = new Identity ('', ''); }
 
-  editIdentity(identity) {
+  editIdentity(identity)
+  {
     this.identityInEdit = identity;
     this.showTicketsIdentity = null;
   }
 
-  isInEdit(identity) {
-    return this.identityInEdit == identity;
-  }
+  isInEdit(identity) { return this.identityInEdit == identity; }
 
-  saveIdentityAttributes(identity) {
+  saveIdentityAttributes(identity)
+  {
     this.storeAttributes(identity)
-    .finally(() => this.updateAttributes(identity))
-    .subscribe(
-      res => console.log(res),
-      error => {return Observable.empty()},
-      () => {
-        this.identityInEdit = null;
-        this.updateAttributes(identity);
-      }
-    );
+        .finally(() => this.updateAttributes(identity))
+        .subscribe(res => console.log(res),
+                   error => {return Observable.empty()}, () => {
+                     this.identityInEdit = null;
+                     this.updateAttributes(identity);
+                   });
     this.newAttribute.name = '';
     this.newAttribute.value = '';
     this.newAttribute.type = "STRING";
     this.identityInEdit = null;
   }
 
-  deleteAttribute(attribute) {
-    this.namestoreService.deleteName(this.identityInEdit, attribute.name).subscribe (data => {
-      this.updateAttributes(this.identityInEdit);
-    });
+  deleteAttribute(attribute)
+  {
+    this.reclaimService.deleteAttribute(this.identityInEdit, attribute)
+        .subscribe(data => { this.updateAttributes(this.identityInEdit); });
   }
-  getMissingAttributes(identity) {
+  getMissingAttributes(identity)
+  {
     let scopes = this.getScopes();
     var i;
     for (i = 0; i < this.requestedAttributes[identity.pubkey].length; i++) {
-      const j = scopes.indexOf(this.requestedAttributes[identity.pubkey][i].name);
+      const j =
+          scopes.indexOf(this.requestedAttributes[identity.pubkey][i].name);
       if (j >= 0) {
         scopes.splice(j, 1);
       }
     }
     this.missingAttributes[identity.pubkey] = [];
     for (i = 0; i < scopes.length; i++) {
-      let attribute = new Attribute('', '', 'STRING');
+      let attribute = new Attribute ('', '', '', 'STRING');
       attribute.name = scopes[i];
       this.missingAttributes[identity.pubkey].push(attribute);
     }
   }
 
-  private updateTickets(identity) {
+  private updateTickets(identity)
+  {
     this.reclaimService.getTickets(identity).subscribe(tickets => {
       this.tickets[identity.pubkey] = [];
       if (tickets === null) {
@@ -188,7 +188,8 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
-  toggleShowTickets(identity) {
+  toggleShowTickets(identity)
+  {
     if (this.showTicketsIdentity == identity) {
       this.showTicketsIdentity = null;
       return;
@@ -196,14 +197,15 @@ export class IdentityListComponent implements OnInit {
     this.showTicketsIdentity = identity;
   }
 
-  revokeTicket(identity, ticket) {
-    this.reclaimService.revokeTicket(ticket).subscribe(data => {
-      this.updateTickets(identity);
-    });
+  revokeTicket(identity, ticket)
+  {
+    this.reclaimService.revokeTicket(ticket).subscribe(
+        data => { this.updateTickets(identity); });
   }
 
 
-  private updateAttributes(identity) {
+  private updateAttributes(identity)
+  {
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
       this.attributes[identity.pubkey] = [];
       this.requestedAttributes[identity.pubkey] = [];
@@ -217,59 +219,57 @@ export class IdentityListComponent implements OnInit {
         if (this.oidcService.getScope().includes(attributes[i].name)) {
           this.requestedAttributes[identity.pubkey].push(attributes[i]);
         }
-
       }
       this.getMissingAttributes(identity);
     });
-
   }
 
-  saveAttribute(identity, attribute) {
-    return this.reclaimService.addAttribute(identity, attribute).subscribe (data => {
-        this.updateAttributes(identity);
-    });
+  saveAttribute(identity, attribute)
+  {
+    return this.reclaimService.addAttribute(identity, attribute)
+        .subscribe(data => { this.updateAttributes(identity); });
   }
 
-  private storeAttributes(identity) {
+  private storeAttributes(identity)
+  {
     var promises = [];
     var i;
     for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
       if (this.missingAttributes[identity.pubkey][i].value === "") {
         continue;
       }
-      promises.push(this.saveAttribute(identity, this.missingAttributes[identity.pubkey][i]));
+      promises.push(this.saveAttribute(
+          identity, this.missingAttributes[identity.pubkey][i]));
     }
     for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
-      promises.push(this.saveAttribute(identity, this.attributes[identity.pubkey][i]));
+      promises.push(
+          this.saveAttribute(identity, this.attributes[identity.pubkey][i]));
     }
     if (this.newAttribute.value !== "") {
       promises.push(this.saveAttribute(identity, this.newAttribute));
-      }
+    }
     return Observable.forkJoin(promises)
   }
 
-  addAttribute(attribute) {
+  addAttribute(attribute)
+  {
     this.storeAttributes(this.identityInEdit)
-      .finally(() => this.updateAttributes(this.identityInEdit))
-      .subscribe(
-        res => console.log(res),
-        error => {return Observable.empty()},
-        () => {
-          this.newAttribute.name = '';
-          this.newAttribute.value = '';
-          this.newAttribute.type = "STRING";
-          this.updateAttributes(this.identityInEdit);
-        }
-      );
+        .finally(() => this.updateAttributes(this.identityInEdit))
+        .subscribe(res => console.log(res),
+                   error => {return Observable.empty()}, () => {
+                     this.newAttribute.name = '';
+                     this.newAttribute.value = '';
+                     this.newAttribute.type = "STRING";
+                     this.updateAttributes(this.identityInEdit);
+                   });
     this.newAttribute.name = '';
     this.newAttribute.value = '';
   }
 
-  cancelAddIdentity() {
-    this.newIdentity = null;
-  }
+  cancelAddIdentity() { this.newIdentity = null; }
 
-  saveIdentity() {
+  saveIdentity()
+  {
     if (!this.canSave()) {
       return;
     }
@@ -281,47 +281,47 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
-  deleteIdentity(identity) {
+  deleteIdentity(identity)
+  {
     this.showConfirmDelete = false;
     this.identityInEdit = null;
-    this.identityService.deleteIdentity(identity.pubkey).subscribe(data => {
-      this.updateIdentities();
-    });
+    this.identityService.deleteIdentity(identity.pubkey)
+        .subscribe(data => { this.updateIdentities(); });
   }
 
-  cancelRequest() {
+  cancelRequest()
+  {
     this.oidcService.cancelAuthorization().subscribe(data => {
       console.log('Request cancelled');
       this.authorize();
     });
   }
 
-  loginIdentity(identity) {
+  loginIdentity(identity)
+  {
     this.oidcService.login(identity).subscribe(data => {
       console.log('Successfully logged in');
       this.authorize();
     });
   }
 
-  authorize() {
-    this.oidcService.authorize();
-  }
+  authorize() { this.oidcService.authorize(); }
 
-  inOpenIdFlow() {
-    return this.oidcService.inOpenIdFlow();
-  }
+  inOpenIdFlow() { return this.oidcService.inOpenIdFlow(); }
 
-  canAddAttribute(identity,attribute) {
+  canAddAttribute(identity, attribute)
+  {
     if ((attribute.name === "") || (attribute.value == "")) {
       return false;
     }
     if (attribute.name.indexOf(" ") >= 0) {
       return false;
     }
-    return !this.isInConflict(identity,attribute);
+    return !this.isInConflict(identity, attribute);
   }
 
-  attributeNameValid(identity, attribute) {
+  attributeNameValid(identity, attribute)
+  {
     if (attribute.name === "" && attribute.value === "") {
       return true;
     }
@@ -331,28 +331,34 @@ export class IdentityListComponent implements OnInit {
     if (!/^[a-zA-Z0-9-]+$/.test(attribute.name)) {
       return false;
     }
-    return !this.isInConflict(identity,attribute);
+    return !this.isInConflict(identity, attribute);
   }
 
-  attributeValueValid(attribute) {
+  attributeValueValid(attribute)
+  {
     if (attribute.value === "") {
       return attribute.name === "";
     }
     return true;
   }
 
-  canSaveIdentity(identity) {
-    if (this.canAddAttribute(identity,this.newAttribute)) {
+  canSaveIdentity(identity)
+  {
+    if (this.canAddAttribute(identity, this.newAttribute)) {
       return true;
     }
-    return ((this.newAttribute.name === "") && (this.newAttribute.value === "")) && !this.isInConflict(identity,this.newAttribute);
+    return ((this.newAttribute.name === "") &&
+            (this.newAttribute.value === "")) &&
+           !this.isInConflict(identity, this.newAttribute);
   }
 
-  isInConflict(identity,attribute) {
+  isInConflict(identity, attribute)
+  {
     var i;
     if (undefined !== this.missingAttributes[identity.pubkey]) {
       for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
-        if (attribute.name === this.missingAttributes[identity.pubkey][i].name) {
+        if (attribute.name ===
+            this.missingAttributes[identity.pubkey][i].name) {
           return true;
         }
       }
@@ -367,14 +373,11 @@ export class IdentityListComponent implements OnInit {
     return false;
   }
 
-  getScopes() {
-    return this.oidcService.getScope();
-  }
+  getScopes() { return this.oidcService.getScope(); }
 
-  getScopesPretty() {
-    return this.getScopes().join(", ");
-  }
-  getMissing(identity) {
+  getScopesPretty() { return this.getScopes().join(", "); }
+  getMissing(identity)
+  {
     var arr = [];
     var i = 0;
     for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
@@ -382,38 +385,43 @@ export class IdentityListComponent implements OnInit {
     }
     return arr;
   }
-  getMissingPretty(identity) {
-    return this.getMissing(identity).join(", ");
-  }
-  canAuthorize(identity) {
+  getMissingPretty(identity) { return this.getMissing(identity).join(", "); }
+  canAuthorize(identity)
+  {
     return this.inOpenIdFlow() && !this.isInEdit(identity);
   }
-  isRequested(identity, attribute) {
+  isRequested(identity, attribute)
+  {
     if (undefined === this.requestedAttributes[identity.pubkey]) {
       return false;
     } else {
-      return -1 !== this.requestedAttributes[identity.pubkey].indexOf(attribute);
+      return -1 !==
+             this.requestedAttributes[identity.pubkey].indexOf(attribute);
     }
   }
 
-  isAttributeMissing(identity) {
+  isAttributeMissing(identity)
+  {
     if (!this.inOpenIdFlow()) {
       return false;
     }
     if (undefined === this.requestedAttributes[identity.pubkey]) {
       return false;
     }
-    return this.getScopes().length !== this.requestedAttributes[identity.pubkey].length;
+    return this.getScopes().length !==
+           this.requestedAttributes[identity.pubkey].length;
   }
 
-  hasAttributes(identity) {
+  hasAttributes(identity)
+  {
     if (undefined === this.attributes[identity.pubkey]) {
       return false;
     }
     return 0 !== this.attributes[identity.pubkey].length
   }
 
-  private updateIdentities() {
+  private updateIdentities()
+  {
     this.identityService.getIdentities().subscribe(identities => {
       this.identities = [];
       var i;
@@ -426,7 +434,7 @@ export class IdentityListComponent implements OnInit {
         }
         this.identities.push(identities[i]);
         if (this.identityInEditName === identities[i].name) {
-          this.editIdentity(this.identities[this.identities.length-1]);
+          this.editIdentity(this.identities[this.identities.length - 1]);
           this.identityInEditName = "";
         }
       }
