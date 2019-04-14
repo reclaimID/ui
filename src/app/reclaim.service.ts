@@ -28,7 +28,7 @@ export class ReclaimService {
 
   deleteAttribute(identity: Identity, attribute: Attribute)
   {
-    return this.http.delete(this.config.get().apiUrl + '/reclaim/attributes' +
+    return this.http.delete(this.config.get().apiUrl + '/reclaim/attributes/' +
                             identity.name + '/' + attribute.id);
   }
 
