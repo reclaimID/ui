@@ -117,7 +117,8 @@ export class IdentityListComponent implements OnInit {
     }
     this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
-        .subscribe(records => {
+        .subscribe(record => {
+          var records = record.data;
           console.log(records);
           for (var i = 0; i < records.length; i++) {
             if (records[i].record_type !== "RECLAIM_OIDC_CLIENT")
