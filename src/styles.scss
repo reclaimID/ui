@@ -32,14 +32,14 @@ button.btn:hover, a.button:hover {
   background-image:none;
 }
 
-.btn .btn-primary {
+.btn.btn-primary {
   background-image: none;
   background-color: #fff;
   color: #555;
   border: 1px solid #ddd;
 }
 
-.btn .btn-primary:hover {
+.btn.btn-primary:hover {
   background-color: #555;
   border: 1px solid #555;
   color: #555;
