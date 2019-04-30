@@ -57,7 +57,7 @@ export class IdentityListComponent implements OnInit {
 
     // On opening the options page, fetch stored settings and update the UI with
     // them.
-    browser.storage.local.get().then(uaSettings => {
+    /*browser.storage.local.get().then(uaSettings => {
       var uaParams = {};
       if (true == <boolean>uaSettings["request"]) {
         var searchStr = <string>uaSettings["search"];
@@ -80,7 +80,7 @@ export class IdentityListComponent implements OnInit {
           () => { console.log("Local storage request removed."); },
           (e) => { console.log(e); });
       console.log("processed localstorage");
-    });
+    });*/
     this.getClientName();
     // this.newIdentity = new Identity('', '', {});
     this.identityInEditName = "";
@@ -93,7 +93,7 @@ export class IdentityListComponent implements OnInit {
   handleStorageChange(uaSettings, areaName): void
   {
     // Greedy
-    browser.storage.local.get().then(uaSettings => {
+    /*browser.storage.local.get().then(uaSettings => {
       var uaParams = {};
       var searchStr = <string>uaSettings["search"];
       var keyVals = searchStr.split("&");
@@ -102,7 +102,7 @@ export class IdentityListComponent implements OnInit {
       }
       console.log(uaParams);
       this.oidcService.parseRouteParams(uaParams);
-    });
+    });*/
   }
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
