@@ -40,10 +40,11 @@ button.btn:hover, a.button:hover {
 }
 
 .btn.btn-primary:hover {
-  background-color: #555;
-  border: 1px solid #555;
+  background-color: #eee;
+  border: 1px solid #ddd;
   color: #555;
   background-image:none;
+  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
 }
 
 .btn-primary:disabled {
