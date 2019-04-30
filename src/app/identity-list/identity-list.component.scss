@@ -32,11 +32,22 @@ div.card-avatar-id {
 
 .card-avatar .btn-primary {
   border: none;
+  background-image: none;
   background-color: rgba(0,0,0,0);
+  box-shadow: none;
   color: #555;
   font-size: 0.75em;
   float: right;
 }
+
+.card-avatar .btn-primary:hover {
+  background-image: none;
+  color: #444;
+  background-color: 
+}
+
+
+
 
 .card-avatar div.icon {
   border-radius: 5em;

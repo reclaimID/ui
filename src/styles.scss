@@ -25,6 +25,11 @@ div.card {
 .btn {
   box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border-radius: 10rem;
+  background-image: none;
+}
+
+.btn:hover {
+  background-image:none;
 }
 
 .btn-primary {
