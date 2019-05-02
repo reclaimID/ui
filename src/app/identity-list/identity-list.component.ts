@@ -54,7 +54,7 @@ export class IdentityListComponent implements OnInit {
     this.requestedAttributes = {};
     this.missingAttributes = {};
     this.clientName = "-";
-
+    this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     // On opening the options page, fetch stored settings and update the UI with
     // them.
     /*browser.storage.local.get().then(uaSettings => {
