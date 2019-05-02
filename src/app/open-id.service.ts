@@ -11,7 +11,9 @@ export class OpenIdService {
 
   constructor(private http: HttpClient,
     private config: ConfigService,
-    private router: Router) { }
+    private router: Router) {
+    this.params = {};
+  }
 
   login(identity: Identity) {
     const httpOptions = {
@@ -21,10 +23,9 @@ export class OpenIdService {
   }
 
   parseRouteParams(params: any): any {
-    if (undefined !== this.params) {
-      return;
-    }
     this.params = params;
+    console.log("Added OIDC params");
+    console.log(this.params);
   }
 
   authorize(): any {
@@ -44,6 +45,12 @@ export class OpenIdService {
   }
 
   inOpenIdFlow(): any {
+    if (this.params['redirect_uri'] !== undefined) {
+      console.log ("In OIDC flow");
+    } else {
+      console.log ("Not in OIDC flow");
+      console.log (this.params);
+    }
     return this.params['redirect_uri'] !== undefined;
   }
 

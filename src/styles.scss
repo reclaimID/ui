@@ -22,23 +22,33 @@ div.card {
   background-color: lightgray;
 }
 
-.btn {
-  border-radius: 10rem;
+button.btn, a.btn {
   box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  border-radius: 10rem;
+  background-image: none;
 }
 
-.btn-primary {
+button.btn:hover, a.button:hover {
+  background-image:none;
+}
+
+.btn.btn-primary {
+  background-image: none;
   background-color: #fff;
   color: #555;
   border: 1px solid #ddd;
 }
 
-.btn-primary:hover {
+.btn.btn-primary:hover {
   background-color: #555;
-  border: 1px solid #555;
+  border: 1px solid #ddd;
+  color: #fff;
+  background-image:none;
+  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
 }
 
-.btn-primary:disabled {
+.btn.btn-primary:disabled {
+  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border: 1px solid #ccc;
 }
 
