@@ -53,12 +53,56 @@ export class IdentityListComponent implements OnInit {
     this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
+    this.clientName = "-";
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
+    // On opening the options page, fetch stored settings and update the UI with
+    // them.
+    /*browser.storage.local.get().then(uaSettings => {
+      var uaParams = {};
+      if (true == <boolean>uaSettings["request"]) {
+        var searchStr = <string>uaSettings["search"];
+        var keyVals = searchStr.split("&");
+        for (var i = 0; i < keyVals.length; i++) {
+          uaParams[keyVals[i].split("=")[0]] = keyVals[i].split("=")[1];
+        }
+        console.log(uaParams);
+        this.oidcService.parseRouteParams(uaParams);
+      }
+      this.getClientName();
+      // this.newIdentity = new Identity('', '', {});
+      this.identityInEditName = "";
+      this.identityNameMapper = {};
+      this.updateIdentities();
+      browser.storage.local.remove("request").then(
+          () => { console.log("Local storage request removed."); },
+          (e) => { console.log(e); });
+      browser.storage.local.remove("search").then(
+          () => { console.log("Local storage request removed."); },
+          (e) => { console.log(e); });
+      console.log("processed localstorage");
+    });*/
     this.getClientName();
     // this.newIdentity = new Identity('', '', {});
     this.identityInEditName = "";
     this.identityNameMapper = {};
     this.updateIdentities();
+    console.log("processed nginit");
+    // browser.storage.onChanged.addListener(this.handleStorageChange);
+  }
+
+  handleStorageChange(uaSettings, areaName): void
+  {
+    // Greedy
+    /*browser.storage.local.get().then(uaSettings => {
+      var uaParams = {};
+      var searchStr = <string>uaSettings["search"];
+      var keyVals = searchStr.split("&");
+      for (var i = 0; i < keyVals.length; i++) {
+        uaParams[keyVals[i].split("=")[0]] = keyVals[i].split("=")[1];
+      }
+      console.log(uaParams);
+      this.oidcService.parseRouteParams(uaParams);
+    });*/
   }
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
@@ -73,7 +117,8 @@ export class IdentityListComponent implements OnInit {
     }
     this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
-        .subscribe(records => {
+        .subscribe(record => {
+          var records = record.data;
           console.log(records);
           for (var i = 0; i < records.length; i++) {
             if (records[i].record_type !== "RECLAIM_OIDC_CLIENT")
