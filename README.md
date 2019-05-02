@@ -1,7 +1,7 @@
-![re:claim](https://avatars2.githubusercontent.com/u/44837876?s=200&v=4)
+![re:claimID](https://gitlab.com/reclaimid/ui/blob/master/src/assets/reclaim_icon.png)
 
-# The web-based user interface
-The reclaim user interface for identity management and OpenID Connect authorization flows.
-End-users should use the dedicated client which includes this interface and the runtime: https://github.com/reclaimID/client
+# The web-based user interface for re:claimID
+The re:claimID user interface for identity management and OpenID Connect authorization flows.
+End-users should use the browser plugin which includes this UI: https://github.com/reclaimID/webextension
 
-(c) 2018 Fraunhofer AISEC
+(c) 2019 Fraunhofer AISEC
