@@ -472,11 +472,7 @@ export class IdentityListComponent implements OnInit {
       var i;
       this.identityNameMapper = {};
       for (i = 0; i < identities.length; i++) {
-        //"reclaim" is the reclaim UI and API namespace!
         this.identityNameMapper[identities[i].pubkey] = identities[i].name;
-        if ("reclaim" === identities[i].name) {
-          continue;
-        }
         this.identities.push(identities[i]);
         if (this.identityInEditName === identities[i].name) {
           this.editIdentity(this.identities[this.identities.length - 1]);
@@ -485,10 +481,8 @@ export class IdentityListComponent implements OnInit {
       }
 
       identities.forEach(identity => {
-        if ("id" !== identity.name && "io" !== identity.name) {
-          this.updateAttributes(identity);
-          this.updateTickets(identity);
-        }
+        this.updateAttributes(identity);
+        this.updateTickets(identity);
       });
     });
   }
