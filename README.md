@@ -1,4 +1,4 @@
-![re:claimID](https://gitlab.com/reclaimid/ui/blob/master/src/assets/reclaim_icon.png)
+![re:claimID](https://gitlab.com/reclaimid/ui/raw/master/src/assets/reclaim_icon.png)
 
 # The web-based user interface for re:claimID
 The re:claimID user interface for identity management and OpenID Connect authorization flows.
