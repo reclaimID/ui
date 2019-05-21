@@ -8,12 +8,20 @@
     <span class="fa fa-ban"></span> Do not share information and return to website
   </button>
 </div>
+
+<div *ngIf="!isConnected(); else emptyIdList" 
+		style="text-align: center;" class="alert alert-danger alert-dismissible fade show" role="alert">
+GNUnet is dead, rip.<br/><br/>
+</div>
+
+<ng-template #emptyIdList>
 <div *ngIf="0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
   You don't have any identities yet.<br/><br/>
   <button class="btn btn-primary" (click)="addIdentity()">
     <span class="fa fa-plus"></span> Add your first identity!
   </button>
 </div>
+</ng-template>
 
 <div class="card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
   <div class="card-avatar card-img-top">

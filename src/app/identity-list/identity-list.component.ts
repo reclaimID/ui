@@ -485,5 +485,9 @@ export class IdentityListComponent implements OnInit {
         this.updateTickets(identity);
       });
     });
-  }
+	}
+
+	isConnected() {
+		//TODO
+	}
 }
