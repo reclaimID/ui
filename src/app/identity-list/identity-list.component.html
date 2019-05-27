@@ -10,8 +10,8 @@
 </div>
 
 <div *ngIf="!isConnected(); else emptyIdList" 
-		style="text-align: center;" class="alert alert-danger alert-dismissible fade show" role="alert">
-GNUnet is dead, rip.<br/><br/>
+		style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
+	<strong>GNUnet is not running.</strong>
 </div>
 
 <ng-template #emptyIdList>

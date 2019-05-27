@@ -2,7 +2,8 @@ import 'rxjs/add/observable/forkJoin';
 
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable} from 'rxjs/Rx'
+import {Observable} from 'rxjs/Rx';
+import {catchError} from 'rxjs/operators';
 
 import {Attribute} from '../attribute';
 import {GnsService} from '../gns.service';
@@ -33,7 +34,8 @@ export class IdentityListComponent implements OnInit {
   identityInEditName: string;
   identityNameMapper: any;
   showTicketsIdentity: Identity;
-  showConfirmDelete: any;
+	showConfirmDelete: any;
+	connected: any;
 
   constructor(private route: ActivatedRoute, private router: Router,
               private oidcService: OpenIdService,
@@ -53,7 +55,8 @@ export class IdentityListComponent implements OnInit {
     this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
-    this.clientName = "-";
+		this.clientName = "-";
+		this.connected = false;
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     // On opening the options page, fetch stored settings and update the UI with
     // them.
@@ -483,11 +486,16 @@ export class IdentityListComponent implements OnInit {
       identities.forEach(identity => {
         this.updateAttributes(identity);
         this.updateTickets(identity);
-      });
-    });
+			});
+			this.connected = true;
+		},
+			error => {
+				console.log(error);
+				this.connected = false
+			});
 	}
 
 	isConnected() {
-		//TODO
+		return this.connected;
 	}
 }
