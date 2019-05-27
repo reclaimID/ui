@@ -3,7 +3,6 @@ import 'rxjs/add/observable/forkJoin';
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs/Rx';
-import {catchError} from 'rxjs/operators';
 
 import {Attribute} from '../attribute';
 import {GnsService} from '../gns.service';
