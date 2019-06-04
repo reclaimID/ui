@@ -1,7 +1,7 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
-  <span><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span>
+  <span><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
   <i *ngIf="!clientNameFound"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Looking for client description.</i><br/>
-  <div *ngIf="clientNameFound"><span class="fa fa-openid"></span>  <strong>"{{ clientName }}"</strong>
+  <div *ngIf="clientNameFound"><strong>"{{ clientName }}"</strong>
   asks you to share personal information.<br/>
   Choose an identity to let it access the following information:
   </div>
@@ -9,7 +9,7 @@
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
   <button class="btn btn-danger" (click)="cancelRequest()">
-    <span class="fa fa-ban"></span> Do not share information and return to website
+    <span class="fa fa-ban"></span> Decline and return to website
   </button>
 </div>
 
