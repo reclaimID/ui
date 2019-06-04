@@ -1,6 +1,9 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
-  <span class="fa fa-openid"></span>  <strong>"{{ clientName }}"</strong> asks you to share personal information.<br/>
+  <i *ngIf="!clientNameFound"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Looking for client description.</i><br/>
+  <div *ngIf="clientNameFound"><span class="fa fa-openid"></span>  <strong>"{{ clientName }}"</strong>
+  asks you to share personal information.<br/>
   Choose an identity to let it access the following information:
+  </div>
   <ul>
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
@@ -10,8 +13,8 @@
 </div>
 
 <div *ngIf="!isConnected(); else emptyIdList" 
-		style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
-	<strong>GNUnet is not running.</strong>
+    style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>GNUnet is not running.</strong>
 </div>
 
 <ng-template #emptyIdList>

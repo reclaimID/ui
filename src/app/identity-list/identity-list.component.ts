@@ -33,8 +33,8 @@ export class IdentityListComponent implements OnInit {
   identityInEditName: string;
   identityNameMapper: any;
   showTicketsIdentity: Identity;
-	showConfirmDelete: any;
-	connected: any;
+  showConfirmDelete: any;
+  connected: any;
 
   constructor(private route: ActivatedRoute, private router: Router,
               private oidcService: OpenIdService,
@@ -54,8 +54,8 @@ export class IdentityListComponent implements OnInit {
     this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
-		this.clientName = "-";
-		this.connected = false;
+    this.clientName = "-";
+    this.connected = false;
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     // On opening the options page, fetch stored settings and update the UI with
     // them.
@@ -129,6 +129,11 @@ export class IdentityListComponent implements OnInit {
             break;
           }
         });
+  }
+
+  clientNameFound()
+  {
+    return this.clientName != this.oidcService.getClientId();
   }
 
   intToRGB(i)
