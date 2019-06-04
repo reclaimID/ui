@@ -1,4 +1,5 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
+  <span><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span>
   <i *ngIf="!clientNameFound"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Looking for client description.</i><br/>
   <div *ngIf="clientNameFound"><span class="fa fa-openid"></span>  <strong>"{{ clientName }}"</strong>
   asks you to share personal information.<br/>
