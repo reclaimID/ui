@@ -219,6 +219,19 @@ export class IdentityListComponent implements OnInit {
     }
   }
 
+  private mapAudience(ticket) 
+  {
+    this.gnsService.getClientName(ticket.audience).subscribe(records => {
+      for (var i = 0; i < records.data.length; i++) {
+        if (records.data[i].record_type !== "RECLAIM_OIDC_CLIENT")
+          continue;
+        this.identityNameMapper[ticket.audience] = records.data[i].value;
+        break;
+      }   
+    },
+      error => console.debug(error.message)); 
+  }
+
   private updateTickets(identity)
   {
     this.reclaimService.getTickets(identity).subscribe(tickets => {
@@ -227,19 +240,10 @@ export class IdentityListComponent implements OnInit {
         return;
       }
       this.tickets[identity.pubkey] = tickets;
-      tickets.forEach((ticket) => {
-        this.gnsService.getClientName(ticket.audience).subscribe(records => {
-          for (var i = 0; i < records.length; i++) {
-            if (records[i].type !== "RECLAIM_OIDC_CLIENT")
-              continue;
-            this.identityNameMapper[ticket.audience] = records[i].value;
-            break;
-          }
-        });
-      });
-    });
+      tickets.forEach(ticket => this.mapAudience(ticket));
+    }); 
   }
-
+  
   toggleShowTickets(identity)
   {
     if (this.showTicketsIdentity == identity) {
@@ -274,6 +278,12 @@ export class IdentityListComponent implements OnInit {
       }
       this.getMissingAttributes(identity);
     });
+  }
+
+  showSharedAttributes(ticket)
+  {
+    return ["attr1", "attr2"];
+    //TODO 
   }
 
   saveAttribute(identity, attribute)
