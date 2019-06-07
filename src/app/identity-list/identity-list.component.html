@@ -116,13 +116,24 @@
             </td>
             <td>
               <div style="min-width: 15em">
-                {{showSharedAttributes(ticket)}}
+                {{ticketAttributeMapper[ticket.audience]}}
               </div>
             </td>
             <td>
+              
+              
+              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
+                <span class="fa fa-unlink"></span> Revoke
+              </button>
+              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
+                Do you really want to revoke this ticket?<br/><br/>
               <button class="btn btn-primary" (click)="revokeTicket(identityInEdit, ticket)">
                 <span class="fa fa-unlink"></span> Revoke
               </button>
+              <button class="btn btn-primary" (click)="hideConfirmRevoke()">
+                <span class="fa fa-close"></span> Cancel
+              </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -146,11 +157,11 @@
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
         <div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>
-        <span class="m-1" styl="display: inline-block">{{ identity.name}}</span>
+        <span class="m-1" styl="display: inline-block">{{identity.name}}</span>
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
           <span class="fa fa-trash"></span>
         </button>
-                <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="editIdentity(identity)">
+        <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="editIdentity(identity)">
           <span class="fa fa-edit"></span>
         </button>
       </div>
