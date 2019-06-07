@@ -287,7 +287,6 @@ export class IdentityListComponent implements OnInit {
     this.reclaimService.revokeTicket(ticket).subscribe(
       data => { 
         this.updateAttributes(identity);
-        this.updateTickets(identity); 
       });
   }
 
@@ -309,6 +308,7 @@ export class IdentityListComponent implements OnInit {
         }
       }
       this.getMissingAttributes(identity);
+      this.updateTickets(identity);
     });
   }
 
@@ -525,7 +525,6 @@ export class IdentityListComponent implements OnInit {
 
       identities.forEach(identity => {
         this.updateAttributes(identity);
-        this.updateTickets(identity);
 			});
 			this.connected = true;
 		},
