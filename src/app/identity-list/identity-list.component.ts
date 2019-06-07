@@ -34,7 +34,9 @@ export class IdentityListComponent implements OnInit {
   identityNameMapper: any;
   showTicketsIdentity: Identity;
   showConfirmDelete: any;
+  showConfirmRevoke: any;
   connected: any;
+  ticketAttributeMapper: any;
 
   constructor(private route: ActivatedRoute, private router: Router,
               private oidcService: OpenIdService,
@@ -51,11 +53,13 @@ export class IdentityListComponent implements OnInit {
     this.tickets = {};
     this.identities = [];
     this.showConfirmDelete = null;
+    this.showConfirmRevoke = null;
     this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
     this.clientName = "-";
     this.connected = false;
+    this.ticketAttributeMapper = {};
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     // On opening the options page, fetch stored settings and update the UI with
     // them.
@@ -109,7 +113,11 @@ export class IdentityListComponent implements OnInit {
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
 
+  confirmRevoke(ticket) { this.showConfirmRevoke = ticket; }
+
   hideConfirmDelete() { this.showConfirmDelete = null; }
+  
+  hideConfirmRevoke() { this.showConfirmRevoke = null; }
 
   getClientName()
   {
@@ -228,8 +236,26 @@ export class IdentityListComponent implements OnInit {
         this.identityNameMapper[ticket.audience] = records.data[i].value;
         break;
       }   
-    },
-      error => console.debug(error.message)); 
+    }); 
+  }
+
+  private mapAttributes(identity, ticket)
+  {    
+    this.namestoreService.getNames(identity).subscribe(names => {
+      this.ticketAttributeMapper[ticket.audience] = [];
+      names = names.filter(name => name.record_name === ticket.rnd.toLowerCase());
+      for (var i = 0; i < names.length; i++) {
+        names[i].data.forEach(record => {
+          if (record.record_type === 'RECLAIM_ATTR_REF') {            
+            this.attributes[identity.pubkey]
+              .filter(attr => attr.id === record.value)
+              .map(attr => {
+                this.ticketAttributeMapper[ticket.audience].push(attr.name);
+              });
+          }
+        });
+      } 
+    });
   }
 
   private updateTickets(identity)
@@ -240,7 +266,10 @@ export class IdentityListComponent implements OnInit {
         return;
       }
       this.tickets[identity.pubkey] = tickets;
-      tickets.forEach(ticket => this.mapAudience(ticket));
+      tickets.forEach(ticket => {
+        this.mapAudience(ticket);
+        this.mapAttributes(identity, ticket);
+      });
     }); 
   }
   
@@ -256,7 +285,10 @@ export class IdentityListComponent implements OnInit {
   revokeTicket(identity, ticket)
   {
     this.reclaimService.revokeTicket(ticket).subscribe(
-        data => { this.updateTickets(identity); });
+      data => { 
+        this.updateAttributes(identity);
+        this.updateTickets(identity); 
+      });
   }
 
 
@@ -278,12 +310,6 @@ export class IdentityListComponent implements OnInit {
       }
       this.getMissingAttributes(identity);
     });
-  }
-
-  showSharedAttributes(ticket)
-  {
-    return ["attr1", "attr2"];
-    //TODO 
   }
 
   saveAttribute(identity, attribute)
@@ -511,5 +537,5 @@ export class IdentityListComponent implements OnInit {
 
 	isConnected() {
 		return this.connected;
-	}
+  }
 }
