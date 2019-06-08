@@ -7,8 +7,7 @@
 }
 
 div.card-avatar {
-    text-align: center;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+    //border-bottom: 2px solid rgba(0, 0, 0, 0.125);
     //min-height: 50px;
 }
 
@@ -27,6 +26,10 @@ div.card-avatar-id {
 
 .card tr.openid.text-dimmed {
    color: #eee;
+}
+
+.card-avatar-character {
+  padding-left: 0.5em;
 }
 
 .card-avatar .btn-primary {
