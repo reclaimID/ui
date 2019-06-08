@@ -193,9 +193,6 @@
         <h6 class="card-subtitle mb-2" *ngIf="hasAttributes(identity)">
           <strong>Information:</strong>
         </h6>
-        <h6 class="card-subtitle mb-2" *ngIf="!hasAttributes(identity)">
-          This identity has no attributes
-        </h6>
         <table class="table pb-1">
           <tbody>
             <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute)"
