@@ -2,8 +2,8 @@
   <span><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
   <i *ngIf="!clientNameFound"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Looking for client description.</i><br/>
   <div *ngIf="clientNameFound"><strong>"{{ clientName }}"</strong>
-  asks you to share personal information.<br/>
-  Choose an identity to let it access the following information:
+    asks you to share personal information.<br/>
+    Choose an identity to let it access the following information:
   </div>
   <ul>
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
@@ -14,17 +14,17 @@
 </div>
 
 <div *ngIf="!isConnected(); else emptyIdList" 
-    style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
+          style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
   <strong>GNUnet is not running.</strong>
 </div>
 
 <ng-template #emptyIdList>
-<div *ngIf="0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
-  You don't have any identities yet.<br/><br/>
-  <button class="btn btn-primary" (click)="addIdentity()">
-    <span class="fa fa-plus"></span> Add your first identity!
-  </button>
-</div>
+  <div *ngIf="0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
+    You don't have any identities yet.<br/><br/>
+    <button class="btn btn-primary" (click)="addIdentity()">
+      <span class="fa fa-plus"></span> Add your first identity!
+    </button>
+  </div>
 </ng-template>
 
 <div class="m-2 card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
@@ -120,19 +120,17 @@
               </div>
             </td>
             <td>
-              
-              
               <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
                 <span class="fa fa-unlink"></span> Revoke
               </button>
               <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
                 Do you really want to revoke this ticket?<br/><br/>
-              <button class="btn btn-primary" (click)="revokeTicket(identityInEdit, ticket)">
-                <span class="fa fa-unlink"></span> Revoke
-              </button>
-              <button class="btn btn-primary" (click)="hideConfirmRevoke()">
-                <span class="fa fa-close"></span> Cancel
-              </button>
+                <button class="btn btn-primary" (click)="revokeTicket(identityInEdit, ticket)">
+                  <span class="fa fa-unlink"></span> Revoke
+                </button>
+                <button class="btn btn-primary" (click)="hideConfirmRevoke()">
+                  <span class="fa fa-close"></span> Cancel
+                </button>
               </div>
             </td>
           </tr>
@@ -217,13 +215,14 @@
       </div>
       <div>
 
-      <div>
-        <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-          <span class="fa fa-openid"></span> Share from this identity</button>
+        <div>
+          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+            <span class="fa fa-openid"></span> Share from this identity</button>
+        </div>
       </div>
-    </div>
-    <div>
-      <i class="m-2" style="float:right; color: #eee;">Identity card</i>
+      <div>
+        <i class="m-2" style="float:right; color: #eee;">Identity card</i>
+      </div>
     </div>
   </div>
 </div>
