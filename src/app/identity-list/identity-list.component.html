@@ -215,15 +215,17 @@
       <div style="margin-bottom: 1em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()" class="text-primary">
         Only attributes marked with <span class="fa fa-openid" ></span> will be shared.
       </div>
+      <div>
 
       <div>
         <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
           <span class="fa fa-openid"></span> Share from this identity</button>
       </div>
     </div>
+    <div>
+      <i class="m-2" style="float:right; color: #eee;">Identity card</i>
+    </div>
   </div>
-
-
 </div>
 <div *ngIf="isAddIdentity()" class="m-2 card" style="text-align:center;">
   <div class="card-avatar card-img-top">
