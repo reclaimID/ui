@@ -27,10 +27,10 @@
 </div>
 </ng-template>
 
-<div class="card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
+<div class="m-2 card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      Manage identity: {{ identityInEdit.name }}
+      Manage identity: <i>{{ identityInEdit.name }}</i>
     </div>
   </div>
   <div class="card-body">
@@ -156,8 +156,9 @@
   <div class="card" *ngFor="let identity of identities">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
-        <div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>
-        <span class="m-1" styl="display: inline-block">{{identity.name}}</span>
+        <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
+        <i class="fa fa-user-circle"></i>
+        <span class="m-1" styl="display: inline-block"><i> {{identity.name}}</i></span>
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
           <span class="fa fa-trash"></span>
         </button>
@@ -190,7 +191,7 @@
     <div class="card-body">
       <div>
         <h6 class="card-subtitle mb-2" *ngIf="hasAttributes(identity)">
-          <strong>Attributes:</strong>
+          <strong>Information:</strong>
         </h6>
         <h6 class="card-subtitle mb-2" *ngIf="!hasAttributes(identity)">
           This identity has no attributes
@@ -227,10 +228,10 @@
 
 
 </div>
-<div *ngIf="isAddIdentity()" class="card" style="text-align:center;">
+<div *ngIf="isAddIdentity()" class="m-2 card" style="text-align:center;">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      New Identity        </div>
+      Add Identity        </div>
   </div>
   <div *ngIf="'' !== newIdentity.name && !canSave()" class="alert alert-danger alert-dismissible fade show" role="alert">
     Only Alphanumeric input. No spaces or special characters allowed.
@@ -242,10 +243,10 @@
     <input [class.text-danger]="'' !== newIdentity.name && !canSave()" style="text-align: center; border: 1px solid #111;" (keyup.enter)="saveIdentity()" pattern="^[a-zA-Z0-9-]+" placeholder="Username" title="Only Alphanumeric input. No spaces or special characters allowed." class="mr-2" [(ngModel)]="newIdentity.name" autofocus>
     <br/>
     <br/>
-    <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="btn btn-primary" (click)="saveIdentity()">
+    <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="-1 btn btn-primary" (click)="saveIdentity()">
       <span class="fa fa-save"></span> Save
     </button>
-    <button class="btn btn-danger" (click)="cancelAddIdentity()">
+    <button class="m-1 btn btn-danger" (click)="cancelAddIdentity()">
       <span class="fa fa-close"></span> Cancel
     </button>
   </div>
