@@ -1,6 +1,6 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
   <span><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
-  <i *ngIf="!clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Looking for client description.</i><br/>
+  <i *ngIf="!clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verifying request for:</i><br/>
   <div *ngIf="clientNameFound()"><strong>"{{ clientName }}"</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
@@ -217,8 +217,8 @@
 
         <div>
           <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="!clientNameFound"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verifying remote party</span>
-            <span *ngIf="clientNameFound" class="fa fa-openid"></span> Share from this identity</button>
+            <span *ngIf="!clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verification in progress...</span>
+            <span *ngIf="clientNameFound()" class="fa fa-openid"></span> Share from this identity</button>
         </div>
       </div>
       <div>
