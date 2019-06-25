@@ -55,6 +55,9 @@ export class OpenIdService {
   }
 
   getClientId(): any {
+    if (!this.inOpenIdFlow()) {
+      return "";
+    }
     return this.params['client_id'];
   }
 

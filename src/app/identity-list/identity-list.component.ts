@@ -121,7 +121,7 @@ export class IdentityListComponent implements OnInit {
 
   getClientName()
   {
-    this.clientName = "-";
+    this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
         .subscribe(record => {
           var records = record.data;
