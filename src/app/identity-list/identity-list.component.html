@@ -1,6 +1,6 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
   <span *ngIf="clientNameFound()"><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
-  <span *ngIf="!clientNameFound()"><i class="fa fa-2x fa-openid"></i> <b class="fa-2x">Verifying request. Please stand by...</b></span> <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i><br/>
+  <span *ngIf="!clientNameFound()"><i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> <b class="fa-2x"> Verifying request, please stand by...</b></span><br/>
   <div *ngIf="clientNameFound()"><strong>"{{ clientName }}"</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
