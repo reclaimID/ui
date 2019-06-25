@@ -472,7 +472,7 @@ export class IdentityListComponent implements OnInit {
   getMissingPretty(identity) { return this.getMissing(identity).join(", "); }
   canAuthorize(identity)
   {
-    return this.inOpenIdFlow() && !this.isInEdit(identity) && this.clientNameFound();
+    return this.inOpenIdFlow() && !this.isInEdit(identity);
   }
   isRequested(identity, attribute)
   {
