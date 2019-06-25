@@ -216,8 +216,8 @@
       <div>
 
         <div>
+          <span *ngIf="!clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verification in progress...</span>
           <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="!clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verification in progress...</span>
             <span *ngIf="clientNameFound()" class="fa fa-openid"></span> Share from this identity</button>
         </div>
       </div>
