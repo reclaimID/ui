@@ -121,10 +121,7 @@ export class IdentityListComponent implements OnInit {
 
   getClientName()
   {
-    if (!this.inOpenIdFlow()) {
-      this.clientName = "-";
-      return;
-    }
+    this.clientName = "-";
     this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
         .subscribe(record => {
@@ -476,7 +473,7 @@ export class IdentityListComponent implements OnInit {
   getMissingPretty(identity) { return this.getMissing(identity).join(", "); }
   canAuthorize(identity)
   {
-    return this.inOpenIdFlow() && !this.isInEdit(identity) && this.clientNameFound;
+    return this.inOpenIdFlow() && !this.isInEdit(identity) && this.clientNameFound();
   }
   isRequested(identity, attribute)
   {
