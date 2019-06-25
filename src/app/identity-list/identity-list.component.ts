@@ -116,13 +116,12 @@ export class IdentityListComponent implements OnInit {
   confirmRevoke(ticket) { this.showConfirmRevoke = ticket; }
 
   hideConfirmDelete() { this.showConfirmDelete = null; }
-  
+
   hideConfirmRevoke() { this.showConfirmRevoke = null; }
 
   getClientName()
   {
     this.clientName = "-";
-    this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
         .subscribe(record => {
           var records = record.data;
