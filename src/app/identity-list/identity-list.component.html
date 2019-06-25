@@ -1,6 +1,6 @@
 <div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
   <span *ngIf="clientNameFound()"><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
-  <span *ngIf="!clientNameFound()"><i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> <b class="fa-2x">Verifying request..</b></span><br/>
+  <span *ngIf="!clientNameFound()"><i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> <b class="fa-2x">Verifying request...</b></span><br/>
   <div *ngIf="clientNameFound()"><strong>"{{ clientName }}"</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
@@ -8,7 +8,7 @@
   <ul *ngIf="clientNameFound()">
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
-  <button class="btn btn-danger" (click)="cancelRequest()">
+  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Decline and return to website
   </button>
 </div>
@@ -216,7 +216,6 @@
       <div>
 
         <div>
-          <span *ngIf="inOpenIdFlow() && !clientNameFound()"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> Verification in progress...</span>
           <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
             <span *ngIf="clientNameFound()"><i class="fa fa-openid"></i> Share from this identity</span>
             <span *ngIf="!clientNameFound()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
