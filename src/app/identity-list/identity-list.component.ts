@@ -160,14 +160,15 @@ export class IdentityListComponent implements OnInit {
 
   isAddIdentity() { return null != this.newIdentity; }
 
-  isDuplicate(identity) 
+  isDuplicate()
   {
     for (let i = 0; i < this.identities.length; i++) {
         if (this.identities[i].name === this.newIdentity.name) {
           return true;
         }
     }
-  } 
+  }
+
   canSave()
   {
     if (this.newIdentity.name == null) {
@@ -177,6 +178,9 @@ export class IdentityListComponent implements OnInit {
       return false;
     }
     if (!/^[a-zA-Z0-9-]+$/.test(this.newIdentity.name)) {
+      return false;
+    }
+    if (this.isDuplicate()) {
       return false;
     }
     return true;
