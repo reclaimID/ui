@@ -160,6 +160,14 @@ export class IdentityListComponent implements OnInit {
 
   isAddIdentity() { return null != this.newIdentity; }
 
+  isDuplicate(identity) 
+  {
+    for (let i = 0; i < this.identities.length; i++) {
+        if (this.identities[i].name === this.newIdentity.name) {
+          return true;
+        }
+    }
+  } 
   canSave()
   {
     if (this.newIdentity.name == null) {

@@ -233,10 +233,19 @@
     <div class="card-avatar-character text-dark">
       Add Identity        </div>
   </div>
+  
+  <!-- Identity creation -->
+  
+  <!-- Invalid input -->
   <div *ngIf="'' !== newIdentity.name && !canSave()" class="alert alert-danger alert-dismissible fade show" role="alert">
     Only Alphanumeric input. No spaces or special characters allowed.
   </div>
-  <div *ngIf="'' === newIdentity.name || canSave()" class="alert alert-secondary alert-dismissible fade show" role="alert">
+  <!--Identity already exists -->  
+  <div *ngIf="isDuplicate(newIdentity)" class="alert alert-warning alert-dismissible fade show" role="alert"> 
+    An identity with this username already exists.
+  </div>
+  <!-- Input text -->
+  <div *ngIf="('' === newIdentity.name || canSave()) && !isDuplicate(newIdentity); else invalid_identity_name" class="alert alert-secondary alert-dismissible fade show" role="alert">
     Enter a username for your new identity
   </div>
   <div class="card-body">
@@ -251,6 +260,7 @@
     </button>
   </div>
 </div>
+
 <div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
   <button class="btn btn-primary" (click)="addIdentity()">
     <span class="fa fa-plus"></span> Add identity
