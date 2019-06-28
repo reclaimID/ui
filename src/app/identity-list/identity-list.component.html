@@ -245,7 +245,7 @@
     An identity with this username already exists.
   </div>
   <!-- Input text -->
-  <div *ngIf="('' === newIdentity.name || canSave()) && !isDuplicate(newIdentity); else invalid_identity_name" class="alert alert-secondary alert-dismissible fade show" role="alert">
+  <div *ngIf="('' === newIdentity.name || canSave()) && !isDuplicate(newIdentity)" class="alert alert-secondary alert-dismissible fade show" role="alert">
     Enter a username for your new identity
   </div>
   <div class="card-body">
