@@ -49,12 +49,15 @@ button.btn:hover, a.button:hover {
 }
 
 .btn.btn-primary:disabled {
+  background-color: white;
   box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border: 1px solid #ccc;
+  color: #ccc;
 }
 
 .btn-primary:disabled:hover {
-  background-color: lightgrey;
+  color: #ccc;
+  background-color: white;
 }
 
 .alert a.buttonlink {
