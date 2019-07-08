@@ -12,6 +12,8 @@ import {NamestoreService} from '../namestore.service';
 import {OpenIdService} from '../open-id.service';
 import {ReclaimService} from '../reclaim.service';
 import {Ticket} from '../ticket';
+import {ModalService} from '../modal.service';
+import {ModalComponent} from '../modal.component';
 
 @Component ({
   selector : 'app-identity-list',
@@ -37,13 +39,16 @@ export class IdentityListComponent implements OnInit {
   showConfirmRevoke: any;
   connected: any;
   ticketAttributeMapper: any;
+  modalOpened: any;
+
 
   constructor(private route: ActivatedRoute, private router: Router,
               private oidcService: OpenIdService,
               private identityService: IdentityService,
               private reclaimService: ReclaimService,
               private namestoreService: NamestoreService,
-              private gnsService: GnsService)
+              private gnsService: GnsService,
+              private modalService: ModalService)
   {
   }
 
@@ -57,9 +62,10 @@ export class IdentityListComponent implements OnInit {
     this.newAttribute = new Attribute ('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
-    this.clientName = "-";
+    this.clientName = '-';
     this.connected = false;
     this.ticketAttributeMapper = {};
+    this.modalOpened = false;
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     // On opening the options page, fetch stored settings and update the UI with
     // them.
@@ -89,10 +95,10 @@ export class IdentityListComponent implements OnInit {
     });*/
     this.getClientName();
     // this.newIdentity = new Identity('', '', {});
-    this.identityInEditName = "";
+    this.identityInEditName = '';
     this.identityNameMapper = {};
     this.updateIdentities();
-    console.log("processed nginit");
+    console.log('processed nginit');
     // browser.storage.onChanged.addListener(this.handleStorageChange);
   }
 
@@ -137,7 +143,7 @@ export class IdentityListComponent implements OnInit {
 
   clientNameFound()
   {
-    return this.clientName != this.oidcService.getClientId();
+    return this.clientName !== this.oidcService.getClientId();
   }
 
   intToRGB(i)
@@ -231,7 +237,7 @@ export class IdentityListComponent implements OnInit {
     }
   }
 
-  private mapAudience(ticket) 
+  private mapAudience(ticket)
   {
     this.gnsService.getClientName(ticket.audience).subscribe(records => {
       for (var i = 0; i < records.data.length; i++) {
@@ -383,6 +389,8 @@ export class IdentityListComponent implements OnInit {
 
   cancelRequest()
   {
+    this.closeModal('OpenIdInfo');
+    this.modalOpened = false;
     this.oidcService.cancelAuthorization().subscribe(data => {
       console.log('Request cancelled');
       this.authorize();
@@ -399,7 +407,27 @@ export class IdentityListComponent implements OnInit {
 
   authorize() { this.oidcService.authorize(); }
 
-  inOpenIdFlow() { return this.oidcService.inOpenIdFlow(); }
+  openModal(id: string)
+  {
+    this.modalService.open(id);
+    this.modalOpened = true;
+  }
+
+  closeModal(id: string)
+  { 
+    this.modalService.close(id);
+    if (!this.inOpenIdFlow())
+      this.modalOpened = false;
+  }
+  
+
+  inOpenIdFlow()
+  { 
+    if (this.oidcService.inOpenIdFlow() && !this.modalOpened) {
+      this.openModal('OpenIdInfo');
+    }
+    return this.oidcService.inOpenIdFlow();
+  }
 
   canAddAttribute(identity, attribute)
   {
@@ -468,6 +496,7 @@ export class IdentityListComponent implements OnInit {
   getScopes() { return this.oidcService.getScope(); }
 
   getScopesPretty() { return this.getScopes().join(", "); }
+  
   getMissing(identity)
   {
     var arr = [];
@@ -478,10 +507,12 @@ export class IdentityListComponent implements OnInit {
     return arr;
   }
   getMissingPretty(identity) { return this.getMissing(identity).join(", "); }
+  
   canAuthorize(identity)
   {
     return this.inOpenIdFlow() && !this.isInEdit(identity);
   }
+  
   isRequested(identity, attribute)
   {
     if (undefined === this.requestedAttributes[identity.pubkey]) {
@@ -529,16 +560,19 @@ export class IdentityListComponent implements OnInit {
 
       identities.forEach(identity => {
         this.updateAttributes(identity);
-			});
-			this.connected = true;
-		},
-			error => {
-				console.log(error);
-				this.connected = false
+      });
+      this.closeModal('GnunetInfo');
+      this.connected = true;
+    },
+      error => {
+        console.log(error);
+        this.openModal('GnunetInfo');
+        this.connected = false;
 			});
 	}
 
-	isConnected() {
+  isConnected() 
+  {
 		return this.connected;
   }
 }
