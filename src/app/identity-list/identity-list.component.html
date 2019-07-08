@@ -1,6 +1,19 @@
-<div *ngIf="inOpenIdFlow()" class="alert alert-primary alert-dismissible fade show" role="alert">
-  <span *ngIf="clientNameFound()"><i class="fa fa-2x fa-openid"></i> <b class="fa-2x"> Authorization Request</b></span><br/>
-  <span *ngIf="!clientNameFound()"><i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> <b class="fa-2x"> Verifying request, please stand by...</b></span><br/>
+<!-- TODO: GNUnet -> modal -->
+
+<!-- OpenId Authorization Screen -->
+<!-- Modal -->
+<oid-modal id="OpenIdInfo">
+  <div style="text-align: center;">
+    <span *ngIf="clientNameFound()">
+    <i class="fa fa-2x fa-openid"></i> 
+    <b class="fa-2x"> Authorization Request </b>
+    </span>
+    <span *ngIf="!clientNameFound()">
+      <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
+      <b class="fa-2x"> Verifying request, please stand by...</b>
+    </span>
+    <br/> 
+  </div>
   <div *ngIf="clientNameFound()"><strong>"{{ clientName }}"</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
@@ -8,24 +21,29 @@
   <ul *ngIf="clientNameFound()">
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
-  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
-    <span class="fa fa-ban"></span> Decline and return to website
+  <div style="text-align: right">
+    <button class="btn btn-danger mt-4" (click)="cancelRequest(); closeModal('OpenIdInfo');">
+      <span class="fa fa-ban"></span> Decline and return to website 
+    </button>
+    &nbsp;
+    <button class="btn btn-primary mt-4" (click)="closeModal('OpenIdInfo');">Continue</button>
+  </div>
+</oid-modal>
+
+<!-- GNUnet not running -->
+<!-- Modal -->
+<oid-modal id="GnunetInfo">
+  <div style="text-align: center;">
+    <b class="fa-2x"> GNUnet is not running. </b>
+  </div>
+</oid-modal>
+
+<div *ngIf="isConnected() && 0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
+  You don't have any identities yet.<br/><br/>
+  <button class="btn btn-primary" (click)="addIdentity()">
+    <span class="fa fa-plus"></span> Add your first identity!
   </button>
 </div>
-
-<div *ngIf="!isConnected(); else emptyIdList" 
-          style="text-align: center; font-size: 1.75em;" class="alert alert-danger alert-dismissible fade show" role="alert">
-  <strong>GNUnet is not running.</strong>
-</div>
-
-<ng-template #emptyIdList>
-  <div *ngIf="0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
-    You don't have any identities yet.<br/><br/>
-    <button class="btn btn-primary" (click)="addIdentity()">
-      <span class="fa fa-plus"></span> Add your first identity!
-    </button>
-  </div>
-</ng-template>
 
 <div class="m-2 card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
   <div class="card-avatar card-img-top">
@@ -228,14 +246,14 @@
     </div>
   </div>
 </div>
+
+<!-- Identity creation -->
 <div *ngIf="isAddIdentity()" class="m-2 card" style="text-align:center;">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      Add Identity        </div>
+      Add Identity        
+    </div>
   </div>
-  
-  <!-- Identity creation -->
-  
   <!-- Invalid input -->
   <div *ngIf="'' !== newIdentity.name && !canSave() && !isDuplicate()" class="alert alert-danger alert-dismissible fade show" role="alert">
     Only Alphanumeric input. No spaces or special characters allowed.
@@ -261,9 +279,17 @@
   </div>
 </div>
 
+<!-- Buttons -->
+<!-- Add identity -->
 <div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
   <button class="btn btn-primary" (click)="addIdentity()">
     <span class="fa fa-plus"></span> Add identity
+  </button>
+</div>
+<!-- Cancel authorization -->
+<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit)" style="margin-bottom: 1em; text-align: center;">
+  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
+    <span class="fa fa-ban"></span> Decline and return to website
   </button>
 </div>
 

@@ -11,6 +11,8 @@ import { ReclaimService } from './reclaim.service';
 import { NamestoreService } from './namestore.service';
 import { GnsService } from './gns.service';
 import { ConfigService } from './config.service';
+import { ModalComponent } from './modal.component';
+import { ModalService } from './modal.service';
 
 import './rxjs';
 import { OpenIdService } from './open-id.service';
@@ -19,6 +21,7 @@ import { OpenIdService } from './open-id.service';
   declarations: [
     AppComponent,
     IdentityListComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,
@@ -28,6 +31,7 @@ import { OpenIdService } from './open-id.service';
   ],
   providers: [
     IdentityService,
+    ModalService,
     ReclaimService,
     NamestoreService,
     GnsService,
