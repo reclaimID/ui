@@ -240,8 +240,8 @@
           </button>
         </div>
       </div>
-      <div>
-        <i class="m-2" style="float:right; color: #eee;">Identity card</i>
+      <div style="text-align:center">
+        <img src="assets/reclaim_icon.png" style="width: 5em;opacity: 0.3;">
       </div>
     </div>
   </div>
@@ -255,15 +255,15 @@
     </div>
   </div>
   <!-- Invalid input -->
-  <div *ngIf="'' !== newIdentity.name && !canSave()" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <div *ngIf="'' !== newIdentity.name && !canSave() && !isDuplicate()" class="alert alert-danger alert-dismissible fade show" role="alert">
     Only Alphanumeric input. No spaces or special characters allowed.
   </div>
   <!--Identity already exists -->  
-  <div *ngIf="isDuplicate(newIdentity)" class="alert alert-warning alert-dismissible fade show" role="alert"> 
+  <div *ngIf="isDuplicate()" class="alert alert-warning alert-dismissible fade show" role="alert"> 
     An identity with this username already exists.
   </div>
   <!-- Input text -->
-  <div *ngIf="('' === newIdentity.name || canSave()) && !isDuplicate(newIdentity)" class="alert alert-secondary alert-dismissible fade show" role="alert">
+  <div *ngIf="'' === newIdentity.name || canSave()" class="alert alert-secondary alert-dismissible fade show" role="alert">
     Enter a username for your new identity
   </div>
   <div class="card-body">
