@@ -3,29 +3,37 @@
   <div style="text-align: center;">
     <div class="logo"><img src="assets/reclaim_icon.png"/></div>
     <hr>
-    <span *ngIf="clientNameFound()">
-    <i class="fa fa-2x fa-openid"></i> 
-    <b class="fa-2x"> Authorization Request </b>
-    </span>
-    <span *ngIf="!clientNameFound()">
+    <span *ngIf="clientNameFound === undefined">
       <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
       <b class="fa-2x"> Verifying request, please stand by...</b>
     </span>
+    <span *ngIf="clientNameFound">
+      <i class="fa fa-2x fa-openid"></i> 
+      <b class="fa-2x"> Authorization Request </b>
+    </span> 
+    <span *ngIf="clientNameFound !== undefined && !clientNameFound">
+      <b class="fa-2x"> Authorization failed. </b>
+    </span>
     <br/> 
   </div>
-  <div *ngIf="clientNameFound()"><strong>"{{ clientName }}"</strong>
+  <div *ngIf="clientNameFound"><strong>"{{ clientName }}"</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
   </div>
-  <ul *ngIf="clientNameFound()">
+  <ul *ngIf="clientNameFound">
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
-  <div style="text-align: center;">
-    <button class="btn btn-danger mt-4" (click)="cancelRequest(); closeModal('OpenIdInfo');" style="margin-bottom: -4%;">
+  <div *ngIf="clientNameFound" style="text-align: center;">
+    <button class="btn btn-danger mt-4" *ngIf="clientNameFound" (click)="cancelRequest(); closeModal('OpenIdInfo');" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline and return to website 
     </button>
     <br/>
-    <button class="btn btn-primary mt-4" (click)="closeModal('OpenIdInfo');">Choose Identity</button>
+    <button class="btn btn-primary mt-4" *ngIf="clientNameFound" (click)="closeModal('OpenIdInfo');">Choose Identity</button>
+  </div>
+  <div *ngIf="clientNameFound !== undefined && !clientNameFound" style="text-align: center;">
+    <button class="btn btn-primary mt-4" *ngIf="!clientNameFound" (click)="getClientName();">
+      <span class="fa fa-openid"></span> Retry
+    </button>
   </div>
 </oid-modal>
 
@@ -244,9 +252,9 @@
       <div>
 
         <div>
-          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="clientNameFound()"><i class="fa fa-openid"></i> Share from this identity</span>
-            <span *ngIf="!clientNameFound()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
+          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+            <span *ngIf="clientNameFound"><i class="fa fa-openid"></i> Share from this identity</span>
+            <span *ngIf="!clientNameFound"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>
         </div>
       </div>
@@ -303,7 +311,7 @@
   </button>
 </div>
 <!-- Cancel authorization -->
-<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit)" style="margin-bottom: 1em; text-align: center;">
+<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" style="margin-bottom: 1em; text-align: center;">
   <button class="btn btn-danger mt-4" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Decline and return to website
   </button>
