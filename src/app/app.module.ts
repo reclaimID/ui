@@ -13,6 +13,7 @@ import { GnsService } from './gns.service';
 import { ConfigService } from './config.service';
 import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
+import { SearchPipe } from './search.pipe';
 
 import './rxjs';
 import { OpenIdService } from './open-id.service';
@@ -21,7 +22,8 @@ import { OpenIdService } from './open-id.service';
   declarations: [
     AppComponent,
     IdentityListComponent,
-    ModalComponent
+    ModalComponent,
+    SearchPipe
   ],
   imports: [
     BrowserModule,

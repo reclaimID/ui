@@ -1,14 +1,13 @@
-<!-- TODO: GNUnet -> modal -->
-
 <!-- OpenId Authorization Screen -->
-<!-- Modal -->
 <oid-modal id="OpenIdInfo">
   <div style="text-align: center;">
-    <span *ngIf="clientNameFound()">
+    <div class="logo"><img src="assets/reclaim_icon.png"/></div>
+    <hr>
+    <span *ngIf="!clientNameFound()">
     <i class="fa fa-2x fa-openid"></i> 
     <b class="fa-2x"> Authorization Request </b>
     </span>
-    <span *ngIf="!clientNameFound()">
+    <span *ngIf="clientNameFound()">
       <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
       <b class="fa-2x"> Verifying request, please stand by...</b>
     </span>
@@ -21,23 +20,25 @@
   <ul *ngIf="clientNameFound()">
     <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
   </ul>
-  <div style="text-align: right">
-    <button class="btn btn-danger mt-4" (click)="cancelRequest(); closeModal('OpenIdInfo');">
+  <div style="text-align: center;">
+    <button class="btn btn-danger mt-4" (click)="cancelRequest(); closeModal('OpenIdInfo');" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline and return to website 
     </button>
-    &nbsp;
-    <button class="btn btn-primary mt-4" (click)="closeModal('OpenIdInfo');">Continue</button>
+    <br/>
+    <button class="btn btn-primary mt-4" (click)="closeModal('OpenIdInfo');">Choose Identity</button>
   </div>
 </oid-modal>
 
 <!-- GNUnet not running -->
-<!-- Modal -->
 <oid-modal id="GnunetInfo">
-  <div style="text-align: center;">
-    <b class="fa-2x"> GNUnet is not running. </b>
+  <div class="logo"><img src="assets/reclaim_icon.png"/></div>
+  <hr>
+  <div style="text-align: center; font-size: 18px;">
+    <strong> Unable to connect to GNUnet. <br/> Maybe it is not running? </strong>
   </div>
 </oid-modal>
 
+<!-- No identities present -->
 <div *ngIf="isConnected() && 0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
   You don't have any identities yet.<br/><br/>
   <button class="btn btn-primary" (click)="addIdentity()">
@@ -45,19 +46,18 @@
   </button>
 </div>
 
+<!-- Identity edit screen -->
 <div class="m-2 card" *ngIf="(null != identityInEdit) && !isAddIdentity()">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
       Manage identity: <i>{{ identityInEdit.name }}</i>
     </div>
   </div>
+  <!-- Attribute table -->
   <div class="card-body">
     <div>
-
-      <h6 class="card-subtitle mb-2">Attributes:
-      </h6>
-
-
+      <h6 class="card-subtitle mb-2">Attributes:</h6>
+      <!-- Missing attributes -->
       <table class="table pb-1" *ngIf="isAttributeMissing(identityInEdit)">
         <tbody>
           <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttribute.name === missing.name" class="text-primary" *ngFor="let missing of missingAttributes[identityInEdit.pubkey]">
@@ -70,6 +70,7 @@
           </tr>
         </tbody>
       </table>
+      <!-- Requested attributes -->
       <table class="table pb-1" style="">
         <tbody>
           <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identityInEdit, attribute)" [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes[identityInEdit.pubkey]">
@@ -99,6 +100,7 @@
         </tbody>
       </table>
     </div>
+    <!-- Attribute creation warning -->
     <div *ngIf="!attributeNameValid(identityInEdit,newAttribute) || !attributeValueValid(newAttribute)" class="alert alert-primary alert-dismissible fade show" role="alert">
       <span class="fa fa-warning"></span> Note:
       <ul>
@@ -107,7 +109,7 @@
         <li>Attribute values may not be empty!</li>
       </ul>
     </div>
-
+    <!-- Authorized entities -->
     <div style="margin-top: 1.5em;">
       <table class="table pb-1" *ngIf="identityInEdit == showTicketsIdentity">
         <thead style="border-top-style: hidden">
@@ -155,21 +157,27 @@
         </tbody>
       </table>
     </div>
-
-
+    <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="saveIdentityAttributes(identityInEdit)" [disabled]="!canSaveIdentity(identityInEdit)">
         <span class="fa fa-save"></span> Save and Back
       </button>
       <button *ngIf="(0 < tickets[identityInEdit.pubkey]?.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets(identityInEdit)" [style.float]="'right'">
-        <span class="fa fa-openid"></span><span *ngIf="identityInEdit == showTicketsIdentity"> Hide</span><span *ngIf="identityInEdit != showTicketsIdentity"> Show</span> Authorizations
+        <span class="fa fa-openid"></span>
+        <span *ngIf="identityInEdit == showTicketsIdentity">Hide</span>
+        <span *ngIf="identityInEdit != showTicketsIdentity">Show</span> 
+        Authorizations
       </button>
     </div>
   </div>
-
 </div>
+
+<!-- Identity cards -->
+<!-- No match -->
+<div *ngIf="isConnected() && (identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">No matching identities.</div>
+<!-- Cards -->
 <div class="card-columns p-2" *ngIf="(null == identityInEdit) && !isAddIdentity()">
-  <div class="card" *ngFor="let identity of identities">
+  <div class="card" *ngFor="let identity of identities | search: searchTerm">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
         <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
@@ -280,8 +288,14 @@
 </div>
 
 <!-- Buttons -->
-<!-- Add identity -->
 <div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
+  <!-- Identity search -->
+  <form class="form-inline" style="display: table; margin: auto;">
+    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
+    <span class="fa fa-search"></span>
+  </form>
+  <br/>
+  <!-- Add identity -->
   <button class="btn btn-primary" (click)="addIdentity()">
     <span class="fa fa-plus"></span> Add identity
   </button>
@@ -292,5 +306,3 @@
     <span class="fa fa-ban"></span> Decline and return to website
   </button>
 </div>
-
-
