@@ -34,6 +34,7 @@ import { OpenIdService } from './open-id.service';
   providers: [
     IdentityService,
     ModalService,
+    SearchPipe,
     ReclaimService,
     NamestoreService,
     GnsService,
