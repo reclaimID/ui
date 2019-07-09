@@ -174,7 +174,9 @@
 
 <!-- Identity cards -->
 <!-- No match -->
-<div *ngIf="isConnected() && (identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">No matching identities.</div>
+<div *ngIf="isConnected()">
+  <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">No matching identities.</div>
+</div>
 <!-- Cards -->
 <div class="card-columns p-2" *ngIf="(null == identityInEdit) && !isAddIdentity()">
   <div class="card" *ngFor="let identity of identities | search: searchTerm">
