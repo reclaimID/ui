@@ -40,7 +40,7 @@ export class IdentityListComponent implements OnInit {
   connected: any;
   ticketAttributeMapper: any;
   modalOpened: any;
-
+  clientNameFound: any;
 
   constructor(private route: ActivatedRoute, private router: Router,
               private oidcService: OpenIdService,
@@ -127,6 +127,7 @@ export class IdentityListComponent implements OnInit {
 
   getClientName()
   {
+    this.clientNameFound = undefined;
     this.clientName = this.oidcService.getClientId();
     this.gnsService.getClientName(this.oidcService.getClientId())
         .subscribe(record => {
@@ -136,15 +137,17 @@ export class IdentityListComponent implements OnInit {
             if (records[i].record_type !== "RECLAIM_OIDC_CLIENT")
               continue;
             this.clientName = records[i].value;
-            break;
+            this.clientNameFound = true;
+            return;
           }
-        });
+          this.clientNameFound = false;
+        }, error => { this.clientNameFound = false; });
   }
 
-  clientNameFound()
-  {
-    return this.clientName !== this.oidcService.getClientId();
-  }
+  //clientNameFound()
+  //{
+  //return this.clientName !== this.oidcService.getClientId();
+  //}
 
   intToRGB(i)
   {
