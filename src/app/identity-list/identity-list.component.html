@@ -46,11 +46,26 @@
   </div>
 </oid-modal>
 
+<!-- Buttons -->
 <!-- Cancel authorization -->
-<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" style="margin-bottom: 1em; text-align: center;">
-  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
+<div style="margin-bottom: 1em; text-align: center;">
+  <button *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" class="btn btn-danger mt-4" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Decline and return to website
   </button>
+
+  <!-- Add identity -->
+  <button *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)" class="btn btn-primary" (click)="addIdentity()">
+    <span class="fa fa-plus"></span> Add identity
+  </button>
+</div>
+
+<div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
+  <!-- Identity search -->
+  <form class="form-inline" style="display: table; margin: auto;">
+    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
+    <span class="fa fa-search"></span>
+  </form>
+  <br/>
 </div>
 
 <!-- No identities present -->
@@ -304,16 +319,3 @@
   </div>
 </div>
 
-<!-- Buttons -->
-<div *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)"  style="margin-top: 1em; text-align: center;">
-  <!-- Identity search -->
-  <form class="form-inline" style="display: table; margin: auto;">
-    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
-    <span class="fa fa-search"></span>
-  </form>
-  <br/>
-  <!-- Add identity -->
-  <button class="btn btn-primary" (click)="addIdentity()">
-    <span class="fa fa-plus"></span> Add identity
-  </button>
-</div>
