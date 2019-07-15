@@ -46,6 +46,13 @@
   </div>
 </oid-modal>
 
+<!-- Cancel authorization -->
+<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" style="margin-bottom: 1em; text-align: center;">
+  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
+    <span class="fa fa-ban"></span> Decline and return to website
+  </button>
+</div>
+
 <!-- No identities present -->
 <div *ngIf="isConnected() && 0 == identities.length && !isAddIdentity()" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
   You don't have any identities yet.<br/><br/>
@@ -308,11 +315,5 @@
   <!-- Add identity -->
   <button class="btn btn-primary" (click)="addIdentity()">
     <span class="fa fa-plus"></span> Add identity
-  </button>
-</div>
-<!-- Cancel authorization -->
-<div *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" style="margin-bottom: 1em; text-align: center;">
-  <button class="btn btn-danger mt-4" (click)="cancelRequest()">
-    <span class="fa fa-ban"></span> Decline and return to website
   </button>
 </div>
