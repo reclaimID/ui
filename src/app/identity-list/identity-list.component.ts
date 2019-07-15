@@ -578,6 +578,15 @@ export class IdentityListComponent implements OnInit {
 			});
 	}
 
+  getAudienceName(ticket)
+  {
+    if (undefined == this.identityNameMapper[ticket.audience])
+    {
+      return "Unknown";
+    }
+    return this.identityNameMapper[ticket.audience];
+  }
+
   isConnected() 
   {
 		return this.connected;

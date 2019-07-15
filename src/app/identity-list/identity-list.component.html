@@ -139,7 +139,7 @@
           <tr *ngFor="let ticket of tickets[identityInEdit.pubkey]">
             <td>
               <div style="min-width: 15em">
-                {{identityNameMapper[ticket.audience]}}
+                {{getAudienceName(ticket)}}
               </div>
             </td>
             <td>
