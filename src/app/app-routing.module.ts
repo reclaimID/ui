@@ -4,7 +4,7 @@ import { IdentityListComponent } from './identity-list/identity-list.component';
 
 const routes: Routes = [
     { path: 'index.html', component: IdentityListComponent },
-    //{ path: 'identities', component: IdentityListComponent },
+    // { path: 'identities', component: IdentityListComponent },
     { path: '', redirectTo: '/index.html', pathMatch: 'full' },
 ];
 

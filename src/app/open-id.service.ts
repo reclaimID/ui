@@ -6,7 +6,7 @@ import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
 
 @Injectable()
-export class OpenIdService {  
+export class OpenIdService {
   params: any;
 
   constructor(private http: HttpClient,
@@ -24,7 +24,7 @@ export class OpenIdService {
 
   parseRouteParams(params: any): any {
     this.params = params;
-    console.log("Added OIDC params");
+    console.log('Added OIDC params');
     console.log(this.params);
   }
 
@@ -46,9 +46,9 @@ export class OpenIdService {
 
   inOpenIdFlow(): any {
     if (this.params['redirect_uri'] !== undefined) {
-      console.log ("In OIDC flow");
+      console.log ('In OIDC flow');
     } else {
-      console.log ("Not in OIDC flow");
+      console.log ('Not in OIDC flow');
       console.log (this.params);
     }
     return this.params['redirect_uri'] !== undefined;
@@ -56,7 +56,7 @@ export class OpenIdService {
 
   getClientId(): any {
     if (!this.inOpenIdFlow()) {
-      return "";
+      return '';
     }
     return this.params['client_id'];
   }
@@ -65,8 +65,8 @@ export class OpenIdService {
     if (!this.inOpenIdFlow()) {
       return [];
     }
-    var scopes = this.params['scope'].split(" ");
-    const i = scopes.indexOf("openid");
+    const scopes = this.params['scope'].split(' ');
+    const i = scopes.indexOf('openid');
     scopes.splice(i, 1);
     return scopes;
   }
