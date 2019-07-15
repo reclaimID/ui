@@ -14,8 +14,6 @@ import { ConfigService } from './config.service';
 import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
-
-import './rxjs';
 import { OpenIdService } from './open-id.service';
 
 @NgModule({
