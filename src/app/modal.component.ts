@@ -15,11 +15,11 @@ import { ModalService } from './modal.service';
 export class ModalComponent implements OnInit, OnDestroy {
   @Input() id: string;
   private element: any;
-  
+
   constructor(private modalService: ModalService, private el: ElementRef) {
     this.element = el.nativeElement;
   }
-  
+
   ngOnInit(): void {
     if (!this.id) {
       console.error('modal must have an id');
@@ -46,14 +46,12 @@ export class ModalComponent implements OnInit, OnDestroy {
     this.element.remove();
   }
 
-  open(): void
-  {
+  open(): void {
     this.element.style.display = 'block';
     document.body.classList.add('oid-modal-open');
   }
 
-  close(): void
-  {
+  close(): void {
     this.element.style.display = 'none';
     document.body.classList.remove('oid-modal-open');
   }
