@@ -1,4 +1,4 @@
-FROM node:8-alpine AS build
+FROM node AS build
 
 LABEL maintainer="Christian Banse <christian.banse@aisec.fraunhofer.de>"
 
@@ -8,7 +8,7 @@ WORKDIR /tmp
 
 # this should hopefully trigger Docker to only update yarn if dependencies have changed
 COPY package.json yarn.lock ./
-RUN yarn --pure-lockfile
+RUN yarn install --pure-lockfile --ignore-optional
 
 # add the rest of the files
 COPY . .

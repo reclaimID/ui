@@ -6,8 +6,7 @@ import { Identity } from './identity';
 })
 export class SearchPipe implements PipeTransform {
 
-  transform(identities: Identity[], filter: string): Identity[]
-  {
+  transform(identities: Identity[], filter: string): Identity[] {
     if (!identities || !filter) { return identities; }
     return identities.filter(identity => identity.name.toLowerCase().startsWith(filter.toLowerCase()));
   }
