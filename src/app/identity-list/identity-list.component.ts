@@ -509,4 +509,8 @@ export class IdentityListComponent implements OnInit {
   isConnected() {
     return this.connected;
   }
+
+  canSearch() {
+    return this.isConnected() && 0 != this.identities.length && !this.isAddIdentity();
+  }
 }
