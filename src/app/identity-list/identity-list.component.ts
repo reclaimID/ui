@@ -336,9 +336,10 @@ export class IdentityListComponent implements OnInit {
     this.modalOpened = false;
     this.oidcService.cancelAuthorization().subscribe(() => {
       console.log('Request cancelled');
+      this.requestedAttributes = {};
+      this.missingAttributes = {};
       this.router.navigate(['/']);
       //Manually reset this component
-      this.ngOnInit();
     });
   }
 
