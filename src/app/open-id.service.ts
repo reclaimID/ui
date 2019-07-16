@@ -41,6 +41,7 @@ export class OpenIdService {
     const httpOptions = {
       withCredentials: true
     };
+    this.params = {};
     return this.http.post(this.config.get().apiUrl + '/openid/login', { 'identity': 'Denied'}, httpOptions);
   }
 
