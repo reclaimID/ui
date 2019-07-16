@@ -50,8 +50,9 @@
 <div *ngIf="canSearch()"  style="margin-top: 1em; text-align: center;">
   <!-- Identity search -->
   <form class="form-inline" style="display: table; margin: auto;">
+    <div class="search-wrapper">
     <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
-    <span class="fa fa-search"></span>
+    </div>
   </form>
   <br/>
 </div>
