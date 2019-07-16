@@ -58,13 +58,8 @@
 
 <!-- Cancel authorization -->
 <div style="margin-bottom: 1em; text-align: center;">
-  <button *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" class="btn btn-danger mr-2" (click)="cancelRequest()">
+  <button *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" class="btn btn-danger mt-2" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Decline and return to website
-  </button>
-
-  <!-- Add identity -->
-  <button *ngIf="0 != identities.length && !isAddIdentity() && (null == identityInEdit)" class="btn btn-primary ml-2" (click)="addIdentity()">
-    <span class="fa fa-plus"></span> Add identity
   </button>
 </div>
 
@@ -279,6 +274,25 @@
             <span *ngIf="!clientNameFound"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>
         </div>
+      </div>
+      <div style="text-align:center">
+        <img src="assets/reclaim_icon.png" style="width: 5em;opacity: 0.3;">
+      </div>
+    </div>
+  </div>
+
+  <!-- New identity card -->
+  <div class="card identity-new" (click)="addIdentity()" *ngIf="0 != identities.length && !isAddIdentity()">
+    <div class="card-avatar card-img-top">
+      <div class="card-avatar-character text-dark">
+        <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
+        <i class="fa fa-user-circle"></i>
+        <span class="m-1" style="display: inline-block"><i> New Identity</i></span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="text-align:center" class="mb-4">
+        <i>Click to add a new identity.</i>
       </div>
       <div style="text-align:center">
         <img src="assets/reclaim_icon.png" style="width: 5em;opacity: 0.3;">
