@@ -35,6 +35,11 @@
       <span class="fa fa-openid"></span> Retry
     </button>
   </div>
+  <div *ngIf="clientNameFound === undefined" style="text-align: center;">
+    <button class="btn btn-danger mt-4" *ngIf="clientNameFound === undefined" (click)="cancelRequest(); closeModal('OpenIdInfo');">
+      <span class="fa fa-ban"></span> Cancel verification request
+    </button>
+  </div>
 </oid-modal>
 
 <!-- GNUnet not running -->
