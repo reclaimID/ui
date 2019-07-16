@@ -335,7 +335,6 @@ export class IdentityListComponent implements OnInit {
     this.modalOpened = false;
     this.oidcService.cancelAuthorization().subscribe(() => {
       console.log('Request cancelled');
-      this.authorize();
     });
   }
 
