@@ -1,3 +1,17 @@
+.search-wrapper {
+  display:inline-block;
+  position: relative
+}
+
+.search-wrapper:after {
+  font-family: 'FontAwesome';
+  content: '\f002';
+  position: absolute;
+  color: #555;
+  right: 1.25em;
+  top: 0.5em;
+}
+
 .card table {
   table-layout: fixed;
 }
