@@ -44,7 +44,8 @@ export class IdentityListComponent implements OnInit {
     private reclaimService: ReclaimService,
     private namestoreService: NamestoreService,
     private gnsService: GnsService,
-    private modalService: ModalService) {
+    private modalService: ModalService,
+    private router: Router) {
   }
 
   ngOnInit() {
@@ -335,6 +336,7 @@ export class IdentityListComponent implements OnInit {
     this.modalOpened = false;
     this.oidcService.cancelAuthorization().subscribe(() => {
       console.log('Request cancelled');
+      this.router.navigate(['/']);
     });
   }
 
