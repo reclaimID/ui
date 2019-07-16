@@ -337,6 +337,8 @@ export class IdentityListComponent implements OnInit {
     this.oidcService.cancelAuthorization().subscribe(() => {
       console.log('Request cancelled');
       this.router.navigate(['/']);
+      //Manually reset this component
+      this.ngOnInit();
     });
   }
 
