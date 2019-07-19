@@ -9,6 +9,7 @@ import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { ReclaimService } from '../reclaim.service';
 import { ModalService } from '../modal.service';
+import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 
 @Component({
@@ -37,6 +38,7 @@ export class IdentityListComponent implements OnInit {
   ticketAttributeMapper: any;
   modalOpened: any;
   clientNameFound: any;
+  errorInfos: any;
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
     private identityService: IdentityService,
@@ -65,6 +67,7 @@ export class IdentityListComponent implements OnInit {
     this.identityInEditName = '';
     this.identityNameMapper = {};
     this.updateIdentities();
+    this.errorInfos = [];
     console.log('processed nginit');
   }
 
@@ -95,7 +98,10 @@ export class IdentityListComponent implements OnInit {
           return;
         }
         this.clientNameFound = false;
-      }, () => { this.clientNameFound = false; });
+      }, err => {
+        console.log(err);
+        this.clientNameFound = false;
+      });
   }
 
   intToRGB(i) {
@@ -151,26 +157,36 @@ export class IdentityListComponent implements OnInit {
 
   saveIdentityAttributes(identity) {
     this.storeAttributes(identity)
+      .pipe(
+        finalize(() => {
+          this.identityInEdit = null;
+          this.newAttribute.name = '';
+          this.newAttribute.value = '';
+          this.newAttribute.type = 'STRING';
+        }))
       .subscribe(res => {
-        console.log(res)
-      },
-      err => {
-        EMPTY
-      },
-      () => {
+        //FIXME success dialog/banner
         this.identityInEdit = null;
         this.updateAttributes(identity);
+      },
+      err => {
+        console.log(err);
+        this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
       });
-    this.newAttribute.name = '';
-    this.newAttribute.value = '';
-    this.newAttribute.type = 'STRING';
-    //this.identityInEdit = null;
   }
 
   deleteAttribute(attribute) {
     this.reclaimService.deleteAttribute(this.identityInEdit, attribute)
-      .subscribe(() => { this.updateAttributes(this.identityInEdit); });
+      .subscribe(res => {
+        //FIXME info dialog
+        this.updateAttributes(this.identityInEdit);
+      },
+      err => {
+        this.errorInfos.push("Failed to delete attribute ``" + attribute.name + "''");
+        console.log(err);
+      });
   }
+
   getMissingAttributes(identity) {
     const scopes = this.getScopes();
     let i;
@@ -230,6 +246,10 @@ export class IdentityListComponent implements OnInit {
         this.mapAudience(ticket);
         this.mapAttributes(identity, ticket);
       });
+    },
+    err => {
+      this.errorInfos.push("Unable to retrieve tickets for identity ``" + identity.name + "''");
+      console.log(err);
     });
   }
 
@@ -243,8 +263,12 @@ export class IdentityListComponent implements OnInit {
 
   revokeTicket(identity, ticket) {
     this.reclaimService.revokeTicket(ticket).subscribe(
-      () => {
+      result => {
         this.updateAttributes(identity);
+      },
+      err => {
+        this.errorInfos.push("Unable to revoke ticket.");
+        console.log(err);
       });
   }
 
@@ -266,6 +290,10 @@ export class IdentityListComponent implements OnInit {
       }
       this.getMissingAttributes(identity);
       this.updateTickets(identity);
+    },
+    err => {
+      this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
+      console.log(err);
     });
   }
 
@@ -292,15 +320,21 @@ export class IdentityListComponent implements OnInit {
 
   addAttribute() {
     this.storeAttributes(this.identityInEdit)
-      .subscribe(res => console.log(res),
-        () => EMPTY, () => {
+      .pipe(
+        finalize(() => {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = 'STRING';
           this.updateAttributes(this.identityInEdit);
-        });
-    this.newAttribute.name = '';
-    this.newAttribute.value = '';
+        }))
+      .subscribe(res => {
+        console.log(res);
+      },
+      err => {
+        console.log(err);
+        this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+        EMPTY
+      });
   }
 
   cancelAddIdentity() { this.newIdentity = null; }
@@ -310,18 +344,29 @@ export class IdentityListComponent implements OnInit {
       return;
     }
     this.identityInEditName = this.newIdentity.name;
-    this.identityService.addIdentity(this.newIdentity).subscribe(() => {
-      this.newIdentity.name = '';
-      this.updateIdentities();
-      this.cancelAddIdentity();
-    });
+    this.identityService.addIdentity(this.newIdentity)
+      .subscribe(res => {
+        this.newIdentity.name = '';
+        this.updateIdentities();
+        this.cancelAddIdentity();
+      },
+      err => {
+        this.errorInfos.push("Failed adding new identity ``" + this.newIdentity.name + "''");
+        console.log(err);
+      });
   }
 
   deleteIdentity(identity) {
     this.showConfirmDelete = false;
     this.identityInEdit = null;
     this.identityService.deleteIdentity(identity.pubkey)
-      .subscribe(() => { this.updateIdentities(); });
+      .subscribe(res => {
+        this.updateIdentities();
+      },
+      err => {
+        this.errorInfos.push("Failed deleting identity ``" + identity.name + "''");
+        console.log(err);
+      });
   }
 
   cancelRequest() {
