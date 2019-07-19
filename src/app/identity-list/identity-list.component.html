@@ -259,8 +259,8 @@
                 <div style="min-width: 15em">{{attribute.name}}</div>
               </td>
               <td>
-                <div *ngIf="attribute.value.length <= 10" style="min-width: 15em">{{attribute.value}}</div>
-                <div *ngIf="attribute.value.length > 10" style="min-width: 15em">{{attribute.value.substring(0, 10)}}[...]</div>
+                <div *ngIf="attribute.value.length <= 20" style="min-width: 15em">{{attribute.value}}</div>
+                <div *ngIf="attribute.value.length > 20" style="min-width: 15em">{{attribute.value.substring(0, 15)}}<span style="color:#eee">[...]</span></div>
               </td>
               <td>
                 <div style="min-width: 8em; text-align: center;">
