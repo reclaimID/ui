@@ -9,8 +9,7 @@ import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { ReclaimService } from '../reclaim.service';
 import { ModalService } from '../modal.service';
-import { finalize } from 'rxjs/operators';
-import { forkJoin, EMPTY } from 'rxjs';
+import { from, forkJoin, EMPTY } from 'rxjs';
 
 @Component({
   selector: 'app-identity-list',
@@ -152,18 +151,20 @@ export class IdentityListComponent implements OnInit {
 
   saveIdentityAttributes(identity) {
     this.storeAttributes(identity)
-      .pipe(
-        finalize(() => this.updateAttributes(identity))
-      )
-      .subscribe(res => console.log(res),
-        () => EMPTY, () => {
-          this.identityInEdit = null;
-          this.updateAttributes(identity);
-        });
+      .subscribe(res => {
+        console.log(res)
+      },
+      err => {
+        EMPTY
+      },
+      () => {
+        this.identityInEdit = null;
+        this.updateAttributes(identity);
+      });
     this.newAttribute.name = '';
     this.newAttribute.value = '';
     this.newAttribute.type = 'STRING';
-    this.identityInEdit = null;
+    //this.identityInEdit = null;
   }
 
   deleteAttribute(attribute) {
@@ -268,11 +269,6 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
-  saveAttribute(identity, attribute) {
-    return this.reclaimService.addAttribute(identity, attribute)
-      .subscribe(() => { this.updateAttributes(identity); });
-  }
-
   private storeAttributes(identity) {
     const promises = [];
     let i;
@@ -280,15 +276,15 @@ export class IdentityListComponent implements OnInit {
       if (this.missingAttributes[identity.pubkey][i].value === '') {
         continue;
       }
-      promises.push(this.saveAttribute(
-        identity, this.missingAttributes[identity.pubkey][i]));
+      promises.push(from(this.reclaimService.addAttribute(
+        identity, this.missingAttributes[identity.pubkey][i])));
     }
     for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
       promises.push(
-        this.saveAttribute(identity, this.attributes[identity.pubkey][i]));
+        from(this.reclaimService.addAttribute(identity, this.attributes[identity.pubkey][i])));
     }
     if (this.newAttribute.value !== '') {
-      promises.push(this.saveAttribute(identity, this.newAttribute));
+      promises.push(from(this.reclaimService.addAttribute(identity, this.newAttribute)));
     }
 
     return forkJoin(promises);
@@ -296,9 +292,6 @@ export class IdentityListComponent implements OnInit {
 
   addAttribute() {
     this.storeAttributes(this.identityInEdit)
-      .pipe(
-        finalize(() => this.updateAttributes(this.identityInEdit))
-      )
       .subscribe(res => console.log(res),
         () => EMPTY, () => {
           this.newAttribute.name = '';
