@@ -186,12 +186,12 @@
                 <span class="fa fa-unlink"></span> Revoke
               </button>
               <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
-                Do you really want to revoke this ticket?<br/><br/>
-                <button class="btn btn-primary" (click)="revokeTicket(identityInEdit, ticket)">
-                  <span class="fa fa-unlink"></span> Revoke
+                Do you really want to revoke this authorization?<br/><br/>
+                <button class="btn btn-primary m-2" (click)="revokeTicket(identityInEdit, ticket)">
+                  <span class="fa fa-check"></span> Yes
                 </button>
-                <button class="btn btn-primary" (click)="hideConfirmRevoke()">
-                  <span class="fa fa-close"></span> Cancel
+                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
+                  <span class="fa fa-close"></span> No
                 </button>
               </div>
             </td>
@@ -206,9 +206,9 @@
       </button>
         <button *ngIf="(0 < tickets[identityInEdit.pubkey]?.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets(identityInEdit)" [style.float]="'right'">
         <span class="fa fa-openid"></span>
-        <span *ngIf="identityInEdit == showTicketsIdentity">Hide</span>
-        <span *ngIf="identityInEdit != showTicketsIdentity">Show</span> 
-        Authorizations
+        <span *ngIf="identityInEdit == showTicketsIdentity"> Hide</span>
+        <span *ngIf="identityInEdit != showTicketsIdentity"> Show</span> 
+        authorizations
       </button>
     </div>
   </div>
