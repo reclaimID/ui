@@ -25,10 +25,10 @@
   </ul>
   <div *ngIf="clientNameFound" style="text-align: center;">
     <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest(); closeModal('OpenIdInfo');" style="margin-bottom: -4%;">
-      <span class="fa fa-ban"></span> Decline and return to website
+      <span class="fa fa-ban"></span> Decline
     </button>
     <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound" (click)="closeModal('OpenIdInfo');">
-      <span class="fa fa-circle-arrow-right"></span> Choose Identity
+      <span class="fa fa-arrow-circle-right"></span> Select identity...
     </button>
   </div>
   <div *ngIf="clientNameFound !== undefined && !clientNameFound" style="text-align: center;">
@@ -267,7 +267,7 @@
             <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute)"
                [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes[identity.pubkey]">
               <td>
-                <div style="min-width: 15em"><span *ngIf="isRequested(identity, attribute)" class="fa fa-openid"> </span>{{attribute.name}}</div>
+                <div style="min-width: 15em"><span *ngIf="isRequested(identity, attribute)" class="fa fa-openid"></span> {{attribute.name}}</div>
               </td>
               <td>
                 <div *ngIf="attribute.value.length <= 20" style="min-width: 15em">{{attribute.value}}</div>
