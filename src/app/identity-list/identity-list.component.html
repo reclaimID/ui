@@ -66,7 +66,7 @@
 <!-- Cancel authorization -->
 <div style="margin-bottom: 1em; text-align: center;">
   <button *ngIf="inOpenIdFlow() && !isAddIdentity() && (null == identityInEdit) && clientNameFound" class="btn btn-danger mt-2" (click)="cancelRequest()">
-    <span class="fa fa-ban"></span> Decline and return to website
+    <span class="fa fa-ban"></span> Decline authorization request
   </button>
 </div>
 
