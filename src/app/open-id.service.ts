@@ -34,6 +34,7 @@ export class OpenIdService {
     '&response_type=' + this.params['response_type'] +
     '&scope=' + this.params['scope'] +
     '&state=' + this.params['state'] +
+    '&code_challenge=' + this.params['code_challenge'] +
     '&nonce=' + this.params['nonce'];
   }
 
