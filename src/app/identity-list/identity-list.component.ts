@@ -300,16 +300,20 @@ export class IdentityListComponent implements OnInit {
   private storeAttributes(identity) {
     const promises = [];
     let i;
-    for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
-      if (this.missingAttributes[identity.pubkey][i].value === '') {
-        continue;
+    if (undefined !== this.missingAttributes[identity.pubkey]) {
+      for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
+        if (this.missingAttributes[identity.pubkey][i].value === '') {
+          continue;
+        }
+        promises.push(from(this.reclaimService.addAttribute(
+          identity, this.missingAttributes[identity.pubkey][i])));
       }
-      promises.push(from(this.reclaimService.addAttribute(
-        identity, this.missingAttributes[identity.pubkey][i])));
     }
-    for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
-      promises.push(
-        from(this.reclaimService.addAttribute(identity, this.attributes[identity.pubkey][i])));
+    if (undefined !== this.attributes[identity.pubkey]) {
+      for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
+        promises.push(
+          from(this.reclaimService.addAttribute(identity, this.attributes[identity.pubkey][i])));
+      }
     }
     if (this.newAttribute.value !== '') {
       promises.push(from(this.reclaimService.addAttribute(identity, this.newAttribute)));
