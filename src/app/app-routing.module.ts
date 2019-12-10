@@ -6,16 +6,16 @@ import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 
 const routes: Routes = [
-    { path: '', component: IdentityListComponent },
+    { path: '/index.html', component: IdentityListComponent },
     // { path: 'identities', component: IdentityListComponent },
-    //{ path: '', redirectTo: '/index.html', pathMatch: 'full' },
+    { path: '', redirectTo: '/index.html', pathMatch: 'full' },
     { path: 'new-identity', component: NewIdentityComponent },
     { path: 'edit-identity/:id', component: EditIdentityComponent },
     { path: 'authorization-request', component: AuthorizationRequestComponent }
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes, { useHash: true })],
+    imports: [RouterModule.forRoot(routes, { useHash: false })],
     exports: [RouterModule]
 })
 export class AppRoutingModule { }
