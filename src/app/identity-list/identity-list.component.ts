@@ -55,8 +55,10 @@ export class IdentityListComponent implements OnInit {
     this.modalOpened = false;
     if (!this.oidcService.inOpenIdFlow()) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
+      if (this.oidcService.inOpenIdFlow()) {
+        this.router.navigate(['/authorization-request']);
+      }
     }
-    this.getClientName();
     this.identityNameMapper = {};
     this.updateIdentities();
     this.errorInfos = [];
@@ -67,47 +69,6 @@ export class IdentityListComponent implements OnInit {
 
 
   hideConfirmDelete() { this.showConfirmDelete = null; }
-
-  getClientName() {
-    this.clientNameFound = undefined;
-    this.clientName = this.oidcService.getClientId();
-    if (!this.oidcService.inOpenIdFlow()) {
-      return;
-    }
-    this.gnsService.getClientName(this.oidcService.getClientId())
-      .subscribe(record => {
-        const records = record.data;
-        console.log(records);
-        for (let i = 0; i < records.length; i++) {
-          if (records[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
-            continue;
-          }
-          this.clientName = records[i].value;
-          this.clientNameFound = true;
-          return;
-        }
-        this.clientNameFound = false;
-      }, err => {
-        console.log(err);
-        this.clientNameFound = false;
-      });
-  }
-
-  intToRGB(i) {
-    i = this.hashCode(i);
-    const c = (i & 0x00FFFFFF).toString(16).toUpperCase();
-
-    return '#' +
-      '00000'.substring(0, 6 - c.length) + c;
-  }
-
-  hashCode(str) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return hash;
-  }
 
   getMissingAttributes(identity) {
     const scopes = this.getScopes();
@@ -162,18 +123,6 @@ export class IdentityListComponent implements OnInit {
         this.errorInfos.push("Failed deleting identity ``" + identity.name + "''");
         console.log(err);
       });
-  }
-
-  cancelRequest() {
-    this.closeModal('OpenIdInfo');
-    this.modalOpened = false;
-    this.oidcService.cancelAuthorization().subscribe(() => {
-      console.log('Request cancelled');
-      this.requestedAttributes = {};
-      this.missingAttributes = {};
-      this.router.navigate(['/']);
-      //Manually reset this component
-    });
   }
 
   loginIdentity(identity) {

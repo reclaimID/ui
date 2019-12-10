@@ -17,6 +17,7 @@ import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
+import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { EditIdentityComponent } from './edit-identity/edit-identity.component';
     ModalComponent,
     SearchPipe,
     NewIdentityComponent,
-    EditIdentityComponent
+    EditIdentityComponent,
+    AuthorizationRequestComponent
   ],
   imports: [
     BrowserModule,
