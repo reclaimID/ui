@@ -6,7 +6,7 @@ import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 
 const routes: Routes = [
-    { path: '/index.html', component: IdentityListComponent },
+    { path: 'index.html', component: IdentityListComponent },
     // { path: 'identities', component: IdentityListComponent },
     { path: '', redirectTo: '/index.html', pathMatch: 'full' },
     { path: 'new-identity', component: NewIdentityComponent },
