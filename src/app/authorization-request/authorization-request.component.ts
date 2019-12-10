@@ -21,7 +21,11 @@ export class AuthorizationRequestComponent implements OnInit {
     this.clientName = '-';
     this.getClientName();
   }
-  
+
+  getScopes() {
+    return this.oidcService.getScope();
+  }
+
   getClientName() {
     this.clientNameFound = undefined;
     this.clientName = this.oidcService.getClientId();

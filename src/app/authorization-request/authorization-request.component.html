@@ -23,7 +23,7 @@
   <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest()" style="margin-bottom: -4%;">
     <span class="fa fa-ban"></span> Decline
   </button>
-  <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound" (click)="closeModal('OpenIdInfo');">
+  <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound">
     <span class="fa fa-arrow-circle-right"></span> Select identity...
   </button>
 </div>
