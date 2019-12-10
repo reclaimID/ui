@@ -13,7 +13,7 @@
 </div>
 <div class="card" *ngIf="isClientVerified()" style="margin-left:30%; width:40%;">
   <div class="card-body">
-    <strong>{{ clientName }}</strong>
+    <strong>{{ oidcService.clientName }}</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
     <ul>
