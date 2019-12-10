@@ -15,6 +15,7 @@ export class AuthorizationRequestComponent implements OnInit {
 
   ngOnInit() {
     this.clientName = '-';
+    this.retryVerify();
   }
 
   getScopes() {
