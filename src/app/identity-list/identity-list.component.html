@@ -83,7 +83,7 @@
 <!-- No identities present -->
 <div *ngIf="isConnected() && 0 == identities.length" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
   You don't have any identities yet.<br/><br/>
-  <button class="btn btn-primary" (click)="addIdentity()">
+  <button class="btn btn-primary" [routerLink]="['/new-identity']">
     <span class="fa fa-plus"></span> Add your first identity!
   </button>
 </div>
@@ -119,14 +119,14 @@
       </button>
     </div>
     <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
-      This identity has no attributes. Maybe try <a class="buttonlink" (click)="editIdentity(identity)">adding some?</a>
+      This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
     <div *ngIf="isAttributeMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
       <span class="fa fa-openid"></span> This identity cannot be used because it's missing requested attributes: 
       <ul>
         <li *ngFor="let attr of getMissing(identity)">{{attr}}</li>
       </ul>
-      <button class="btn btn-primary" (click)="editIdentity(identity)">
+      <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-plus"></span> Add
       </button>
     </div>
