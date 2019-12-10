@@ -4,18 +4,48 @@ import { HttpHeaders } from '@angular/common/http';
 import { Identity } from './identity';
 import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
+import { GnsService } from './gns.service';
 
 @Injectable()
 export class OpenIdService {
   params: any;
   inOidcFlow: Boolean;
+  clientNameVerified: Boolean;
+  clientName: String;
 
   constructor(private http: HttpClient,
     private config: ConfigService,
+    private gnsService: GnsService,
     private router: Router) {
     this.params = {};
     this.inOidcFlow = false;
   }
+  
+  getClientName() {
+    this.clientNameVerified = undefined;
+    if (!this.inOpenIdFlow()) {
+      return;
+    }
+    this.gnsService.getClientName(this.getClientId())
+      .subscribe(record => {
+        const records = record.data;
+        console.log(records);
+        for (let i = 0; i < records.length; i++) {
+          if (records[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
+            continue;
+          }
+          this.clientName = records[i].value;
+          this.clientNameVerified = true;
+          return;
+        }
+        this.clientNameVerified = false;
+      }, err => {
+        console.log(err);
+        this.clientNameVerified = false;
+      });
+  }
+
+  isClientVerified() { return this.clientNameVerified; }
 
   login(identity: Identity) {
     const httpOptions = {

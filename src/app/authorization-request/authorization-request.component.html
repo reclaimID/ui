@@ -2,16 +2,16 @@
   <i class="fa fa-2x fa-openid"></i> 
   <b class="fa-2x"> Authorization Request </b>
   <br/>
-  <span *ngIf="clientNameFound === undefined">
+  <span *ngIf="isClientVerified() === undefined">
     <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
     <b class="fa-2x"> Verifying request, please stand by...</b>
   </span>
-  <span *ngIf="clientNameFound !== undefined && !clientNameFound">
+  <span *ngIf="isClientVerified() !== undefined && !isClientVerified()">
     <b class="fa-2x"> Authorization failed. </b>
   </span>
   <br/> 
 </div>
-<div class="card" *ngIf="clientNameFound" style="margin-left:30%; width:40%;">
+<div class="card" *ngIf="isClientVerified()" style="margin-left:30%; width:40%;">
   <div class="card-body">
     <strong>{{ clientName }}</strong>
     asks you to share personal information.<br/>
@@ -21,21 +21,21 @@
     </ul>
   </div>
   <div style="margin: 1em;">
-    <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest()" style="margin-bottom: -4%;">
+    <button class="btn btn-danger m-1 mt-4" *ngIf="isClientVerified()" (click)="cancelRequest()" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline
     </button>
-    <button class="btn btn-primary m-1 mt-4" [routerLink]="['/']" *ngIf="clientNameFound">
+    <button class="btn btn-primary m-1 mt-4" [routerLink]="['/']" *ngIf="isClientVerified()">
       <span class="fa fa-arrow-circle-right"></span> Select identity...
     </button>
   </div>
 </div>
-<div *ngIf="clientNameFound !== undefined && !clientNameFound" style="text-align: center;">
-  <button class="btn btn-primary mt-4" *ngIf="!clientNameFound" (click)="getClientName();">
+<div *ngIf="isClientVerified() !== undefined && !isClientVerified()" style="text-align: center;">
+  <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
     <span class="fa fa-openid"></span> Retry
   </button>
 </div>
-<div *ngIf="clientNameFound === undefined" style="text-align: center;">
-  <button class="btn btn-danger mt-4" *ngIf="clientNameFound === undefined" (click)="cancelRequest()">
+<div *ngIf="isClientVerified() === undefined" style="text-align: center;">
+  <button class="btn btn-danger mt-4" *ngIf="isClientVerified() === undefined" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Cancel verification request
   </button>
 </div>

@@ -20,7 +20,7 @@
 
 <!-- Cancel authorization -->
 <div style="margin-bottom: 1em; text-align: center;">
-  <button *ngIf="inOpenIdFlow() && clientNameFound" class="btn btn-danger mt-2" (click)="cancelRequest()">
+  <button *ngIf="inOpenIdFlow()" class="btn btn-danger mt-2" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Decline authorization request
   </button>
 </div>
@@ -112,9 +112,9 @@
       <div>
 
         <div>
-          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !clientNameFound" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="clientNameFound"><i class="fa fa-openid"></i> Share from this identity</span>
-            <span *ngIf="!clientNameFound"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
+          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+            <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share from this identity</span>
+            <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>
         </div>
       </div>
