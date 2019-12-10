@@ -148,9 +148,6 @@ export class IdentityListComponent implements OnInit {
 
 
   inOpenIdFlow() {
-    if (this.oidcService.inOpenIdFlow() && !this.modalOpened) {
-      this.openModal('OpenIdInfo');
-    }
     return this.oidcService.inOpenIdFlow();
   }
 
