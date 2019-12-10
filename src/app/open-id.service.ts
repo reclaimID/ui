@@ -32,6 +32,7 @@ export class OpenIdService {
   }
 
   authorize(): any {
+    this.inOidcFlow = false;
     window.location.href = this.config.get().apiUrl + '/openid/authorize?client_id=' + this.params['client_id'] +
     '&redirect_uri=' + this.params['redirect_uri'] +
     '&response_type=' + this.params['response_type'] +
@@ -51,7 +52,7 @@ export class OpenIdService {
   }
 
   inOpenIdFlow(): any {
-    return this.params['redirect_uri'] !== undefined;
+    return this.inOidcFlow;
   }
 
   getClientId(): any {
