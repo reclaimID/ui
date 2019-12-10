@@ -1,31 +1,29 @@
 <div style="text-align: center;">
+  <i class="fa fa-2x fa-openid"></i> 
+  <b class="fa-2x"> Authorization Request </b>
   <span *ngIf="clientNameFound === undefined">
     <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
     <b class="fa-2x"> Verifying request, please stand by...</b>
   </span>
-  <span *ngIf="clientNameFound">
-    <i class="fa fa-2x fa-openid"></i> 
-    <b class="fa-2x"> Authorization Request </b>
-  </span> 
   <span *ngIf="clientNameFound !== undefined && !clientNameFound">
     <b class="fa-2x"> Authorization failed. </b>
   </span>
   <br/> 
 </div>
-<div class="card" *ngIf="clientNameFound">
+<div class="card" *ngIf="clientNameFound" style="margin-left:30%; width:40%;">
   <div class="card-body">
-    <strong>"{{ clientName }}"</strong>
+    <strong>{{ clientName }}</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
     <ul>
       <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
     </ul>
   </div>
-  <div>
+  <div style="margin: 1em;">
     <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest()" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline
     </button>
-    <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound">
+    <button class="btn btn-primary m-1 mt-4" [routerLink]="['/']" *ngIf="clientNameFound">
       <span class="fa fa-arrow-circle-right"></span> Select identity...
     </button>
   </div>
