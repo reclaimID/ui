@@ -44,7 +44,7 @@
               <input placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
             </td>
             <td>
-              <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute(newAttribute)">
+              <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute()">
                 <span class="fa fa-plus"></span> 
               </button>
             </td>
@@ -63,7 +63,7 @@
     </div>
     <!-- Authorized entities -->
     <div style="margin-top: 1.5em;">
-      <table class="table pb-1" *ngIf="showTicketsIdentity">
+      <table class="table pb-1" *ngIf="showTickets">
         <thead style="border-top-style: hidden">
           <tr>
             <th scope="col">
@@ -114,10 +114,10 @@
       <button class="btn btn-primary" (click)="saveIdentityAttributes()" [disabled]="!canSaveIdentity()">
         <span class="fa fa-save"></span> Save and Back
       </button>
-        <button *ngIf="(0 < tickets?.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets()" [style.float]="'right'">
+        <button *ngIf="(0 < tickets.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets()" [style.float]="'right'">
         <span class="fa fa-openid"></span>
-        <span *ngIf="showTicketsIdentity"> Hide</span>
-        <span *ngIf="!showTicketsIdentity"> Show</span> 
+        <span *ngIf="showTickets"> Hide</span>
+        <span *ngIf="!showTickets"> Show</span> 
         authorizations
       </button>
     </div>

@@ -32,6 +32,7 @@ export class IdentityListComponent implements OnInit {
   modalOpened: any;
   clientNameFound: any;
   errorInfos: any;
+  searchTerm: any;
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
     private identityService: IdentityService,
