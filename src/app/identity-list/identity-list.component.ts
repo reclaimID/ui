@@ -57,16 +57,16 @@ export class IdentityListComponent implements OnInit {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
       if (this.oidcService.inOpenIdFlow()) {
         this.router.navigate(['/authorization-request']);
+        return;
       }
     }
-    this.identityNameMapper = {};
     this.updateIdentities();
+    this.identityNameMapper = {};
     this.errorInfos = [];
     console.log('processed nginit');
   }
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
-
 
   hideConfirmDelete() { this.showConfirmDelete = null; }
 
