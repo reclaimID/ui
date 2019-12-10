@@ -18,7 +18,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 })
 export class EditIdentityComponent implements OnInit {
 
-  tickets: {};
+  tickets: Ticket[];
   identity: Identity;
   audienceNames: {};
   showTickets: Boolean;
@@ -38,7 +38,7 @@ export class EditIdentityComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.tickets = {};
+    this.tickets = [];
     this.attributes = [];
     this.showConfirmRevoke = null;
     this.identity = new Identity('','');
@@ -212,7 +212,7 @@ export class EditIdentityComponent implements OnInit {
     return !this.isInConflict(attribute);
   }
 
-  canSaveIdentity(identity) {
+  canSaveIdentity() {
     if (this.canAddAttribute(this.newAttribute)) {
       return true;
     }
