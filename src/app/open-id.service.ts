@@ -8,11 +8,13 @@ import { Router } from '@angular/router';
 @Injectable()
 export class OpenIdService {
   params: any;
+  inOidcFlow: Boolean;
 
   constructor(private http: HttpClient,
     private config: ConfigService,
     private router: Router) {
     this.params = {};
+    this.inOidcFlow = false;
   }
 
   login(identity: Identity) {
@@ -26,6 +28,7 @@ export class OpenIdService {
     this.params = params;
     console.log('Added OIDC params');
     console.log(this.params);
+    this.inOidcFlow = this.params['redirect_uri'] !== undefined;
   }
 
   authorize(): any {
@@ -43,6 +46,7 @@ export class OpenIdService {
       withCredentials: true
     };
     this.params = {};
+    this.inOidcFlow = false;
     return this.http.post(this.config.get().apiUrl + '/openid/login', { 'identity': 'Denied'}, httpOptions);
   }
 
