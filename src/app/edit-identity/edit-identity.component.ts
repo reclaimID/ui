@@ -328,4 +328,11 @@ export class EditIdentityComponent implements OnInit {
       this.requestedAttributes.length;
   }
 
+  getAudienceName(ticket) {
+    if (undefined === this.audienceNames[ticket.audience]) {
+      return 'Unknown';
+    }
+    return this.audienceNames[ticket.audience];
+  }
+
 }

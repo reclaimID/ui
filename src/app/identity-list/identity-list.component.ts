@@ -23,14 +23,10 @@ export class IdentityListComponent implements OnInit {
   requestedAttributes: any;
   missingAttributes: any;
   attributes: any;
-  tickets: any;
-  clientName: any;
   identities: Identity[];
-  identityNameMapper: any;
   showConfirmDelete: any;
   connected: any;
   modalOpened: any;
-  clientNameFound: any;
   errorInfos: any;
   searchTerm: any;
 
@@ -45,12 +41,10 @@ export class IdentityListComponent implements OnInit {
 
   ngOnInit() {
     this.attributes = {};
-    this.tickets = {};
     this.identities = [];
     this.showConfirmDelete = null;
     this.requestedAttributes = {};
     this.missingAttributes = {};
-    this.clientName = '-';
     this.connected = false;
     this.modalOpened = false;
     if (!this.oidcService.inOpenIdFlow()) {
@@ -61,10 +55,15 @@ export class IdentityListComponent implements OnInit {
       }
     }
     this.updateIdentities();
-    this.identityNameMapper = {};
     this.errorInfos = [];
     console.log('processed nginit');
   }
+
+  cancelRequest() {
+    this.oidcService.cancelAuthorization();
+  }
+
+  isClientVerified() { return this.oidcService.isClientVerified(); }
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
 
@@ -151,8 +150,6 @@ export class IdentityListComponent implements OnInit {
 
   getScopes() { return this.oidcService.getScope(); }
 
-  getScopesPretty() { return this.getScopes().join(', '); }
-
   getMissing(identity) {
     const arr = [];
     let i = 0;
@@ -161,7 +158,6 @@ export class IdentityListComponent implements OnInit {
     }
     return arr;
   }
-  getMissingPretty(identity) { return this.getMissing(identity).join(', '); }
 
   canAuthorize(identity) {
     return this.inOpenIdFlow();
@@ -198,9 +194,7 @@ export class IdentityListComponent implements OnInit {
     this.identityService.getIdentities().subscribe(identities => {
       this.identities = [];
       let i;
-      this.identityNameMapper = {};
       for (i = 0; i < identities.length; i++) {
-        this.identityNameMapper[identities[i].pubkey] = identities[i].name;
         this.identities.push(identities[i]);
       }
 
@@ -217,13 +211,6 @@ export class IdentityListComponent implements OnInit {
         this.openModal('GnunetInfo');
         this.connected = false;
       });
-  }
-
-  getAudienceName(ticket) {
-    if (undefined === this.identityNameMapper[ticket.audience]) {
-      return 'Unknown';
-    }
-    return this.identityNameMapper[ticket.audience];
   }
 
   isConnected() {
