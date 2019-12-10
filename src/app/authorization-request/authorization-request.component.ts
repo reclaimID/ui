@@ -8,13 +8,11 @@ import { OpenIdService } from '../open-id.service';
   styleUrls: ['./authorization-request.component.css']
 })
 export class AuthorizationRequestComponent implements OnInit {
-  clientName: String;
 
   constructor(private oidcService: OpenIdService,
               private router: Router) { }
 
   ngOnInit() {
-    this.clientName = '-';
     this.retryVerify();
   }
 
