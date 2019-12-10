@@ -12,20 +12,23 @@
   </span>
   <br/> 
 </div>
-<div *ngIf="clientNameFound"><strong>"{{ clientName }}"</strong>
-  asks you to share personal information.<br/>
-  Choose an identity to let it access the following information:
-</div>
-<ul *ngIf="clientNameFound">
-  <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
-</ul>
-<div *ngIf="clientNameFound" style="text-align: center;">
-  <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest()" style="margin-bottom: -4%;">
-    <span class="fa fa-ban"></span> Decline
-  </button>
-  <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound">
-    <span class="fa fa-arrow-circle-right"></span> Select identity...
-  </button>
+<div class="card" *ngIf="clientNameFound">
+  <div class="card-body">
+    <strong>"{{ clientName }}"</strong>
+    asks you to share personal information.<br/>
+    Choose an identity to let it access the following information:
+    <ul>
+      <li *ngFor="let attribute of getScopes()"><strong>{{attribute}}</strong>
+    </ul>
+  </div>
+  <div>
+    <button class="btn btn-danger m-1 mt-4" *ngIf="clientNameFound" (click)="cancelRequest()" style="margin-bottom: -4%;">
+      <span class="fa fa-ban"></span> Decline
+    </button>
+    <button class="btn btn-primary m-1 mt-4" *ngIf="clientNameFound">
+      <span class="fa fa-arrow-circle-right"></span> Select identity...
+    </button>
+  </div>
 </div>
 <div *ngIf="clientNameFound !== undefined && !clientNameFound" style="text-align: center;">
   <button class="btn btn-primary mt-4" *ngIf="!clientNameFound" (click)="getClientName();">
