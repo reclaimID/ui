@@ -47,12 +47,6 @@ export class OpenIdService {
   }
 
   inOpenIdFlow(): any {
-    if (this.params['redirect_uri'] !== undefined) {
-      console.log ('In OIDC flow');
-    } else {
-      console.log ('Not in OIDC flow');
-      console.log (this.params);
-    }
     return this.params['redirect_uri'] !== undefined;
   }
 

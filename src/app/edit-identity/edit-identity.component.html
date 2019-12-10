@@ -1,0 +1,126 @@
+<!-- Identity edit screen -->
+<div class="m-2 card">
+  <div class="card-avatar card-img-top">
+    <div class="card-avatar-character text-dark">
+      Manage identity: <i>{{ identity.name }}</i>
+    </div>
+  </div>
+  <!-- Attribute table -->
+  <div class="card-body">
+    <div>
+      <h6 class="card-subtitle mb-2">Attributes:</h6>
+      <!-- Missing attributes -->
+      <table class="table pb-1" *ngIf="isAttributeMissing()">
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttribute.name === missing.name" class="text-primary" *ngFor="let missing of missingAttributes">
+            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+            <td>
+              <input placeholder="Value" [(ngModel)]="missing.value">
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- Requested attributes -->
+      <table class="table pb-1" style="">
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(attribute)" [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes">
+            <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
+            <td>
+              <input placeholder="Value" [(ngModel)]="attribute.value">
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(attribute)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <tr [class.alert-danger]="isInConflict(newAttribute)">
+            <td>
+              <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
+            </td>
+            <td>
+              <input placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
+            </td>
+            <td>
+              <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute(newAttribute)">
+                <span class="fa fa-plus"></span> 
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Attribute creation warning -->
+    <div *ngIf="!attributeNameValid(newAttribute) || !attributeValueValid(newAttribute)" class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> Note:
+      <ul>
+        <li>Only use alphanumeric attribute names.</li>
+        <li>You cannot define the same name twice.</li>
+        <li>Attribute values may not be empty!</li>
+      </ul>
+    </div>
+    <!-- Authorized entities -->
+    <div style="margin-top: 1.5em;">
+      <table class="table pb-1" *ngIf="showTicketsIdentity">
+        <thead style="border-top-style: hidden">
+          <tr>
+            <th scope="col">
+              <h6 class="card-subtitle mb-2">
+                Authorized Entities:
+              </h6>
+            </th>
+            <th scope="col">
+              <h6 class="card-subtitle mb-2">
+                Shared attributes:
+              </h6>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ticket of tickets">
+            <td>
+              <div style="min-width: 15em">
+                {{getAudienceName(ticket)}}
+              </div>
+            </td>
+            <td>
+              <div style="min-width: 15em">
+                {{ticketAttributeMapper[ticket.audience]}}
+              </div>
+            </td>
+            <td>
+              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
+                <span class="fa fa-unlink"></span> Revoke
+              </button>
+              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
+                Do you really want to revoke this authorization?<br/><br/>
+                <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
+                  <span class="fa fa-check"></span> Yes
+                </button>
+                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
+                  <span class="fa fa-close"></span> No
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Edit card buttons -->
+    <div>
+      <button class="btn btn-primary" (click)="saveIdentityAttributes()" [disabled]="!canSaveIdentity()">
+        <span class="fa fa-save"></span> Save and Back
+      </button>
+        <button *ngIf="(0 < tickets?.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets()" [style.float]="'right'">
+        <span class="fa fa-openid"></span>
+        <span *ngIf="showTicketsIdentity"> Hide</span>
+        <span *ngIf="!showTicketsIdentity"> Show</span> 
+        authorizations
+      </button>
+    </div>
+  </div>
+</div>
+

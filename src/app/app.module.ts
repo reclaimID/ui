@@ -15,13 +15,17 @@ import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
+import { NewIdentityComponent } from './new-identity/new-identity.component';
+import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     IdentityListComponent,
     ModalComponent,
-    SearchPipe
+    SearchPipe,
+    NewIdentityComponent,
+    EditIdentityComponent
   ],
   imports: [
     BrowserModule,

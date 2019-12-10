@@ -26,16 +26,9 @@ export class IdentityListComponent implements OnInit {
   tickets: any;
   clientName: any;
   identities: Identity[];
-  newIdentity: Identity;
-  newAttribute: Attribute;
-  identityInEdit: Identity;
-  identityInEditName: string;
   identityNameMapper: any;
-  showTicketsIdentity: Identity;
   showConfirmDelete: any;
-  showConfirmRevoke: any;
   connected: any;
-  ticketAttributeMapper: any;
   modalOpened: any;
   clientNameFound: any;
   errorInfos: any;
@@ -54,17 +47,13 @@ export class IdentityListComponent implements OnInit {
     this.tickets = {};
     this.identities = [];
     this.showConfirmDelete = null;
-    this.showConfirmRevoke = null;
-    this.newAttribute = new Attribute('', '', '', 'STRING');
     this.requestedAttributes = {};
     this.missingAttributes = {};
     this.clientName = '-';
     this.connected = false;
-    this.ticketAttributeMapper = {};
     this.modalOpened = false;
     this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
     this.getClientName();
-    this.identityInEditName = '';
     this.identityNameMapper = {};
     this.updateIdentities();
     this.errorInfos = [];
@@ -73,11 +62,8 @@ export class IdentityListComponent implements OnInit {
 
   confirmDelete(identity) { this.showConfirmDelete = identity; }
 
-  confirmRevoke(ticket) { this.showConfirmRevoke = ticket; }
 
   hideConfirmDelete() { this.showConfirmDelete = null; }
-
-  hideConfirmRevoke() { this.showConfirmRevoke = null; }
 
   getClientName() {
     this.clientNameFound = undefined;
@@ -120,73 +106,6 @@ export class IdentityListComponent implements OnInit {
     return hash;
   }
 
-  isAddIdentity() { return null != this.newIdentity; }
-
-  isDuplicate() {
-    for (let i = 0; i < this.identities.length; i++) {
-      if (this.identities[i].name === this.newIdentity.name) {
-        return true;
-      }
-    }
-  }
-
-  canSave() {
-    if (this.newIdentity.name == null) {
-      return false;
-    }
-    if (this.newIdentity.name === '') {
-      return false;
-    }
-    if (!/^[a-zA-Z0-9-]+$/.test(this.newIdentity.name)) {
-      return false;
-    }
-    if (this.isDuplicate()) {
-      return false;
-    }
-    return true;
-  }
-
-  addIdentity() { this.newIdentity = new Identity('', ''); }
-
-  editIdentity(identity) {
-    this.identityInEdit = identity;
-    this.showTicketsIdentity = null;
-  }
-
-  isInEdit(identity) { return this.identityInEdit === identity; }
-
-  saveIdentityAttributes(identity) {
-    this.storeAttributes(identity)
-      .pipe(
-        finalize(() => {
-          this.identityInEdit = null;
-          this.newAttribute.name = '';
-          this.newAttribute.value = '';
-          this.newAttribute.type = 'STRING';
-        }))
-      .subscribe(res => {
-        //FIXME success dialog/banner
-        this.identityInEdit = null;
-        this.updateAttributes(identity);
-      },
-      err => {
-        console.log(err);
-        this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      });
-  }
-
-  deleteAttribute(attribute) {
-    this.reclaimService.deleteAttribute(this.identityInEdit, attribute)
-      .subscribe(res => {
-        //FIXME info dialog
-        this.updateAttributes(this.identityInEdit);
-      },
-      err => {
-        this.errorInfos.push("Failed to delete attribute ``" + attribute.name + "''");
-        console.log(err);
-      });
-  }
-
   getMissingAttributes(identity) {
     const scopes = this.getScopes();
     let i;
@@ -205,74 +124,6 @@ export class IdentityListComponent implements OnInit {
     }
   }
 
-  private mapAudience(ticket) {
-    this.gnsService.getClientName(ticket.audience).subscribe(records => {
-      for (let i = 0; i < records.data.length; i++) {
-        if (records.data[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
-          continue;
-        }
-        this.identityNameMapper[ticket.audience] = records.data[i].value;
-        break;
-      }
-    });
-  }
-
-  private mapAttributes(identity, ticket) {
-    this.namestoreService.getNames(identity).subscribe(names => {
-      this.ticketAttributeMapper[ticket.audience] = [];
-      names = names.filter(name => name.record_name === ticket.rnd.toLowerCase());
-      for (let i = 0; i < names.length; i++) {
-        names[i].data.forEach(record => {
-          if (record.record_type === 'RECLAIM_ATTR_REF') {
-            this.attributes[identity.pubkey]
-              .filter(attr => attr.id === record.value)
-              .map(attr => {
-                this.ticketAttributeMapper[ticket.audience].push(attr.name);
-              });
-          }
-        });
-      }
-    });
-  }
-
-  private updateTickets(identity) {
-    this.reclaimService.getTickets(identity).subscribe(tickets => {
-      this.tickets[identity.pubkey] = [];
-      if (tickets === null) {
-        return;
-      }
-      this.tickets[identity.pubkey] = tickets;
-      tickets.forEach(ticket => {
-        this.mapAudience(ticket);
-        this.mapAttributes(identity, ticket);
-      });
-    },
-    err => {
-      this.errorInfos.push("Unable to retrieve tickets for identity ``" + identity.name + "''");
-      console.log(err);
-    });
-  }
-
-  toggleShowTickets(identity) {
-    if (this.showTicketsIdentity === identity) {
-      this.showTicketsIdentity = null;
-      return;
-    }
-    this.showTicketsIdentity = identity;
-  }
-
-  revokeTicket(identity, ticket) {
-    this.reclaimService.revokeTicket(ticket).subscribe(
-      result => {
-        this.updateAttributes(identity);
-      },
-      err => {
-        this.errorInfos.push("Unable to revoke ticket.");
-        console.log(err);
-      });
-  }
-
-
   private updateAttributes(identity) {
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
       this.attributes[identity.pubkey] = [];
@@ -289,7 +140,6 @@ export class IdentityListComponent implements OnInit {
         }
       }
       this.getMissingAttributes(identity);
-      this.updateTickets(identity);
     },
     err => {
       this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -297,72 +147,10 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
-  private storeAttributes(identity) {
-    const promises = [];
-    let i;
-    if (undefined !== this.missingAttributes[identity.pubkey]) {
-      for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
-        if (this.missingAttributes[identity.pubkey][i].value === '') {
-          continue;
-        }
-        promises.push(from(this.reclaimService.addAttribute(
-          identity, this.missingAttributes[identity.pubkey][i])));
-      }
-    }
-    if (undefined !== this.attributes[identity.pubkey]) {
-      for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
-        promises.push(
-          from(this.reclaimService.addAttribute(identity, this.attributes[identity.pubkey][i])));
-      }
-    }
-    if (this.newAttribute.value !== '') {
-      promises.push(from(this.reclaimService.addAttribute(identity, this.newAttribute)));
-    }
-
-    return forkJoin(promises);
-  }
-
-  addAttribute() {
-    this.storeAttributes(this.identityInEdit)
-      .pipe(
-        finalize(() => {
-          this.newAttribute.name = '';
-          this.newAttribute.value = '';
-          this.newAttribute.type = 'STRING';
-          this.updateAttributes(this.identityInEdit);
-        }))
-      .subscribe(res => {
-        console.log(res);
-      },
-      err => {
-        console.log(err);
-        this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-        EMPTY
-      });
-  }
-
-  cancelAddIdentity() { this.newIdentity = null; }
-
-  saveIdentity() {
-    if (!this.canSave()) {
-      return;
-    }
-    this.identityInEditName = this.newIdentity.name;
-    this.identityService.addIdentity(this.newIdentity)
-      .subscribe(res => {
-        this.newIdentity.name = '';
-        this.updateIdentities();
-        this.cancelAddIdentity();
-      },
-      err => {
-        this.errorInfos.push("Failed adding new identity ``" + this.newIdentity.name + "''");
-        console.log(err);
-      });
-  }
-
+  
+  
   deleteIdentity(identity) {
     this.showConfirmDelete = false;
-    this.identityInEdit = null;
     this.identityService.deleteIdentity(identity.pubkey)
       .subscribe(res => {
         this.updateIdentities();
@@ -414,65 +202,10 @@ export class IdentityListComponent implements OnInit {
     return this.oidcService.inOpenIdFlow();
   }
 
-  canAddAttribute(identity, attribute) {
-    if ((attribute.name === '') || (attribute.value === '')) {
-      return false;
-    }
-    if (attribute.name.indexOf(' ') >= 0) {
-      return false;
-    }
-    return !this.isInConflict(identity, attribute);
-  }
-
-  attributeNameValid(identity, attribute) {
-    if (attribute.name === '' && attribute.value === '') {
-      return true;
-    }
-    if (attribute.name.indexOf(' ') >= 0) {
-      return false;
-    }
-    if (!/^[a-zA-Z0-9-]+$/.test(attribute.name)) {
-      return false;
-    }
-    return !this.isInConflict(identity, attribute);
-  }
-
-  attributeValueValid(attribute) {
-    if (attribute.value === '') {
-      return attribute.name === '';
-    }
-    return true;
-  }
-
-  canSaveIdentity(identity) {
-    if (this.canAddAttribute(identity, this.newAttribute)) {
-      return true;
-    }
-    return ((this.newAttribute.name === '') &&
-      (this.newAttribute.value === '')) &&
-      !this.isInConflict(identity, this.newAttribute);
-  }
-
-  isInConflict(identity, attribute) {
-    let i;
-    if (undefined !== this.missingAttributes[identity.pubkey]) {
-      for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
-        if (attribute.name ===
-          this.missingAttributes[identity.pubkey][i].name) {
-          return true;
-        }
-      }
-    }
-    if (undefined !== this.attributes[identity.pubkey]) {
-      for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
-        if (attribute.name === this.attributes[identity.pubkey][i].name) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
+  
+  
+  
+  
   getScopes() { return this.oidcService.getScope(); }
 
   getScopesPretty() { return this.getScopes().join(', '); }
@@ -488,7 +221,7 @@ export class IdentityListComponent implements OnInit {
   getMissingPretty(identity) { return this.getMissing(identity).join(', '); }
 
   canAuthorize(identity) {
-    return this.inOpenIdFlow() && !this.isInEdit(identity);
+    return this.inOpenIdFlow();
   }
 
   isRequested(identity, attribute) {
@@ -526,10 +259,6 @@ export class IdentityListComponent implements OnInit {
       for (i = 0; i < identities.length; i++) {
         this.identityNameMapper[identities[i].pubkey] = identities[i].name;
         this.identities.push(identities[i]);
-        if (this.identityInEditName === identities[i].name) {
-          this.editIdentity(this.identities[this.identities.length - 1]);
-          this.identityInEditName = '';
-        }
       }
 
       identities.forEach(identity => {
@@ -557,6 +286,6 @@ export class IdentityListComponent implements OnInit {
   }
 
   canSearch() {
-    return this.isConnected() && 0 != this.identities.length && !this.isAddIdentity() && (null == this.identityInEdit);
+    return this.isConnected() && 0 != this.identities.length;
   }
 }
