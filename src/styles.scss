@@ -70,3 +70,78 @@ button.btn:hover, a.button:hover {
   border-radius: 0;
   margin-bottom: 0;
 }
+
+
+div.card-avatar-character {
+    font-size: 2em;
+}
+
+div.card-avatar-id {
+    font-size: 1em;
+}
+
+.card.selected {
+    box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+    //border-color: #343a40;
+}
+
+.card tr.openid.text-dimmed {
+   color: #eee;
+}
+
+.card.identity-new {
+  background: none;
+  border: 1px dashed #555;
+  box-shadow: none;
+}
+
+.card-avatar-character {
+  padding-left: 0.5em;
+}
+
+.card-avatar .btn-primary {
+  border: none;
+  background-image: none;
+  background-color: rgba(0,0,0,0);
+  box-shadow: none;
+  color: #555;
+  font-size: 0.75em;
+  float: right;
+  min-width: 2em;
+}
+
+.card-avatar .btn-primary:hover {
+  background-image: none;
+  color: #444;
+  background-color: #eee; 
+}
+
+.card-avatar div.icon {
+  border-radius: 5em;
+  width: 1.5em;
+  color: white;
+  display: inline-block;
+}
+
+.logo {
+  text-align: center;
+}
+
+.logo img {
+  width: 125px;
+}
+
+.card table {
+  table-layout: fixed;
+}
+
+.card table input {
+  width: 100%;
+}
+
+div.card-avatar {
+    //border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+    //min-height: 50px;
+}
+
+
