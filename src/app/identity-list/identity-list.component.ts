@@ -111,8 +111,6 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
-  
-  
   deleteIdentity(identity) {
     this.showConfirmDelete = false;
     this.identityService.deleteIdentity(identity.pubkey)
@@ -151,10 +149,6 @@ export class IdentityListComponent implements OnInit {
     return this.oidcService.inOpenIdFlow();
   }
 
-  
-  
-  
-  
   getScopes() { return this.oidcService.getScope(); }
 
   getScopesPretty() { return this.getScopes().join(', '); }
@@ -213,7 +207,9 @@ export class IdentityListComponent implements OnInit {
       identities.forEach(identity => {
         this.updateAttributes(identity);
       });
-      this.closeModal('GnunetInfo');
+      if (!this.modalOpened) {
+        this.closeModal('GnunetInfo');
+      }
       this.connected = true;
     },
       error => {
