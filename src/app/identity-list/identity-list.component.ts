@@ -53,7 +53,9 @@ export class IdentityListComponent implements OnInit {
     this.clientName = '-';
     this.connected = false;
     this.modalOpened = false;
-    this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
+    if (!this.oidcService.inOpenIdFlow()) {
+      this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
+    }
     this.getClientName();
     this.identityNameMapper = {};
     this.updateIdentities();
