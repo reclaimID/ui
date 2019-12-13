@@ -41,6 +41,7 @@ export class EditIdentityComponent implements OnInit {
     this.tickets = [];
     this.attributes = [];
     this.showConfirmRevoke = null;
+    this.audienceNames = {};
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', 'STRING');
     this.ticketAttributeMapper = {};
