@@ -1,8 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Attribute } from './attribute';
+import { Reference } from './reference';
+import { Attestation } from './attestation';
 import { ConfigService } from './config.service';
 import { GnuNetResponse } from './gnu-net-response';
 import { Identity } from './identity';
@@ -37,5 +39,47 @@ export class ReclaimService {
   revokeTicket(ticket: Ticket) {
     return this.http.post<Ticket>(this.config.get().apiUrl + '/reclaim/revoke',
       ticket);
+  }
+  getReferences(identity: Identity): Observable<Reference[]> {
+    return this.http.get<Reference[]>(this.config.get().apiUrl +
+      '/reclaim/attestation/reference/' + identity.name);
+  }
+
+  addReference(identity: Identity, reference: Reference) {
+    return this.http.post<Reference>(this.config.get().apiUrl +
+      '/reclaim/attestation/reference/' + identity.name,
+      reference);
+  }
+
+  deleteReference(identity: Identity, reference: Reference) {
+    const options = {headers: new HttpHeaders({'Content-Type': 'application/json',}),
+    body: reference,};
+    return this.http.delete(this.config.get().apiUrl + '/reclaim/attestation/reference/' +
+      identity.name + '/' + reference.ref_id, options);
+  }
+
+  getAttestation(identity: Identity): Observable<Attestation[]> {
+    return this.http.get<Attestation[]>(this.config.get().apiUrl +
+      '/reclaim/attestation/' + identity.name);
+  }
+
+  addAttestation(identity: Identity, attestation: Attestation) {
+    return this.http.post<Attestation>(this.config.get().apiUrl +
+      '/reclaim/attestation/' + identity.name,
+      attestation);
+  }
+
+  deleteAttestation(identity: Identity, attestation: Attestation) {
+    return this.http.delete(this.config.get().apiUrl + '/reclaim/attestation/' +
+      identity.name + '/' + attestation.id);
+  }
+
+  //FIXME this should be replaced by a data model that ties attributes
+  //and references to attestations together.
+  parseAttest(attestation: Attestation) {
+    var json = JSON.parse('{"value":"'+ attestation.value + '", "type":"'+ attestation.type + '"}')
+    return this.http.post(this.config.get().apiUrl +
+      '/reclaim/attestation/parse',json
+      );
   }
 }
