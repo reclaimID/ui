@@ -27,7 +27,7 @@
                 <option *ngFor="let claim of objectKeys(attestation_val[missing.ref_id])" value={{claim}}>
                   {{claim}}
                 </option>
-                <option value="">{{attestation_val[missing.ref_id]['iss']}}</option>
+                <option value="">{{attestationValues[missing.ref_id]['iss']}}</option>
               </select>
             </td>
             <td>
@@ -74,10 +74,14 @@
           <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(attribute)" [class.alert-danger]="newAttribute.name === attribute.name" [class.text-secondary]="isAttestation(attribute)" *ngFor="let attribute of attributes">
             <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
             <td>
-              <input placeholder="Value" [(ngModel)]="attribute.value">
+              <input *ngIf="!isAttestation(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
+              <span *ngIf="isAttestation(attribute)" >{{ attribute.value }} issued by {{ getIssuer(attribute) }} as ``{{ getReferencedName(attribute) }}''</span>
             </td>
             <td>
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isAttestation(attribute)">
+                <span class="fa fa-trash"></span>
+              </button>
+              <button class="btn btn-primary"  (click)="deleteReferenceByAttribute(attribute)" *ngIf="isAttestation(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
             </td>
@@ -95,6 +99,35 @@
               </button>
             </td>
           </tr>
+          <tr [class.alert-danger]="isRefInConflict(newReference)">
+            <td>
+              <input [class.text-danger]="!referenceNameValid(newReference)" placeholder="Reference" [(ngModel)]="newReference.name">
+            </td>
+            <td>
+              <select (change)="newReference.ref_id=$event.target.value; ">
+                <option value="">Attestation</option>
+                <option *ngFor="let attest of attestations" value={{attest.id}}>
+                {{attest.name}}
+                </option>
+              </select>
+
+              <select *ngIf="newReference.ref_id !== ''" (change)="newReference.ref_value=$event.target.value">
+                <option value="">Source</option>
+                <option *ngFor="let claim of attestationValuesForReference(newReference)" value={{claim}}>
+                  {{claim}}
+                </option>
+                <option value="">{{attestationValues[newReference.ref_id]['iss']}}</option>
+              </select>
+
+            </td>
+
+            <td>
+              <button [disabled]="!canAddReference(newReference)" class="btn btn-primary"  (click)="addReference(newReference)">
+                <span class="fa fa-plus"></span> 
+              </button>
+            </td>
+          </tr>
+
         </tbody>
       </table>
     </div>
@@ -106,76 +139,6 @@
         <li>You cannot define the same name twice.</li>
         <li>Attribute values may not be empty!</li>
       </ul>
-    </div>
-    <div>
-      <button class="btn btn-primary" (click)="toggleShowRef()" [style.float]="'right'">
-        <span *ngIf="showReferences"> Hide</span>
-        <span *ngIf="!showReferences"> Show</span> 
-        reference management
-      </button>
-    </div>
-    <div style="margin-top: 1.5em;" *ngIf="showReferences">   
-      <h6 class="card-subtitle mb-2">References:</h6>
-      <!-- Requested references -->
-      <table class="table pb-1" style="">
-        <thead *ngIf="!isReferenceMissing()">
-          <tr>
-              <th>Attribute Name</th>
-              <th>Attribute Value</th>
-              <th>Attestation ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRefRequested(reference)" [class.text-secondary]="isoptRefRequested(reference)" [class.alert-danger]="newReference.name === reference.name" [class.alert-warning]="!isAttestationValid(reference.ref_id)" *ngFor="let reference of references">
-            <td><div style="min-width: 15em">{{reference.name}}</div></td>
-            <td>
-              <input placeholder="Claim Name Attestation" [(ngModel)]="reference.ref_value">
-            </td>
-            <td>
-              <input placeholder="Attestation ID" [(ngModel)]="reference.ref_id">
-            </td>
-            <td>
-              <button class="btn btn-primary"  (click)="deleteReference(reference)">
-                <span class="fa fa-trash"></span>
-              </button>
-            </td>
-            <td>
-              <div *ngIf= "isAttestationValid(reference.ref_id)"> Valid Reference <span class="fa fa-check"></span> </div>
-              <div *ngIf= "!isAttestationValid(reference.ref_id)"> <span style="color:#f00"> Expired Attestation </span><span class="fa fa-times"></span> </div>
-            </td>
-
-          </tr>
-          <tr [class.alert-danger]="isRefInConflict(newReference)">
-            <td>
-              <input [class.text-danger]="!referenceNameValid(newReference)" placeholder="Reference" [(ngModel)]="newReference.name">
-            </td>
-            <td>
-              <select *ngIf="newReference.ref_id !== ''" (change)="newReference.ref_value=$event.target.value">
-                <option value="">Select a Claim</option>
-                <option *ngFor="let claim of objectKeys(attestation_val[newReference.ref_id])" value={{claim}}>
-                  {{claim}}
-                </option>
-                <option value="">{{attestation_val[newReference.ref_id]['iss']}}</option>
-              </select>
-
-            </td>
-            <td>
-              <select (change)="newReference.ref_id=$event.target.value; ">
-              <option value="">Select an Attestation</option>
-              <option *ngFor="let attest of attestations" value={{attest.id}}>
-                {{attest.name}}
-              </option>
-            </select>
-            </td>
-
-            <td>
-              <button [disabled]="!canAddReference(newReference)" class="btn btn-primary"  (click)="addReference(newReference)">
-                <span class="fa fa-plus"></span> 
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </div>
     <!-- optional attributes information -->
     <div *ngIf="optionalReferences.length !== 0" class="text-primary">

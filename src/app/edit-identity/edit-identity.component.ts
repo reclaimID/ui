@@ -382,8 +382,7 @@ export class EditIdentityComponent implements OnInit {
       this.attestations = attestations;
       //FIXME this is not how this API should work
       //The API should already return attributes which can be used...
-      let i;
-      for (i = 0; i < this.attestations.length; i++) {
+      for (let i = 0; i < this.attestations.length; i++) {
         this.reclaimService.parseAttest(this.attestations[i]).subscribe(values =>{
           this.attestationValues[this.attestations[i].id]=values;
         },
@@ -585,14 +584,25 @@ export class EditIdentityComponent implements OnInit {
   });
   }*/
 
+  isReferenceValid(reference: Reference) {
+    for (let i = 0; i < this.attestations.length; i++) {
+      if (reference.ref_id === this.attestations[i].id) {
+        return this.isAttestationValid(this.attestations[i]);
+      }
+    }
+    return false;
+  }
 
   isAttestationValid(attestation: Attestation) {
     //FIXME JWT specific
     //FIXME the expiration of the JWT should be a property of the attestation
     //Not part of the values
     const now = Date.now().valueOf() / 1000;
+    if (this.attestationValues[attestation.id] === undefined) {
+      return false;
+    }
     if (this.attestationValues[attestation.id]['exp'] === 'undefined') {
-      return true;
+      return false;
     }
     return this.attestationValues[attestation.id]['exp'] > now;
   }
@@ -611,6 +621,43 @@ export class EditIdentityComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  attestationValuesForReference(reference: Reference) {
+    return Object.keys(this.attestationValues[reference.ref_id]);
+  }
+
+  //FIXME JWT specific, this should be provided as part of API
+  private findReferenceForAttribute(attribute: Attribute) {
+    if (this.references === undefined) {
+      return null;
+    }
+    for (let i = 0; i < this.references.length; i++) {
+      if (this.references[i].ref_id === attribute.id) {
+        return this.references[i];
+      }
+    }
+    return null;
+  }
+  getIssuer(attribute: Attribute) {
+    let ref = this.findReferenceForAttribute(attribute);
+    if (null != ref && (this.attestationValues[ref.ref_id] !== undefined)) {
+      return this.attestationValues[ref.ref_id]['iss'];
+    }
+    return "UNKNOWN";
+  }
+  getReferencedName(attribute: Attribute) {
+    let ref = this.findReferenceForAttribute(attribute);
+    if (null != ref) {
+      return ref.ref_value;
+    }
+    return "UNKNOWN";
+  }
+  deleteReferenceByAttribute(attribute: Attribute) {
+    let ref = this.findReferenceForAttribute(attribute);
+    if (null != ref) {
+      this.deleteReference(ref);
+    }
   }
 
 }
