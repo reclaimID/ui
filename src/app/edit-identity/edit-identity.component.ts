@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReclaimService } from '../reclaim.service';
-import { Ticket } from '../ticket';
 import { Identity } from '../identity';
 import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { Attribute } from '../attribute';
+import { Attestation } from '../attestation';
+import { Reference } from '../reference';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
@@ -18,16 +19,19 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 })
 export class EditIdentityComponent implements OnInit {
 
-  tickets: Ticket[];
   identity: Identity;
-  audienceNames: {};
-  showTickets: Boolean;
-  ticketAttributeMapper: {};
+  showReferences: Boolean;
   attributes: Attribute[];
+  attestations: Attestation[];
+  attestationValues: {};
   requestedAttributes: Attribute[];
   missingAttributes: Attribute[];
   newAttribute: Attribute;
-  showConfirmRevoke: any;
+  references: Reference[];
+  newReference: Reference;
+  missingReferences: Reference[];
+  requestedReferences: Reference[];
+  optionalReferences: Reference[];
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -38,14 +42,14 @@ export class EditIdentityComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.tickets = [];
     this.attributes = [];
-    this.showConfirmRevoke = null;
-    this.audienceNames = {};
+    this.attestations = [];
+    this.optionalReferences = [];
+    this.attestationValues = {};
     this.identity = new Identity('','');
-    this.newAttribute = new Attribute('', '', '', 'STRING');
-    this.ticketAttributeMapper = {};
-    this.activatedRoute.params.subscribe(p => {
+    this.newAttribute = new Attribute('', '', '', 'STRING', '');
+    this.newReference = new Reference('', '', '', '');
+      this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
       }
@@ -55,79 +59,16 @@ export class EditIdentityComponent implements OnInit {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
               this.updateAttributes();
+              this.updateReferences();
+              this.updateAttestations();
             }
           }
         });
     });
   }
 
-  confirmRevoke(ticket) { this.showConfirmRevoke = ticket;}
 
-  hideConfirmRevoke() { this.showConfirmRevoke = null; }
 
-  private mapAudience(ticket) {
-    this.gnsService.getClientName(ticket.audience).subscribe(records => {
-      for (let i = 0; i < records.data.length; i++) {
-        if (records.data[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
-          continue;
-        }
-        this.audienceNames[ticket.audience] = records.data[i].value;
-        break;
-      }
-    });
-  }
-
-  private updateTickets() {
-    this.reclaimService.getTickets(this.identity).subscribe(tickets => {
-      this.tickets = [];
-      if (tickets === null) {
-        return;
-      }
-      this.tickets = tickets;
-      tickets.forEach(ticket => {
-        this.mapAudience(ticket);
-        this.mapAttributes(ticket);
-      });
-    },
-    err => {
-      //this.errorInfos.push("Unable to retrieve tickets for identity ``" + identity.name + "''");
-      console.log(err);
-    });
-  }
-  
-  private mapAttributes(ticket) {
-    this.namestoreService.getNames(this.identity).subscribe(names => {
-      this.ticketAttributeMapper[ticket.audience] = [];
-      names = names.filter(name => name.record_name === ticket.rnd.toLowerCase());
-      for (let i = 0; i < names.length; i++) {
-        names[i].data.forEach(record => {
-          if (record.record_type === 'RECLAIM_ATTR_REF') {
-            this.attributes
-              .filter(attr => attr.id === record.value)
-              .map(attr => {
-                this.ticketAttributeMapper[ticket.audience].push(attr.name);
-              });
-          }
-        });
-      }
-    });
-  }
-
-  toggleShowTickets(identity) {
-    this.showTickets = !this.showTickets;
-  }
-
-  revokeTicket(ticket) {
-    this.reclaimService.revokeTicket(ticket).subscribe(
-      result => {
-        this.updateAttributes();
-      },
-      err => {
-        //this.errorInfos.push("Unable to revoke ticket.");
-        console.log(err);
-      });
-  }
-  
   private updateAttributes() {
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
       this.attributes = [];
@@ -144,7 +85,6 @@ export class EditIdentityComponent implements OnInit {
         }
       }
       this.getMissingAttributes();
-      this.updateTickets();
     },
     err => {
       //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -177,7 +117,7 @@ export class EditIdentityComponent implements OnInit {
     }
     this.missingAttributes = [];
     for (i = 0; i < scopes.length; i++) {
-      const attribute = new Attribute('', '', '', 'STRING');
+      const attribute = new Attribute('', '', '', 'STRING', '');
       attribute.name = scopes[i];
       this.missingAttributes.push(attribute);
     }
@@ -214,12 +154,54 @@ export class EditIdentityComponent implements OnInit {
   }
 
   canSaveIdentity() {
+    return (this.canSaveAttribute() &&
+            this.canSaveReference());
+  }
+
+  canSaveAttribute() {
     if (this.canAddAttribute(this.newAttribute)) {
       return true;
     }
     return ((this.newAttribute.name === '') &&
       (this.newAttribute.value === '')) &&
       !this.isInConflict(this.newAttribute);
+  }
+
+  canSaveReference() {
+    if (this.canAddReference(this.newReference)) {
+      return true;
+    }
+    return ((this.newReference.name === '') &&
+      (this.newReference.ref_value === '') &&
+      (this.newReference.ref_id === '')) &&
+      !this.isRefInConflict(this.newReference);
+  }
+
+
+  isRefInConflict(reference) {
+    let i;
+    if (undefined !== this.missingReferences) {
+      for (i = 0; i < this.missingReferences.length; i++) {
+        if (reference.name ===
+          this.missingReferences[i].name) {
+          return true;
+        }
+      }
+    }
+    if (undefined !== this.references) {
+      for (i = 0; i < this.references.length; i++) {
+        if (reference.name === this.references[i].name) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+
+  saveIdentity() {
+    this.saveIdentityAttributes();
+    this.saveIdentityReferences();
   }
 
   saveIdentityAttributes() {
@@ -268,6 +250,9 @@ export class EditIdentityComponent implements OnInit {
     }
     if (undefined !== this.attributes) {
       for (i = 0; i < this.attributes.length; i++) {
+        if (this.attributes[i].flag === '1') {
+          continue; //Is an attestation
+        }
         promises.push(
           from(this.reclaimService.addAttribute(this.identity, this.attributes[i])));
       }
@@ -329,11 +314,303 @@ export class EditIdentityComponent implements OnInit {
       this.requestedAttributes.length;
   }
 
-  getAudienceName(ticket) {
-    if (undefined === this.audienceNames[ticket.audience]) {
-      return 'Unknown';
+  private saveIdentityReferences() {
+    this.storeReferences()
+      .pipe(
+        finalize(() => {
+          this.newReference.name = '';
+          this.newReference.ref_value = '';
+          this.newReference.ref_id = '';
+        }))
+      .subscribe(res => {
+        //FIXME success dialog/banner
+        this.updateReferences();
+      },
+      err => {
+        console.log(err);
+        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+      });
+  }
+
+  deleteReference(reference) {
+    this.reclaimService.deleteReference(this.identity, reference)
+      .subscribe(res => {
+        //FIXME info dialog
+        this.updateReferences();
+        this.updateAttributes();
+      },
+      err => {
+        //this.errorInfos.push("Failed to delete reference ``" + reference.name + "''");
+        console.log(err);
+      });
+  }
+
+
+  getMissingReferences() {
+    const refscopes = this.oidcService.getRefScope();
+    let i;
+    for (i = 0; i < this.requestedReferences.length; i++) {
+      for (var j = 0; j < refscopes.length; j++) {
+        if (this.requestedReferences[i].name === refscopes[j][0] ) {
+          refscopes.splice(j,1);
+        }
+      }
     }
-    return this.audienceNames[ticket.audience];
+    this.missingReferences = [];
+    this.optionalReferences = [];
+    for (i = 0; i < refscopes.length; i++) {
+      const reference = new Reference('', '', '', '');
+      if (refscopes[i][1] === true)
+      {
+        reference.name = refscopes[i][0];
+        this.missingReferences.push(reference);
+      }
+      if (refscopes[i][1] === false)
+      {
+        reference.name = refscopes[i][0];
+        this.optionalReferences.push(reference);
+      }
+    }
+  }
+
+  toggleShowRef() {
+    this.showReferences = !this.showReferences;
+  }
+
+  private updateAttestations() {
+    this.reclaimService.getAttestation(this.identity).subscribe(attestations => {
+      this.attestations = attestations;
+      //FIXME this is not how this API should work
+      //The API should already return attributes which can be used...
+      let i;
+      for (i = 0; i < this.attestations.length; i++) {
+        this.reclaimService.parseAttest(this.attestations[i]).subscribe(values =>{
+          this.attestationValues[this.attestations[i].id]=values;
+        },
+        err => {
+          //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
+          console.log(err);
+        });
+
+      }
+    },
+    err => {
+      //this.errorInfos.push("Error retrieving attestation for ``" + identity.name + "''");
+      console.log(err);
+    });
+  }
+
+  private updateReferences() {
+    this.reclaimService.getReferences(this.identity).subscribe(references => {
+      this.references = [];
+      this.requestedReferences = [];
+      if (references === null) {
+        this.getMissingReferences();
+        return;
+      }
+      const scope = this.oidcService.getRefScope();
+      let i;
+      for (i = 0; i < references.length; i++) {
+        this.references.push(references[i]);
+        let j;
+        for (j = 0; j < scope.length; j++) {
+          if (references[i].name === scope[j][0] ) {
+            this.requestedReferences.push(references[i]);
+          }
+        }
+      }
+      this.getMissingReferences();
+    },
+    err => {
+      //this.errorInfos.push("Error retrieving references for ``" + identity.name + "''");
+      console.log(err);
+    });
+  }
+
+  private storeReferences() {
+    const promises = [];
+    let i;
+    if (undefined !== this.missingReferences) {
+      for (i = 0; i < this.missingReferences.length; i++) {
+        if ((this.missingReferences[i].ref_value === '') || (this.missingReferences[i].ref_id === '')) {
+          console.log("EmptyReferences: " + this.missingReferences[i]);
+          continue;
+        }
+        console.log("MissingReferences: " + this.missingReferences[i]);
+        promises.push(from(this.reclaimService.addReference(
+          this.identity, this.missingReferences[i])));
+      }
+    }
+    if (undefined !== this.references) {
+      for (i = 0; i < this.references.length; i++) {
+        promises.push(
+          from(this.reclaimService.addReference(this.identity, this.references[i])));
+      }
+    }
+    if ((this.newReference.ref_value !== '') || (this.newReference.ref_id !== '')) {
+      promises.push(from(this.reclaimService.addReference(this.identity, this.newReference)));
+    }
+
+    return forkJoin(promises);
+  }
+
+  addReference() {
+    this.storeReferences()
+    .pipe(
+      finalize(() => {
+        this.newReference.name = '';
+        this.newReference.ref_value= '';
+        this.newReference.ref_id = '';
+        this.updateReferences();
+        this.updateAttributes();
+      }))
+      .subscribe(res => {
+        console.log(res);
+      },
+      err => {
+        console.log(err);
+        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+        EMPTY
+      });
+  }
+
+
+  isAttestation(attribute) {
+    if (attribute.flag ==='1') {
+      return true;
+    }
+    return false;
+  }
+
+  canAddReference(reference) {
+    if ((reference.name === '') || (reference.ref_value === '') || (reference.ref_id === '')) {
+      return false;
+    }
+    if (reference.name.indexOf(' ') >= 0) {
+      return false;
+    }
+    return !this.isRefInConflict(reference);
+  }
+
+  referenceNameValid(reference) {
+    if (reference.name === '' && reference.ref_value === '' && reference.ref_id === '') {
+      return true;
+    }
+    if (reference.name.indexOf(' ') >= 0) {
+      return false;
+    }
+    if (!/^[a-zA-Z0-9-_]+$/.test(reference.name)) {
+      return false;
+    }
+    return !this.isRefInConflict(reference);
+  }
+
+  referenceValueValid(reference: Reference) {
+    if (reference.ref_value === '') {
+      return reference.name === '';
+    }
+    return true;
+  }
+
+  referenceIDValid(reference: Reference) {
+    if (reference.ref_id === '') {
+      return reference.name === '';
+    }
+    return true;
+  }
+
+
+  isRefRequested(reference: Reference) {
+    if (undefined === this.requestedReferences) {
+      return false;
+    } else {
+      return -1 !==
+        this.requestedReferences.indexOf(reference);
+    }
+  }
+
+  isAttrRefRequested(attribute: Attribute) {
+    if (undefined === this.requestedReferences) {
+      return false;
+    } else {
+      for (var j = 0; j < this.requestedReferences.length; j++) {
+        if (attribute.name === this.requestedReferences[j].name) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  isoptRefRequested(reference: Reference) {
+    if (undefined === this.optionalReferences) {
+      return false;
+    } else {
+      return -1 !==
+        this.optionalReferences.indexOf(reference);
+    }
+  }
+
+  isReferenceMissing() {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    if (undefined === this.requestedReferences) {
+      return false;
+    }
+    for (var i = 0; i < this.oidcService.getRefScope().length; i++) {
+      if (this.oidcService.getRefScope()[i][1] === true) {
+        var j;
+        for (j = 0; j < this.requestedReferences.length; j++) {
+          if (this.oidcService.getRefScope()[i][0] === this.requestedReferences[j].name){
+            break;
+          }
+        }
+        if (j === this.requestedReferences.length){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /*private setAttestationValue(attestation) {
+    var value_string="";
+    return this.reclaimService.parseAttest(attestation).subscribe(json_string =>{
+    this.attestation_val[attestation.id]=json_string;
+    },
+    err => {
+  //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
+  console.log(err);
+  });
+  }*/
+
+
+  isAttestationValid(attestation: Attestation) {
+    //FIXME JWT specific
+    //FIXME the expiration of the JWT should be a property of the attestation
+    //Not part of the values
+    const now = Date.now().valueOf() / 1000;
+    if (this.attestationValues[attestation.id]['exp'] === 'undefined') {
+      return true;
+    }
+    return this.attestationValues[attestation.id]['exp'] > now;
+  }
+
+
+  isAnyAttestationInvalid() {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    if (undefined === this.requestedReferences) {
+      return false;
+    }
+    for (var j = 0; j < this.attestations.length; j++) {
+      if (!this.isAttestationValid(this.attestations[j])) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

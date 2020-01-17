@@ -1,0 +1,83 @@
+<!-- Identity edit screen -->
+<div class="m-2 card">
+  <div class="card-avatar card-img-top">
+    <div class="card-avatar-character text-dark">
+      Manage attestations for <i>{{ identity.name }}</i>
+    </div>
+  </div>
+  <!-- Attestation management -->
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2">Attestations:</h6>
+    <!-- Requested attestation -->
+    <table class="table pb-1" style="">
+      <thead>
+        <tr>
+          <th>Attestation Name</th>
+          <th>Attestation Type</th>
+          <th>Attestation Value</th>
+          <th>Isser</th>
+          <th>Attestation ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr [class.alert-danger]="newAttestation.name === attestation.name" [class.alert-warning]="!isAttestationValid(attestation.id)" *ngFor="let attestation of attestations">
+          <td><div style="min-width: 15em">{{attestation.name}}</div></td>
+          <td>
+            <div>{{attestation.type}}</div>
+          </td>
+          <td>
+            <input placeholder="Attestation Value" [(ngModel)]="attestation.value">
+          </td>
+          <td>
+            <div style="min-width: 15em">
+              {{attestation_val[attestation.id]['iss']}}
+            </div>
+          </td>
+          <td><div style="min-width: 15em">{{attestation.id}}</div></td>
+          <td>
+            <button class="btn btn-primary"  (click)="deleteAttestation(attestation)">
+              <span class="fa fa-trash"></span>
+            </button>
+          </td>
+          <td>
+              <div *ngIf= "isAttestationValid(attestation.id)"> Valid <span class="fa fa-check"></span> </div>
+              <div *ngIf= "!isAttestationValid(attestation.id)"> <span style="color:#f00"> Expired </span> <span class="fa fa-times"></span> </div>
+            </td>
+        </tr>
+        <tr [class.alert-danger]="isAttestInConflict(newAttestation)">
+          <td>
+            <input [class.text-danger]="!attestationNameValid(newAttestation)" placeholder="Attestation" [(ngModel)]="newAttestation.name">
+          </td>
+          <td>
+            <input placeholder="Type [JWT]" [class.text-danger]="!attestationTypeValid(newAttestation)" [(ngModel)]="newAttestation.type">
+          </td>
+          <td>
+            <input placeholder="Attestation Value" [class.text-danger]="!attestationValueValid(newAttestation)" [(ngModel)]="newAttestation.value">
+          </td>
+          <td>
+            <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="addAttestation(newAttestation)">
+              <span class="fa fa-plus"></span> 
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!-- Attestation creation warning -->
+    <div *ngIf="!attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)" class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> Note:
+      <ul>
+        <li>Only use alphanumeric attestation names.</li>
+        <li>You cannot define the same name twice.</li>
+        <li>Types and values may not be empty!</li>
+      </ul>
+    </div>
+
+    <!-- Edit card buttons -->
+    <div>
+      <button class="btn btn-primary" (click)="saveAttestation()" [disabled]="!canSaveAttestation()">
+        <span class="fa fa-save"></span> Save and Back
+      </button>
+    </div>
+  </div>
+</div>
+

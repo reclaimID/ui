@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Attribute } from '../attribute';
+import { Reference } from '../reference';
 import { GnsService } from '../gns.service';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
@@ -21,8 +22,12 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 export class IdentityListComponent implements OnInit {
 
   requestedAttributes: any;
+  requestedReferences: any;
   missingAttributes: any;
+  missingReferences: any;
+  optionalReferences: any;
   attributes: any;
+  references: any;
   identities: Identity[];
   showConfirmDelete: any;
   connected: any;
@@ -41,10 +46,14 @@ export class IdentityListComponent implements OnInit {
 
   ngOnInit() {
     this.attributes = {};
+    this.references = {};
     this.identities = [];
     this.showConfirmDelete = null;
     this.requestedAttributes = {};
     this.missingAttributes = {};
+    this.requestedReferences = {};
+    this.missingReferences = {};
+    this.optionalReferences = {};
     this.connected = false;
     this.modalOpened = false;
     if (!this.oidcService.inOpenIdFlow()) {
@@ -81,10 +90,64 @@ export class IdentityListComponent implements OnInit {
     }
     this.missingAttributes[identity.pubkey] = [];
     for (i = 0; i < scopes.length; i++) {
-      const attribute = new Attribute('', '', '', 'STRING');
+      const attribute = new Attribute('', '', '', 'STRING', '');
       attribute.name = scopes[i];
       this.missingAttributes[identity.pubkey].push(attribute);
     }
+  }
+
+  getMissingReferences(identity) {
+    const refscopes = this.oidcService.getRefScope();
+    let i;
+    for (i = 0; i < this.requestedReferences[identity.pubkey].length; i++) {
+      for (var j = 0; j < refscopes.length; j++) {
+        if (this.requestedReferences[identity.pubkey][i].name === refscopes[j][0] ) {
+          refscopes.splice(j,1);
+        }
+      }
+    }
+    this.missingReferences[identity.pubkey] = [];
+    this.optionalReferences[identity.pubkey] = [];
+    for (i = 0; i < refscopes.length; i++) {
+      const reference = new Reference('', '', '', '');
+      if (refscopes[i][1] === true)
+      {
+        reference.name = refscopes[i][0];
+        this.missingReferences[identity.pubkey].push(reference);
+      }
+      if (refscopes[i][1] === false)
+      {
+        reference.name = refscopes[i][0];
+        this.optionalReferences[identity.pubkey].push(reference);
+      }
+    }
+  }
+
+  private updateReferences(identity) {
+    this.reclaimService.getReferences(identity).subscribe(references => {
+      this.references[identity.pubkey] = [];
+      this.requestedReferences[identity.pubkey] = [];
+      if (references === null) {
+        this.getMissingReferences(identity);
+        return;
+      }
+     const scope = this.oidcService.getRefScope();
+      let i;
+      for (i = 0; i < references.length; i++) {
+        this.references[identity.pubkey].push(references[i]);
+        let j;
+        for (j = 0; j < scope.length; j++) {
+          if (references[i].name === scope[j][0] ) {
+            this.requestedReferences[identity.pubkey].push(references[i]);
+          }
+        }
+      }
+      this.getMissingReferences(identity);
+    },
+    err => {
+      this.errorInfos.push("Error retrieving references for ``" + identity.name + "''");
+      console.log(err);
+    });
   }
 
   private updateAttributes(identity) {
@@ -200,6 +263,7 @@ export class IdentityListComponent implements OnInit {
 
       identities.forEach(identity => {
         this.updateAttributes(identity);
+        this.updateReferences(identity);
       });
       if (!this.modalOpened) {
         this.closeModal('GnunetInfo');
@@ -220,4 +284,52 @@ export class IdentityListComponent implements OnInit {
   canSearch() {
     return this.isConnected() && 0 != this.identities.length;
   }
+
+  isReferenceMissing(identity) {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    if (undefined === this.requestedReferences) {
+      return false;
+    }
+    for (var i = 0; i < this.oidcService.getRefScope().length; i++) {
+      if (this.oidcService.getRefScope()[i][1] === true) {
+        var j;
+        for (j = 0; j < this.requestedReferences.length; j++) {
+          if (this.oidcService.getRefScope()[i][0] === this.requestedReferences[j].name){
+            break;
+          }
+        }
+        if (j === this.requestedReferences.length){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isAttrRefRequested(identity: Identity, attribute: Attribute) {
+    if (undefined === this.requestedReferences[identity.pubkey]) {
+      return false;
+    } else {
+      for (var j = 0; j < this.requestedReferences[identity.pubkey].length; j++) {
+        if (attribute.name === this.requestedReferences[identity.pubkey][j].name) {
+          return true;
+        }
+      }
+      return false;
+    }
+  }
+
+  isAttestation(attribute: Attribute) {
+    if (attribute.flag ==='1') {
+      return true;
+    }
+    return false;
+  }
+
+  isReqReferenceInvalid(identity: any) {
+    return false; //FIXME actually handle this https://gitlab.com/voggenre/ui/commit/dd9b6656dee7dbf59809dcc9bc2508ee70d8afe6
+  }
+
 }

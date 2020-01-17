@@ -18,6 +18,8 @@ import { OpenIdService } from './open-id.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
+import { EditAuthorizationsComponent } from './edit-authorizations/edit-authorizations.component';
+import { EditAttestationsComponent } from './edit-attestations/edit-attestations.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { AuthorizationRequestComponent } from './authorization-request/authoriza
     SearchPipe,
     NewIdentityComponent,
     EditIdentityComponent,
-    AuthorizationRequestComponent
+    AuthorizationRequestComponent,
+    EditAuthorizationsComponent,
+    EditAttestationsComponent
   ],
   imports: [
     BrowserModule,

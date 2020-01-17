@@ -76,14 +76,24 @@
     <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
-    <div *ngIf="isAttributeMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <span class="fa fa-openid"></span> This identity cannot be used because it's missing requested attributes: 
+    <div *ngIf="isAttributeMissing(identity) || isReferenceMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span class="fa fa-openid"></span> This identity cannot be used because it's missing requested information:
       <ul>
         <li *ngFor="let attr of getMissing(identity)">{{attr}}</li>
+        <li *ngFor="let ref of getOptional(identity)">{{ref}}(optional)</li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-plus"></span> Add
       </button>
+    </div>
+    <div *ngIf="isReqReferenceInvalid(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span class="fa fa-openid"></span> This identity cannot be used because one or more references are invalid.
+      <button class="btn btn-primary" (click)="editIdentity(identity)">
+        <span class="fa fa-pencil-square-o"></span> Edit
+      </button>
+    </div>
+    <div *ngIf="(0 < requestedReferences[identity.pubkey]?.length) && inOpenIdFlow()" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span class="fa fa-openid"></span> Please note that sharing references might disclose additional information stored in the attestation.
     </div>
     <div class="card-body">
       <!-- Attribute table --> 
@@ -93,10 +103,11 @@
         </h6>
         <table class="table pb-1">
           <tbody>
-            <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute)"
+            <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute) || isAttrRefRequested(identity, attribute)"
+               [class.text-secondary]="!isAttrRefRequested(identity, attribute) && isAttestation(attribute)"
                *ngFor="let attribute of attributes[identity.pubkey]">
               <td>
-                <div style="min-width: 15em"><span *ngIf="isRequested(identity, attribute)" class="fa fa-openid"></span> {{attribute.name}}</div>
+                <div style="min-width: 15em"><span *ngIf="isRequested(identity, attribute) || isAttrRefRequested(identity, attribute)" class="fa fa-openid"></span> {{attribute.name}}</div>
               </td>
               <td>
                 <div *ngIf="attribute.value.length <= 20" style="min-width: 15em">{{attribute.value}}</div>
@@ -112,7 +123,7 @@
       <div>
 
         <div>
-          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || !isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || isReferenceMissing(identity) || !isClientVerified() || isReqReferenceInvalid(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
             <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share from this identity</span>
             <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>

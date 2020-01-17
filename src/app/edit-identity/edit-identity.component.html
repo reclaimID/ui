@@ -9,8 +9,48 @@
   <div class="card-body">
     <div>
       <h6 class="card-subtitle mb-2">Attributes:</h6>
+      <!-- Missing references -->
+      <table class="table pb-1" *ngIf="isReferenceMissing()">
+        <thead>
+          <tr>
+              <th>Attribute Name</th>
+              <th>Attribute Value</th>
+              <th>Attestation ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newReference.name === missing.name" class="text-primary" *ngFor="let missing of missingReferences">
+            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+            <td>
+<select *ngIf="missing.ref_id !== ''" (change)="missing.ref_value=$event.target.value">
+                <option value="">Select a Claim</option>
+                <option *ngFor="let claim of objectKeys(attestation_val[missing.ref_id])" value={{claim}}>
+                  {{claim}}
+                </option>
+                <option value="">{{attestation_val[missing.ref_id]['iss']}}</option>
+              </select>
+            </td>
+            <td>
+              <select (change)="missing.ref_id=$event.target.value; ">
+              <option value="">Select an Attestation</option>
+              <option *ngFor="let attest of attestations" value={{attest.id}}>
+                {{attest.name}}
+              </option>
+            </select>
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <!-- Missing attributes -->
       <table class="table pb-1" *ngIf="isAttributeMissing()">
+        <thead>
+          <tr>
+              <th>Attribute Name</th>
+              <th>Attribute Value</th>
+          </tr>
+        </thead>
         <tbody>
           <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttribute.name === missing.name" class="text-primary" *ngFor="let missing of missingAttributes">
             <td><div style="min-width: 15em">{{missing.name}}</div></td>
@@ -24,14 +64,20 @@
       </table>
       <!-- Requested attributes -->
       <table class="table pb-1" style="">
+        <thead *ngIf="!isAttributeMissing()">
+          <tr>
+              <th>Attribute Name</th>
+              <th>Attribute Value</th>
+          </tr>
+        </thead>
         <tbody>
-          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(attribute)" [class.alert-danger]="newAttribute.name === attribute.name" *ngFor="let attribute of attributes">
+          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(attribute)" [class.alert-danger]="newAttribute.name === attribute.name" [class.text-secondary]="isAttestation(attribute)" *ngFor="let attribute of attributes">
             <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
             <td>
               <input placeholder="Value" [(ngModel)]="attribute.value">
             </td>
             <td>
-              <button class="btn btn-primary" (click)="deleteAttribute(attribute)">
+              <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isAttestation(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
             </td>
@@ -61,65 +107,107 @@
         <li>Attribute values may not be empty!</li>
       </ul>
     </div>
-    <!-- Authorized entities -->
-    <div style="margin-top: 1.5em;">
-      <table class="table pb-1" *ngIf="showTickets">
-        <thead style="border-top-style: hidden">
+    <div>
+      <button class="btn btn-primary" (click)="toggleShowRef()" [style.float]="'right'">
+        <span *ngIf="showReferences"> Hide</span>
+        <span *ngIf="!showReferences"> Show</span> 
+        reference management
+      </button>
+    </div>
+    <div style="margin-top: 1.5em;" *ngIf="showReferences">   
+      <h6 class="card-subtitle mb-2">References:</h6>
+      <!-- Requested references -->
+      <table class="table pb-1" style="">
+        <thead *ngIf="!isReferenceMissing()">
           <tr>
-            <th scope="col">
-              <h6 class="card-subtitle mb-2">
-                Authorized Entities:
-              </h6>
-            </th>
-            <th scope="col">
-              <h6 class="card-subtitle mb-2">
-                Shared attributes:
-              </h6>
-            </th>
-            <th scope="col"></th>
+              <th>Attribute Name</th>
+              <th>Attribute Value</th>
+              <th>Attestation ID</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let ticket of tickets">
+          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRefRequested(reference)" [class.text-secondary]="isoptRefRequested(reference)" [class.alert-danger]="newReference.name === reference.name" [class.alert-warning]="!isAttestationValid(reference.ref_id)" *ngFor="let reference of references">
+            <td><div style="min-width: 15em">{{reference.name}}</div></td>
             <td>
-              <div style="min-width: 15em">
-                {{getAudienceName(ticket)}}
-              </div>
+              <input placeholder="Claim Name Attestation" [(ngModel)]="reference.ref_value">
             </td>
             <td>
-              <div style="min-width: 15em">
-                {{ticketAttributeMapper[ticket.audience]}}
-              </div>
+              <input placeholder="Attestation ID" [(ngModel)]="reference.ref_id">
             </td>
             <td>
-              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
-                <span class="fa fa-unlink"></span> Revoke
+              <button class="btn btn-primary"  (click)="deleteReference(reference)">
+                <span class="fa fa-trash"></span>
               </button>
-              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
-                Do you really want to revoke this authorization?<br/><br/>
-                <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
-                  <span class="fa fa-check"></span> Yes
-                </button>
-                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
-                  <span class="fa fa-close"></span> No
-                </button>
-              </div>
+            </td>
+            <td>
+              <div *ngIf= "isAttestationValid(reference.ref_id)"> Valid Reference <span class="fa fa-check"></span> </div>
+              <div *ngIf= "!isAttestationValid(reference.ref_id)"> <span style="color:#f00"> Expired Attestation </span><span class="fa fa-times"></span> </div>
+            </td>
+
+          </tr>
+          <tr [class.alert-danger]="isRefInConflict(newReference)">
+            <td>
+              <input [class.text-danger]="!referenceNameValid(newReference)" placeholder="Reference" [(ngModel)]="newReference.name">
+            </td>
+            <td>
+              <select *ngIf="newReference.ref_id !== ''" (change)="newReference.ref_value=$event.target.value">
+                <option value="">Select a Claim</option>
+                <option *ngFor="let claim of objectKeys(attestation_val[newReference.ref_id])" value={{claim}}>
+                  {{claim}}
+                </option>
+                <option value="">{{attestation_val[newReference.ref_id]['iss']}}</option>
+              </select>
+
+            </td>
+            <td>
+              <select (change)="newReference.ref_id=$event.target.value; ">
+              <option value="">Select an Attestation</option>
+              <option *ngFor="let attest of attestations" value={{attest.id}}>
+                {{attest.name}}
+              </option>
+            </select>
+            </td>
+
+            <td>
+              <button [disabled]="!canAddReference(newReference)" class="btn btn-primary"  (click)="addReference(newReference)">
+                <span class="fa fa-plus"></span> 
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <!-- optional attributes information -->
+    <div *ngIf="optionalReferences.length !== 0" class="text-primary">
+      <span class="fa fa-openid"></span> Optionally requested is also:
+      <ul>
+        <li *ngFor="let reference of optionalReferences"><strong>{{reference}}</strong>
+      </ul>
+    </div>
+    <!-- Reference creation warning -->
+    <div *ngIf="!referenceNameValid(newReference) || !referenceValueValid(newReference) || !referenceIDValid(newReference)" class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> Note:
+      <ul>
+        <li>Only use alphanumeric reference names.</li>
+        <li>You cannot define the same name twice.</li>
+        <li>IDs and values may not be empty!</li>
+      </ul>
+    </div>
+
     <!-- Edit card buttons -->
     <div>
-      <button class="btn btn-primary" (click)="saveIdentityAttributes()" [disabled]="!canSaveIdentity()">
+      <button class="btn btn-primary" (click)="saveIdentity()" [disabled]="!canSaveIdentity()">
         <span class="fa fa-save"></span> Save and Back
       </button>
-        <button *ngIf="(0 < tickets.length) && !inOpenIdFlow()" class="btn btn-primary" (click)="toggleShowTickets()" [style.float]="'right'">
+      <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'">
         <span class="fa fa-openid"></span>
-        <span *ngIf="showTickets"> Hide</span>
-        <span *ngIf="!showTickets"> Show</span> 
-        authorizations
+        Manage authorizations
       </button>
+      <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-attestations', identity.name]" [style.float]="'right'">
+        <span class="fa fa-openid"></span>
+        Manage attestations
+      </button>
+
     </div>
   </div>
 </div>

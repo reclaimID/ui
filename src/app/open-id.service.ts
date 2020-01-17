@@ -5,6 +5,7 @@ import { Identity } from './identity';
 import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
 import { GnsService } from './gns.service';
+import { Reference } from './reference';
 
 @Injectable()
 export class OpenIdService {
@@ -12,6 +13,7 @@ export class OpenIdService {
   inOidcFlow: Boolean;
   clientNameVerified: Boolean;
   clientName: String;
+  referenceString: String;
 
   constructor(private http: HttpClient,
     private config: ConfigService,
@@ -19,8 +21,9 @@ export class OpenIdService {
     private router: Router) {
     this.params = {};
     this.inOidcFlow = false;
+    this.referenceString = "";
   }
-  
+
   getClientName() {
     this.clientNameVerified = undefined;
     if (!this.inOpenIdFlow()) {
@@ -66,10 +69,17 @@ export class OpenIdService {
     window.location.href = this.config.get().apiUrl + '/openid/authorize?client_id=' + this.params['client_id'] +
     '&redirect_uri=' + this.params['redirect_uri'] +
     '&response_type=' + this.params['response_type'] +
-    '&scope=' + this.params['scope'] +
+    '&scope=' + this.params['scope'] + " " + this.referenceString +
     '&state=' + this.params['state'] +
     '&code_challenge=' + this.params['code_challenge'] +
     '&nonce=' + this.params['nonce'];
+  }
+
+  setReferences(references: Reference[]) {
+    this.referenceString = "";
+    for(var i = 0; i < references.length; i++) {
+      this.referenceString = this.referenceString + references[i].name + " ";
+    }
   }
 
   cancelAuthorization(): any {
@@ -101,4 +111,21 @@ export class OpenIdService {
     scopes.splice(i, 1);
     return scopes;
   }
+
+  getRefScope(): any {
+    if (!this.inOpenIdFlow()) {
+      return [];
+    }
+    var scope = [];
+    var json = JSON.parse(this.params.get('claims'))['userinfo'];
+    for(var key in json)
+    {
+      if (json[key]['attestation'] === true)
+        {
+          scope.push([key, json[key]['essential'], json[key]['attestation'], json[key]['format']]);
+        }
+    }
+    return scope;
+  }
+
 }
