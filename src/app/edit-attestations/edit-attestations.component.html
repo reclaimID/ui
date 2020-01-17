@@ -7,7 +7,6 @@
   </div>
   <!-- Attestation management -->
   <div class="card-body">
-    <h6 class="card-subtitle mb-2">Attestations:</h6>
     <!-- Requested attestation -->
     <table class="table pb-1" style="">
       <thead>
@@ -15,12 +14,12 @@
           <th>Attestation Name</th>
           <th>Attestation Type</th>
           <th>Attestation Value</th>
-          <th>Isser</th>
+          <th>Issuer</th>
           <th>Attestation ID</th>
         </tr>
       </thead>
       <tbody>
-        <tr [class.alert-danger]="newAttestation.name === attestation.name" [class.alert-warning]="!isAttestationValid(attestation.id)" *ngFor="let attestation of attestations">
+        <tr [class.alert-danger]="newAttestation.name === attestation.name" [class.alert-warning]="!isAttestationValid(attestation)" *ngFor="let attestation of attestations">
           <td><div style="min-width: 15em">{{attestation.name}}</div></td>
           <td>
             <div>{{attestation.type}}</div>
@@ -30,7 +29,7 @@
           </td>
           <td>
             <div style="min-width: 15em">
-              {{attestation_val[attestation.id]['iss']}}
+              TODO <!--{{attestation_val[attestation.id]['iss']}}-->
             </div>
           </td>
           <td><div style="min-width: 15em">{{attestation.id}}</div></td>
@@ -40,9 +39,8 @@
             </button>
           </td>
           <td>
-              <div *ngIf= "isAttestationValid(attestation.id)"> Valid <span class="fa fa-check"></span> </div>
-              <div *ngIf= "!isAttestationValid(attestation.id)"> <span style="color:#f00"> Expired </span> <span class="fa fa-times"></span> </div>
-            </td>
+            <div *ngIf= "!isAttestationValid(attestation)"> <span style="color:#f00"> Expired </span> <span class="fa fa-times"></span> </div>
+          </td>
         </tr>
         <tr [class.alert-danger]="isAttestInConflict(newAttestation)">
           <td>

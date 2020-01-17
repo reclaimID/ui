@@ -17,6 +17,7 @@ export class EditAttestationsComponent implements OnInit {
   identity: Identity;
   attestations: Attestation[];
   newAttestation: Attestation;
+  attestationValues: {}; //FIXME fix bad API design
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -26,6 +27,8 @@ export class EditAttestationsComponent implements OnInit {
   ngOnInit() {
     this.newAttestation = new Attestation('', '', '', '');
     this.identity = new Identity('','');
+    this.attestationValues = {};
+    this.attestations = [];
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -45,10 +48,16 @@ export class EditAttestationsComponent implements OnInit {
 
   private updateAttestation() {
     this.reclaimService.getAttestation(this.identity).subscribe(attestation => {
-      this.attestations = [];
-      let i;
-      for (i = 0; i < attestation.length; i++) {
-        this.attestations.push(attestation[i]);
+      this.attestations = attestation;
+      for (let i = 0; i < this.attestations.length; i++) {
+        this.reclaimService.parseAttest(this.attestations[i]).subscribe(values =>{
+          this.attestationValues[this.attestations[i].id] = values;
+        },
+        err => {
+          //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
+          console.log(err);
+        });
+
       }
     },
     err => {
@@ -177,6 +186,22 @@ export class EditAttestationsComponent implements OnInit {
 
   attestationValueValid(attestation: Attestation) {
     return true;
+  }
+
+
+
+  isAttestationValid(attestation: Attestation) {
+    //FIXME JWT specific
+    //FIXME the expiration of the JWT should be a property of the attestation
+    //Not part of the values
+    const now = Date.now().valueOf() / 1000;
+    if (this.attestationValues[attestation.id] === undefined) {
+      return false;
+    }
+    if (this.attestationValues[attestation.id]['exp'] === 'undefined') {
+      return false;
+    }
+    return this.attestationValues[attestation.id]['exp'] > now;
   }
 
 }
