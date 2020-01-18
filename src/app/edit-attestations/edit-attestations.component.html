@@ -53,7 +53,7 @@
             <input placeholder="Attestation Value" [class.text-danger]="!attestationValueValid(newAttestation)" [(ngModel)]="newAttestation.value">
           </td>
           <td>
-            <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="addAttestation(newAttestation)">
+            <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="addAttestation()">
               <span class="fa fa-plus"></span> 
             </button>
           </td>
