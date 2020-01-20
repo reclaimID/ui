@@ -332,4 +332,16 @@ export class IdentityListComponent implements OnInit {
     return false; //FIXME actually handle this https://gitlab.com/voggenre/ui/commit/dd9b6656dee7dbf59809dcc9bc2508ee70d8afe6
   }
 
+  getOptional(identity) {
+    const arr = [];
+    let i = 0;
+    if (!this.inOpenIdFlow()) {
+      return [];
+    }
+    for (i = 0; i < this.optionalReferences[identity.pubkey].length; i++) {
+        arr.push(this.optionalReferences[identity.pubkey][i].name);
+    }
+    return arr;
+  }
+
 }
