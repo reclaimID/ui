@@ -186,6 +186,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   loginIdentity(identity) {
+    this.oidcService.setReferences(this.requestedReferences[identity.pubkey]);
     this.oidcService.login(identity).subscribe(() => {
       console.log('Successfully logged in');
       this.authorize();
