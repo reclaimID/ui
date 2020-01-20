@@ -9,42 +9,8 @@
   <div class="card-body">
     <div>
       <h6 class="card-subtitle mb-2">Attributes:</h6>
-      <!-- Missing references -->
-      <table class="table pb-1" *ngIf="isReferenceMissing()">
-        <thead>
-          <tr>
-              <th>Attribute Name</th>
-              <th>Attribute Value</th>
-              <th>Attestation ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newReference.name === missing.name" class="text-primary" *ngFor="let missing of missingReferences">
-            <td><div style="min-width: 15em">{{missing.name}}</div></td>
-            <td>
-<select *ngIf="missing.ref_id !== ''" (change)="missing.ref_value=$event.target.value">
-                <option value="">Select a Claim</option>
-                <option *ngFor="let claim of objectKeys(attestation_val[missing.ref_id])" value={{claim}}>
-                  {{claim}}
-                </option>
-                <option value="">{{attestationValues[missing.ref_id]['iss']}}</option>
-              </select>
-            </td>
-            <td>
-              <select (change)="missing.ref_id=$event.target.value; ">
-              <option value="">Select an Attestation</option>
-              <option *ngFor="let attest of attestations" value={{attest.id}}>
-                {{attest.name}}
-              </option>
-            </select>
-            </td>
-            <td>
-            </td>
-          </tr>
-        </tbody>
-      </table>
       <!-- Missing attributes -->
-      <table class="table pb-1" *ngIf="isAttributeMissing()">
+      <table class="table pb-1" *ngIf="isAttributeMissing() || isReferenceMissing()">
         <thead>
           <tr>
               <th>Attribute Name</th>
@@ -60,6 +26,27 @@
             <td>
             </td>
           </tr>
+          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newReference.name === missing.name" class="text-primary" *ngFor="let missing of missingReferences">
+            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+            <td>
+              <select (change)="missing.ref_id=$event.target.value; ">
+                <option value="">Attestation</option>
+                <option *ngFor="let attest of attestations" value={{attest.id}}>
+                  {{attest.name}}
+                </option>
+              </select>
+
+              <select *ngIf="missing.ref_id !== ''" (change)="missing.ref_value=$event.target.value">
+                <option value="">Source</option>
+                <option *ngFor="let claim of attestationValuesForReference(missing.ref_id)" value={{claim}}>
+                  {{claim}}
+                </option>
+              </select>
+            </td>
+            <td>
+            </td>
+          </tr>
+
         </tbody>
       </table>
       <!-- Requested attributes -->
@@ -116,9 +103,7 @@
                 <option *ngFor="let claim of attestationValuesForReference(newReference)" value={{claim}}>
                   {{claim}}
                 </option>
-                <option value="">{{attestationValues[newReference.ref_id]['iss']}}</option>
               </select>
-
             </td>
 
             <td>
