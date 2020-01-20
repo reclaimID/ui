@@ -20,7 +20,7 @@ export class AuthorizationRequestComponent implements OnInit {
     return this.oidcService.getScope();
   }
 
-  getRedSCope() {
+  getRefScope() {
     return this.oidcService.getRefScope();
   }
 
