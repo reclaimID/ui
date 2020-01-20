@@ -338,6 +338,9 @@ export class IdentityListComponent implements OnInit {
     if (!this.inOpenIdFlow()) {
       return [];
     }
+    if (undefined === this.optionalReferences[identity.pubkey]) {
+      return [];
+    }
     for (i = 0; i < this.optionalReferences[identity.pubkey].length; i++) {
         arr.push(this.optionalReferences[identity.pubkey][i].name);
     }
