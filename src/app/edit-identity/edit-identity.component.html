@@ -127,9 +127,9 @@
     </div>
     <!-- optional attributes information -->
     <div *ngIf="optionalReferences.length !== 0" class="text-primary">
-      <span class="fa fa-openid"></span> Optionally requested is also:
+      <span class="fa fa-openid"></span> You may optionally provide attestations for:
       <ul>
-        <li *ngFor="let reference of optionalReferences"><strong>{{reference}}</strong>
+        <li *ngFor="let reference of optionalReferences"><strong>{{reference[0]}}</strong>
       </ul>
     </div>
     <!-- Reference creation warning -->
