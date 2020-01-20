@@ -117,7 +117,7 @@ export class OpenIdService {
       return [];
     }
     var scope = [];
-    var json = JSON.parse(this.params.get('claims'))['userinfo'];
+    var json = JSON.parse(this.params['claims'])['userinfo'];
     for(var key in json)
     {
       if (json[key]['attestation'] === true)
