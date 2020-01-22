@@ -82,4 +82,9 @@ export class ReclaimService {
       '/reclaim/attestation/parse',json
       );
   }
+
+  fixmeExchangeCode(code: String) {
+    let json = JSON.parse("{}");
+    return this.http.post("http://localhost:4567/token?grant_type=authorization_code&client_id=reclaimid&redirect_uri=http://localhost:4200/index.html&scope=openid&code="+code, json);
+  }
 }

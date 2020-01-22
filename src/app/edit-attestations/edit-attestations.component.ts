@@ -43,7 +43,19 @@ export class EditAttestationsComponent implements OnInit {
           }
         });
     });
-
+    let code = localStorage.getItem('attestationCode');
+    if (undefined !== code) {
+      console.log(code);
+      this.reclaimService.fixmeExchangeCode(code).subscribe(response => {
+        if (undefined !== response["id_token"]) {
+          this.newAttestation.value = response["id_token"];
+          this.newAttestation.type = "JWT";
+          this.newAttestation.name = "FraunhoferAISEC";
+          this.addAttestation();
+          localStorage.setItem('attestationCode', null);
+        }
+      });;
+    }
   }
 
   private updateAttestation() {
@@ -204,4 +216,8 @@ export class EditAttestationsComponent implements OnInit {
     return this.attestationValues[attestation.id]['exp'] > now;
   }
 
+  getFhGAttestation() {
+    localStorage.setItem('userForAttestation', this.identity.name);
+    window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+  }
 }

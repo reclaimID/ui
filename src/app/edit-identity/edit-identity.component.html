@@ -86,7 +86,7 @@
               </button>
             </td>
           </tr>
-          <tr [class.alert-danger]="isRefInConflict(newReference)">
+          <tr [class.alert-danger]="isRefInConflict(newReference)" *ngIf="0 != attestations.length">
             <td>
               <input [class.text-danger]="!referenceNameValid(newReference)" placeholder="Reference" [(ngModel)]="newReference.name">
             </td>
