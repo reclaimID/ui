@@ -14,7 +14,7 @@
           <th>Attestation Name</th>
           <th>Attestation Type</th>
           <th>Attestation Value</th>
-          <th>Issuer</th>
+          <!--<th>Issuer</th>-->
           <th>Attestation ID</th>
         </tr>
       </thead>
@@ -27,11 +27,10 @@
           <td>
             <input placeholder="Attestation Value" [(ngModel)]="attestation.value">
           </td>
-          <td>
+<!--ISSUER          <td>
             <div style="min-width: 15em">
-              TODO <!--{{attestation_val[attestation.id]['iss']}}-->
             </div>
-          </td>
+</td>-->
           <td><div style="min-width: 15em">{{attestation.id}}</div></td>
           <td>
             <button class="btn btn-primary"  (click)="deleteAttestation(attestation)">
@@ -53,6 +52,8 @@
             <input placeholder="Attestation Value" [class.text-danger]="!attestationValueValid(newAttestation)" [(ngModel)]="newAttestation.value">
           </td>
           <td>
+          </td>
+          <td>
             <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="addAttestation()">
               <span class="fa fa-plus"></span> 
             </button>
@@ -69,7 +70,10 @@
         <li>Types and values may not be empty!</li>
       </ul>
     </div>
-
+    <button class="btn btn-primary mb-4" (click)="getFhGAttestation()">
+      <span class="fa fa-user"></span> Get Fraunhofer Credentials
+    </button>
+    <hr/>
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="saveAttestation()" [disabled]="!canSaveAttestation()">

@@ -56,6 +56,11 @@ export class IdentityListComponent implements OnInit {
     this.optionalReferences = {};
     this.connected = false;
     this.modalOpened = false;
+    if (undefined !== this.route.snapshot.queryParams["code"]) {
+      localStorage.setItem('attestationCode', this.route.snapshot.queryParams["code"]);
+      var user = localStorage.getItem('userForAttestation');
+      this.router.navigate(['/edit-attestations', user]);
+    }
     if (!this.oidcService.inOpenIdFlow()) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
       if (this.oidcService.inOpenIdFlow()) {
