@@ -211,6 +211,7 @@ export class EditIdentityComponent implements OnInit {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = 'STRING';
+          this.router.navigate(['/']);
         }))
       .subscribe(res => {
         //FIXME success dialog/banner
