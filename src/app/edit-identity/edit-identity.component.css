@@ -1,0 +1,11 @@
+button.fhg-link {
+  background-color: #009374;
+  border: 2px solid #fff;
+  color: #fff;
+}
+
+button.fhg-link:hover {
+  background-color: #fff;
+  border: 2px solid #009374;
+  color: #009374;
+}
