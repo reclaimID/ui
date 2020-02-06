@@ -291,7 +291,7 @@ export class EditIdentityComponent implements OnInit {
     if (attribute.name.indexOf(' ') >= 0) {
       return false;
     }
-    if (!/^[a-zA-Z0-9-]+$/.test(attribute.name)) {
+    if (!/^[a-zA-Z0-9-_]+$/.test(attribute.name)) {
       return false;
     }
     return !this.isInConflict(attribute);
@@ -659,6 +659,11 @@ export class EditIdentityComponent implements OnInit {
     if (null != ref) {
       this.deleteReference(ref);
     }
+  }
+
+  getFhGAttestation() {
+    localStorage.setItem('userForAttestation', this.identity.name);
+    window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
   }
 
 }
