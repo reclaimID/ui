@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Attribute } from '../attribute';
-import { Reference } from '../reference';
+import { Attestation } from '../attestation';
 import { GnsService } from '../gns.service';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
@@ -22,12 +22,12 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 export class IdentityListComponent implements OnInit {
 
   requestedAttributes: any;
-  requestedReferences: any;
+  requestedAttested: any;
   missingAttributes: any;
-  missingReferences: any;
-  optionalReferences: any;
+  missingAttestations: any;
+  optionalAttested: any;
   attributes: any;
-  references: any;
+  attestations: any;
   identities: Identity[];
   showConfirmDelete: any;
   connected: any;
@@ -46,14 +46,14 @@ export class IdentityListComponent implements OnInit {
 
   ngOnInit() {
     this.attributes = {};
-    this.references = {};
+    this.attestations = {};
     this.identities = [];
     this.showConfirmDelete = null;
     this.requestedAttributes = {};
     this.missingAttributes = {};
-    this.requestedReferences = {};
-    this.missingReferences = {};
-    this.optionalReferences = {};
+    this.requestedAttested = {};
+    this.missingAttestations = {};
+    this.optionalAttested = {};
     this.connected = false;
     this.modalOpened = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
@@ -95,59 +95,46 @@ export class IdentityListComponent implements OnInit {
     }
     this.missingAttributes[identity.pubkey] = [];
     for (i = 0; i < scopes.length; i++) {
-      const attribute = new Attribute('', '', '', 'STRING', '');
+      const attribute = new Attribute('', '', '', '', 'STRING', '');
       attribute.name = scopes[i];
       this.missingAttributes[identity.pubkey].push(attribute);
     }
   }
 
-  getMissingReferences(identity) {
-    const refscopes = this.oidcService.getRefScope();
+  getMissingAttested(identity) {
+    const refscopes = this.oidcService.getAttestedScope();
     let i;
-    for (i = 0; i < this.requestedReferences[identity.pubkey].length; i++) {
+    for (i = 0; i < this.requestedAttested[identity.pubkey].length; i++) {
       for (var j = 0; j < refscopes.length; j++) {
-        if (this.requestedReferences[identity.pubkey][i].name === refscopes[j][0] ) {
+        if (this.requestedAttested[identity.pubkey][i].name === refscopes[j][0] ) {
           refscopes.splice(j,1);
         }
       }
     }
-    this.missingReferences[identity.pubkey] = [];
-    this.optionalReferences[identity.pubkey] = [];
+    this.missingAttestations[identity.pubkey] = [];
+    this.optionalAttested[identity.pubkey] = [];
     for (i = 0; i < refscopes.length; i++) {
-      const reference = new Reference('', '', '', '');
+      const attested = new Attribute('', '', '', '', 'STRING', '');
       if (refscopes[i][1] === true)
       {
-        reference.name = refscopes[i][0];
-        this.missingReferences[identity.pubkey].push(reference);
+        attested.name = refscopes[i][0];
+        this.missingAttestations[identity.pubkey].push(attested);
       }
       if (refscopes[i][1] === false)
       {
-        reference.name = refscopes[i][0];
-        this.optionalReferences[identity.pubkey].push(reference);
+        attested.name = refscopes[i][0];
+        this.optionalAttested[identity.pubkey].push(attested);
       }
     }
   }
 
-  private updateReferences(identity) {
-    this.reclaimService.getReferences(identity).subscribe(references => {
-      this.references[identity.pubkey] = [];
-      this.requestedReferences[identity.pubkey] = [];
-      if (references === null) {
-        this.getMissingReferences(identity);
-        return;
+  private updateAttestations(identity) {
+    this.attestations[identity.pubkey] = [];
+    this.requestedAttested[identity.pubkey] = [];
+    this.reclaimService.getAttestations(identity).subscribe(attestations => {
+      if (attestations !== null) {
+        this.attestations[identity.pubkey] = attestations;
       }
-     const scope = this.oidcService.getRefScope();
-      let i;
-      for (i = 0; i < references.length; i++) {
-        this.references[identity.pubkey].push(references[i]);
-        let j;
-        for (j = 0; j < scope.length; j++) {
-          if (references[i].name === scope[j][0] ) {
-            this.requestedReferences[identity.pubkey].push(references[i]);
-          }
-        }
-      }
-      this.getMissingReferences(identity);
     },
     err => {
       this.errorInfos.push("Error retrieving references for ``" + identity.name + "''");
@@ -166,11 +153,17 @@ export class IdentityListComponent implements OnInit {
       let i;
       for (i = 0; i < attributes.length; i++) {
         this.attributes[identity.pubkey].push(attributes[i]);
-        if (this.oidcService.getScope().includes(attributes[i].name)) {
+        if ((attributes[i].attestation === '') &&
+            this.oidcService.getScope().includes(attributes[i].name)) {
           this.requestedAttributes[identity.pubkey].push(attributes[i]);
+        }
+        if ((attributes[i].attestation !== '') &&
+            this.oidcService.getAttestedScope().includes(attributes[i].name)) {
+          this.requestedAttested[identity.pubkey].push(attributes[i]);
         }
       }
       this.getMissingAttributes(identity);
+      this.getMissingAttested(identity);
     },
     err => {
       this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -191,7 +184,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   loginIdentity(identity) {
-    this.oidcService.setReferences(this.requestedReferences[identity.pubkey]);
+    this.oidcService.setAttestations(this.requestedAttested[identity.pubkey]);
     this.oidcService.login(identity).subscribe(() => {
       console.log('Successfully logged in');
       this.authorize();
@@ -269,7 +262,7 @@ export class IdentityListComponent implements OnInit {
 
       identities.forEach(identity => {
         this.updateAttributes(identity);
-        this.updateReferences(identity);
+        this.updateAttestations(identity);
       });
       if (!this.modalOpened) {
         this.closeModal('GnunetInfo');
@@ -291,22 +284,22 @@ export class IdentityListComponent implements OnInit {
     return this.isConnected() && 0 != this.identities.length;
   }
 
-  isReferenceMissing(identity) {
+  isAttestedMissing(identity) {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedReferences) {
+    if (undefined === this.requestedAttested) {
       return false;
     }
-    for (var i = 0; i < this.oidcService.getRefScope().length; i++) {
-      if (this.oidcService.getRefScope()[i][1] === true) {
+    for (var i = 0; i < this.oidcService.getAttestedScope().length; i++) {
+      if (this.oidcService.getAttestedScope()[i][1] === true) {
         var j;
-        for (j = 0; j < this.requestedReferences.length; j++) {
-          if (this.oidcService.getRefScope()[i][0] === this.requestedReferences[j].name){
+        for (j = 0; j < this.requestedAttested.length; j++) {
+          if (this.oidcService.getAttestedScope()[i][0] === this.requestedAttested[j].name){
             break;
           }
         }
-        if (j === this.requestedReferences.length){
+        if (j === this.requestedAttested.length){
           return true;
         }
       }
@@ -314,12 +307,13 @@ export class IdentityListComponent implements OnInit {
     return false;
   }
 
-  isAttrRefRequested(identity: Identity, attribute: Attribute) {
-    if (undefined === this.requestedReferences[identity.pubkey]) {
+  isAttestedRequested(identity: Identity, attribute: Attribute) {
+    if (undefined === this.requestedAttested[identity.pubkey]) {
       return false;
     } else {
-      for (var j = 0; j < this.requestedReferences[identity.pubkey].length; j++) {
-        if (attribute.name === this.requestedReferences[identity.pubkey][j].name) {
+      for (var j = 0; j < this.requestedAttested[identity.pubkey].length; j++) {
+        if ((attribute.attestation !== '') &&
+            (attribute.name === this.requestedAttested[identity.pubkey][j].name)) {
           return true;
         }
       }
@@ -328,7 +322,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   isAttestation(attribute: Attribute) {
-    if (attribute.flag ==='1') {
+    if (attribute.attestation !== '') {
       return true;
     }
     return false;
@@ -344,11 +338,11 @@ export class IdentityListComponent implements OnInit {
     if (!this.inOpenIdFlow()) {
       return [];
     }
-    if (undefined === this.optionalReferences[identity.pubkey]) {
+    if (undefined === this.optionalAttested[identity.pubkey]) {
       return [];
     }
-    for (i = 0; i < this.optionalReferences[identity.pubkey].length; i++) {
-        arr.push(this.optionalReferences[identity.pubkey][i].name);
+    for (i = 0; i < this.optionalAttested[identity.pubkey].length; i++) {
+        arr.push(this.optionalAttested[identity.pubkey][i].name);
     }
     return arr;
   }

@@ -10,7 +10,7 @@
     <div>
       <h6 class="card-subtitle mb-2">Attributes:</h6>
       <!-- Missing attributes -->
-      <table class="table pb-1" *ngIf="isAttributeMissing() || isReferenceMissing()">
+      <table class="table pb-1" *ngIf="isAttributeMissing() || isAttestedMissing()">
         <thead>
           <tr>
               <th>Attribute Name</th>
@@ -26,20 +26,20 @@
             <td>
             </td>
           </tr>
-          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newReference.name === missing.name" class="text-primary" *ngFor="let missing of missingReferences">
+          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttested.name === missing.name" class="text-primary" *ngFor="let missing of missingAttested">
             <td><div style="min-width: 15em">{{missing.name}}</div></td>
             <td>
-              <select (change)="missing.ref_id=$event.target.value; ">
+              <select (change)="missing.attestation=$event.target.value; ">
                 <option value="">Attestation</option>
                 <option *ngFor="let attest of attestations" value={{attest.id}}>
                   {{attest.name}}
                 </option>
               </select>
 
-              <select *ngIf="missing.ref_id !== ''" (change)="missing.ref_value=$event.target.value">
+              <select *ngIf="missing.attestation !== ''" (change)="missing.value=$event.target.value">
                 <option value="">Source</option>
-                <option *ngFor="let claim of attestationValuesForReference(missing.ref_id)" value={{claim}}>
-                  {{claim}}
+                <option *ngFor="let claim of attestationValuesForAttested(missing)" value={{claim.name}}>
+                  {{claim.name}}
                 </option>
               </select>
             </td>
@@ -62,13 +62,13 @@
             <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
             <td>
               <input *ngIf="!isAttestation(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
-              <span *ngIf="isAttestation(attribute)" >{{ attribute.value }} issued by {{ getIssuer(attribute) }} as ``{{ getReferencedName(attribute) }}''</span>
+              <span *ngIf="isAttestation(attribute)" >{{ attribute.value }} issued by {{ getIssuer(attribute) }} as ``{{ attribute.value }}''</span>
             </td>
             <td>
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isAttestation(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
-              <button class="btn btn-primary"  (click)="deleteReferenceByAttribute(attribute)" *ngIf="isAttestation(attribute)">
+              <button class="btn btn-primary"  (click)="deleteAttribute(attribute)" *ngIf="isAttestation(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
             </td>
@@ -82,32 +82,32 @@
             </td>
             <td>
               <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute()">
-                <span class="fa fa-plus"></span> 
+                <span class="fa fa-plus"></span>
               </button>
             </td>
           </tr>
-          <tr [class.alert-danger]="isRefInConflict(newReference)" *ngIf="0 != attestations.length">
+          <tr [class.alert-danger]="isAttestedInConflict(newAttested)" *ngIf="0 != attestations.length">
             <td>
-              <input [class.text-danger]="!referenceNameValid(newReference)" placeholder="Reference" [(ngModel)]="newReference.name">
+              <input [class.text-danger]="!attestedNameValid(newAttested)" placeholder="Attested attribute" [(ngModel)]="newAttested.name">
             </td>
             <td>
-              <select (change)="newReference.ref_id=$event.target.value; ">
+              <select (change)="newAttested.attestation=$event.target.value; ">
                 <option value="">Attestation</option>
                 <option *ngFor="let attest of attestations" value={{attest.id}}>
                 {{attest.name}}
                 </option>
               </select>
 
-              <select *ngIf="newReference.ref_id !== ''" (change)="newReference.ref_value=$event.target.value">
+              <select *ngIf="newAttested.attestation !== ''" (change)="newAttested.value=$event.target.value">
                 <option value="">Source</option>
-                <option *ngFor="let claim of attestationValuesForReference(newReference)" value={{claim}}>
-                  {{claim}}
+                <option *ngFor="let claim of attestationValuesForAttested(newAttested)" value={{claim.name}}>
+                  {{claim.name}}
                 </option>
               </select>
             </td>
 
             <td>
-              <button [disabled]="!canAddReference(newReference)" class="btn btn-primary"  (click)="addReference()">
+              <button [disabled]="!canAddAttested(newAttested)" class="btn btn-primary"  (click)="addAttested()">
                 <span class="fa fa-plus"></span> 
               </button>
             </td>
@@ -126,17 +126,17 @@
       </ul>
     </div>
     <!-- optional attributes information -->
-    <div *ngIf="optionalReferences.length !== 0" class="text-primary">
+    <div *ngIf="optionalAttested.length !== 0" class="text-primary">
       <span class="fa fa-openid"></span> You may optionally provide attestations for:
       <ul>
-        <li *ngFor="let reference of optionalReferences"><strong>{{reference.name}}</strong>
+        <li *ngFor="let attribute of optionalAttested"><strong>{{attribute.name}}</strong>
       </ul>
     </div>
-    <!-- Reference creation warning -->
-    <div *ngIf="!referenceNameValid(newReference) || !referenceValueValid(newReference) || !referenceIDValid(newReference)" class="alert alert-primary alert-dismissible fade show" role="alert">
+    <!-- Attested creation warning -->
+    <div *ngIf="!attestedNameValid(newAttested) || !attestedValueValid(newAttested)" class="alert alert-primary alert-dismissible fade show" role="alert">
       <span class="fa fa-warning"></span> Note:
       <ul>
-        <li>Only use alphanumeric reference names.</li>
+        <li>Only use alphanumeric attribute names.</li>
         <li>You cannot define the same name twice.</li>
         <li>IDs and values may not be empty!</li>
       </ul>

@@ -17,7 +17,6 @@ export class EditAttestationsComponent implements OnInit {
   identity: Identity;
   attestations: Attestation[];
   newAttestation: Attestation;
-  attestationValues: {}; //FIXME fix bad API design
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -25,9 +24,8 @@ export class EditAttestationsComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.newAttestation = new Attestation('', '', '', '');
+    this.newAttestation = new Attestation('', '', '', '', []);
     this.identity = new Identity('','');
-    this.attestationValues = {};
     this.attestations = [];
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
@@ -60,18 +58,8 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   private updateAttestation() {
-    this.reclaimService.getAttestation(this.identity).subscribe(attestation => {
+    this.reclaimService.getAttestations(this.identity).subscribe(attestation => {
       this.attestations = attestation;
-      for (let i = 0; i < this.attestations.length; i++) {
-        this.reclaimService.parseAttest(this.attestations[i]).subscribe(values =>{
-          this.attestationValues[this.attestations[i].id] = values;
-        },
-        err => {
-          //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
-          console.log(err);
-        });
-
-      }
     },
     err => {
       //this.errorInfos.push("Error retrieving attestation for ``" + identity.name + "''");
@@ -202,23 +190,8 @@ export class EditAttestationsComponent implements OnInit {
   }
 
 
-
+  //FIXME
   isAttestationValid(attestation: Attestation) {
-    //FIXME JWT specific
-    //FIXME the expiration of the JWT should be a property of the attestation
-    //Not part of the values
-    const now = Date.now().valueOf() / 1000;
-    if (this.attestationValues[attestation.id] === undefined) {
-      return false;
-    }
-    if (this.attestationValues[attestation.id]['exp'] === 'undefined') {
-      return false;
-    }
-    return this.attestationValues[attestation.id]['exp'] > now;
-  }
-
-  getFhGAttestation() {
-    localStorage.setItem('userForAttestation', this.identity.name);
-    window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+    return true;
   }
 }

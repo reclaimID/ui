@@ -5,7 +5,7 @@ import { Identity } from './identity';
 import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
 import { GnsService } from './gns.service';
-import { Reference } from './reference';
+import { Attribute } from './attribute';
 
 @Injectable()
 export class OpenIdService {
@@ -75,10 +75,10 @@ export class OpenIdService {
     '&nonce=' + this.params['nonce'];
   }
 
-  setReferences(references: Reference[]) {
+  setAttestations(attestations: Attribute[]) {
     this.referenceString = "";
-    for(var i = 0; i < references.length; i++) {
-      this.referenceString = this.referenceString + references[i].name + " ";
+    for(var i = 0; i < attestations.length; i++) {
+      this.referenceString = this.referenceString + attestations[i].name + " ";
     }
   }
 
@@ -112,7 +112,7 @@ export class OpenIdService {
     return scopes;
   }
 
-  getRefScope(): any {
+  getAttestedScope(): any {
     if (!this.inOpenIdFlow()) {
       return [];
     }

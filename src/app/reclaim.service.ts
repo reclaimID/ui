@@ -40,16 +40,6 @@ export class ReclaimService {
     return this.http.post<Ticket>(this.config.get().apiUrl + '/reclaim/revoke',
       ticket);
   }
-  getReferences(identity: Identity): Observable<Reference[]> {
-    return this.http.get<Reference[]>(this.config.get().apiUrl +
-      '/reclaim/attestation/reference/' + identity.name);
-  }
-
-  addReference(identity: Identity, reference: Reference) {
-    return this.http.post<Reference>(this.config.get().apiUrl +
-      '/reclaim/attestation/reference/' + identity.name,
-      reference);
-  }
 
   deleteReference(identity: Identity, reference: Reference) {
     const options = {headers: new HttpHeaders({'Content-Type': 'application/json',}),
@@ -58,7 +48,7 @@ export class ReclaimService {
       identity.name + '/' + reference.ref_id, options);
   }
 
-  getAttestation(identity: Identity): Observable<Attestation[]> {
+  getAttestations(identity: Identity): Observable<Attestation[]> {
     return this.http.get<Attestation[]>(this.config.get().apiUrl +
       '/reclaim/attestation/' + identity.name);
   }
@@ -72,15 +62,6 @@ export class ReclaimService {
   deleteAttestation(identity: Identity, attestation: Attestation) {
     return this.http.delete(this.config.get().apiUrl + '/reclaim/attestation/' +
       identity.name + '/' + attestation.id);
-  }
-
-  //FIXME this should be replaced by a data model that ties attributes
-  //and references to attestations together.
-  parseAttest(attestation: Attestation) {
-    var json = JSON.parse('{"value":"'+ attestation.value + '", "type":"'+ attestation.type + '"}')
-    return this.http.post(this.config.get().apiUrl +
-      '/reclaim/attestation/parse',json
-      );
   }
 
   fixmeExchangeCode(code: String) {

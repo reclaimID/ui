@@ -21,7 +21,7 @@ export class AuthorizationRequestComponent implements OnInit {
   }
 
   getRefScope() {
-    return this.oidcService.getRefScope();
+    return this.oidcService.getAttestedScope();
   }
 
   isClientVerified() {
