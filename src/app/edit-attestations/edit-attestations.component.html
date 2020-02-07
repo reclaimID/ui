@@ -11,11 +11,11 @@
     <table class="table pb-1" style="">
       <thead>
         <tr>
-          <th>Attestation Name</th>
-          <th>Attestation Type</th>
-          <th>Attestation Value</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Value</th>
           <!--<th>Issuer</th>-->
-          <th>Attestation ID</th>
+          <th>Issuer</th>
         </tr>
       </thead>
       <tbody>
@@ -31,7 +31,7 @@
             <div style="min-width: 15em">
             </div>
 </td>-->
-          <td><div style="min-width: 15em">{{attestation.id}}</div></td>
+          <td><div style="min-width: 15em">{{attestation.issuer}}</div></td>
           <td>
             <button class="btn btn-primary"  (click)="deleteAttestation(attestation)">
               <span class="fa fa-trash"></span>

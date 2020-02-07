@@ -24,7 +24,7 @@ export class EditAttestationsComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.newAttestation = new Attestation('', '', '', '', []);
+    this.newAttestation = new Attestation('', '', '', '', '', []);
     this.identity = new Identity('','');
     this.attestations = [];
     this.activatedRoute.params.subscribe(p => {

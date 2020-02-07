@@ -62,7 +62,7 @@
             <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
             <td>
               <input *ngIf="!isAttestation(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
-              <span *ngIf="isAttestation(attribute)" >{{ attribute.value }} issued by {{ getIssuer(attribute) }} as ``{{ attribute.value }}''</span>
+              <span *ngIf="isAttestation(attribute)" >{{ getAttestedValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
             </td>
             <td>
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isAttestation(attribute)">
