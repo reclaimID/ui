@@ -24,7 +24,7 @@ export class EditAttestationsComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.newAttestation = new Attestation('', '', '', '', '', []);
+    this.newAttestation = new Attestation('', '', '', '', '', 0, []);
     this.identity = new Identity('','');
     this.attestations = [];
     this.activatedRoute.params.subscribe(p => {
@@ -189,6 +189,11 @@ export class EditAttestationsComponent implements OnInit {
     return true;
   }
 
+  getExpiration(attestation: Attestation) {
+    var exp = new Date();
+    exp.setMilliseconds(attestation.expiration / 1000);
+    return exp.toLocaleString();
+  }
 
   //FIXME
   isAttestationValid(attestation: Attestation) {
