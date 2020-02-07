@@ -7,7 +7,6 @@ import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { Attribute } from '../attribute';
 import { Attestation } from '../attestation';
-import { Reference } from '../reference';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
@@ -20,18 +19,16 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 export class EditIdentityComponent implements OnInit {
 
   identity: Identity;
-  showReferences: Boolean;
   attributes: Attribute[];
   attestations: Attestation[];
   attestationValues: {};
   requestedAttributes: Attribute[];
   missingAttributes: Attribute[];
   newAttribute: Attribute;
-  references: Reference[];
-  newReference: Reference;
-  missingReferences: Reference[];
-  requestedReferences: Reference[];
-  optionalReferences: Reference[];
+  newAttested: Attribute;
+  missingAttested: Attribute[];
+  requestedAttested: Attribute[];
+  optionalAttested: Attribute[];
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -44,11 +41,11 @@ export class EditIdentityComponent implements OnInit {
   ngOnInit() {
     this.attributes = [];
     this.attestations = [];
-    this.optionalReferences = [];
+    this.optionalAttested = [];
     this.attestationValues = {};
     this.identity = new Identity('','');
-    this.newAttribute = new Attribute('', '', '', 'STRING', '');
-    this.newReference = new Reference('', '', '', '');
+    this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
+    this.newAttested = new Attribute('', '', '', '', 'STRING', '');
       this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -59,7 +56,6 @@ export class EditIdentityComponent implements OnInit {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
               this.updateAttributes();
-              this.updateReferences();
               this.updateAttestations();
             }
           }
@@ -73,18 +69,25 @@ export class EditIdentityComponent implements OnInit {
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
       this.attributes = [];
       this.requestedAttributes = [];
+      this.requestedAttested = [];
       if (attributes === null) {
         this.getMissingAttributes();
         return;
       }
       let i;
+      this.attributes = attributes;
       for (i = 0; i < attributes.length; i++) {
-        this.attributes.push(attributes[i]);
-        if (this.oidcService.getScope().includes(attributes[i].name)) {
+        if ((attributes[i].attestation === '') &&
+            this.oidcService.getScope().includes(attributes[i].name)) {
           this.requestedAttributes.push(attributes[i]);
+        }
+        if ((attributes[i].attestation !== '') &&
+            this.oidcService.getAttestedScope().includes(attributes[i].name)) {
+          this.requestedAttested.push(attributes[i]);
         }
       }
       this.getMissingAttributes();
+      this.getMissingAttested();
     },
     err => {
       //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -117,7 +120,7 @@ export class EditIdentityComponent implements OnInit {
     }
     this.missingAttributes = [];
     for (i = 0; i < scopes.length; i++) {
-      const attribute = new Attribute('', '', '', 'STRING', '');
+      const attribute = new Attribute('', '', '', '', 'STRING', '');
       attribute.name = scopes[i];
       this.missingAttributes.push(attribute);
     }
@@ -155,7 +158,7 @@ export class EditIdentityComponent implements OnInit {
 
   canSaveIdentity() {
     return (this.canSaveAttribute() &&
-            this.canSaveReference());
+            this.canSaveAttested());
   }
 
   canSaveAttribute() {
@@ -167,30 +170,30 @@ export class EditIdentityComponent implements OnInit {
       !this.isInConflict(this.newAttribute);
   }
 
-  canSaveReference() {
-    if (this.canAddReference(this.newReference)) {
+  canSaveAttested() {
+    if (this.canAddAttested(this.newAttested)) {
       return true;
     }
-    return ((this.newReference.name === '') &&
-      (this.newReference.ref_value === '') &&
-      (this.newReference.ref_id === '')) &&
-      !this.isRefInConflict(this.newReference);
+    return ((this.newAttested.name === '') &&
+      (this.newAttested.attestation === '') &&
+      (this.newAttested.id === '')) &&
+      !this.isAttestedInConflict(this.newAttested);
   }
 
 
-  isRefInConflict(reference) {
+  isAttestedInConflict(attested) {
     let i;
-    if (undefined !== this.missingReferences) {
-      for (i = 0; i < this.missingReferences.length; i++) {
-        if (reference.name ===
-          this.missingReferences[i].name) {
+    if (undefined !== this.missingAttested) {
+      for (i = 0; i < this.missingAttested.length; i++) {
+        if (attested.name ===
+          this.missingAttested[i].name) {
           return true;
         }
       }
     }
-    if (undefined !== this.references) {
-      for (i = 0; i < this.references.length; i++) {
-        if (reference.name === this.references[i].name) {
+    if (undefined !== this.attributes) {
+      for (i = 0; i < this.attributes.length; i++) {
+        if (attested.name === this.attributes[i].name) {
           return true;
         }
       }
@@ -201,7 +204,6 @@ export class EditIdentityComponent implements OnInit {
 
   saveIdentity() {
     this.saveIdentityAttributes();
-    this.saveIdentityReferences();
   }
 
   saveIdentityAttributes() {
@@ -315,17 +317,18 @@ export class EditIdentityComponent implements OnInit {
       this.requestedAttributes.length;
   }
 
-  private saveIdentityReferences() {
-    this.storeReferences()
+  private saveIdentityAttested() {
+    this.storeAttested()
       .pipe(
         finalize(() => {
-          this.newReference.name = '';
-          this.newReference.ref_value = '';
-          this.newReference.ref_id = '';
+          this.newAttested.name = '';
+          this.newAttested.attestation = '';
+          this.newAttested.id = '';
+          this.newAttested.value = '';
         }))
       .subscribe(res => {
         //FIXME success dialog/banner
-        this.updateReferences();
+        this.updateAttributes();
       },
       err => {
         console.log(err);
@@ -333,11 +336,10 @@ export class EditIdentityComponent implements OnInit {
       });
   }
 
-  deleteReference(reference) {
-    this.reclaimService.deleteReference(this.identity, reference)
+  deleteAttested(attribute) {
+    this.reclaimService.deleteAttribute(this.identity, attribute)
       .subscribe(res => {
         //FIXME info dialog
-        this.updateReferences();
         this.updateAttributes();
       },
       err => {
@@ -347,52 +349,36 @@ export class EditIdentityComponent implements OnInit {
   }
 
 
-  getMissingReferences() {
-    const refscopes = this.oidcService.getRefScope();
+  getMissingAttested() {
+    const refscopes = this.oidcService.getAttestedScope();
     let i;
-    for (i = 0; i < this.requestedReferences.length; i++) {
+    for (i = 0; i < this.requestedAttested.length; i++) {
       for (var j = 0; j < refscopes.length; j++) {
-        if (this.requestedReferences[i].name === refscopes[j][0] ) {
+        if (this.requestedAttested[i].name === refscopes[j][0] ) {
           refscopes.splice(j,1);
         }
       }
     }
-    this.missingReferences = [];
-    this.optionalReferences = [];
+    this.missingAttested = [];
+    this.optionalAttested = [];
     for (i = 0; i < refscopes.length; i++) {
-      const reference = new Reference('', '', '', '');
+      const attribute = new Attribute('', '', '', '', 'STRING', '');
       if (refscopes[i][1] === true)
       {
-        reference.name = refscopes[i][0];
-        this.missingReferences.push(reference);
+        attribute.name = refscopes[i][0];
+        this.missingAttested.push(attribute);
       }
       if (refscopes[i][1] === false)
       {
-        reference.name = refscopes[i][0];
-        this.optionalReferences.push(reference);
+        attribute.name = refscopes[i][0];
+        this.optionalAttested.push(attribute);
       }
     }
   }
 
-  toggleShowRef() {
-    this.showReferences = !this.showReferences;
-  }
-
   private updateAttestations() {
-    this.reclaimService.getAttestation(this.identity).subscribe(attestations => {
+    this.reclaimService.getAttestations(this.identity).subscribe(attestations => {
       this.attestations = attestations;
-      //FIXME this is not how this API should work
-      //The API should already return attributes which can be used...
-      for (let i = 0; i < this.attestations.length; i++) {
-        this.reclaimService.parseAttest(this.attestations[i]).subscribe(values =>{
-          this.attestationValues[this.attestations[i].id]=values;
-        },
-        err => {
-          //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
-          console.log(err);
-        });
-
-      }
     },
     err => {
       //this.errorInfos.push("Error retrieving attestation for ``" + identity.name + "''");
@@ -400,68 +386,45 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
-  private updateReferences() {
-    this.reclaimService.getReferences(this.identity).subscribe(references => {
-      this.references = [];
-      this.requestedReferences = [];
-      if (references === null) {
-        this.getMissingReferences();
-        return;
-      }
-      const scope = this.oidcService.getRefScope();
-      let i;
-      for (i = 0; i < references.length; i++) {
-        this.references.push(references[i]);
-        let j;
-        for (j = 0; j < scope.length; j++) {
-          if (references[i].name === scope[j][0] ) {
-            this.requestedReferences.push(references[i]);
-          }
-        }
-      }
-      this.getMissingReferences();
-    },
-    err => {
-      //this.errorInfos.push("Error retrieving references for ``" + identity.name + "''");
-      console.log(err);
-    });
-  }
-
-  private storeReferences() {
+  private storeAttested() {
     const promises = [];
     let i;
-    if (undefined !== this.missingReferences) {
-      for (i = 0; i < this.missingReferences.length; i++) {
-        if ((this.missingReferences[i].ref_value === '') || (this.missingReferences[i].ref_id === '')) {
-          console.log("EmptyReferences: " + this.missingReferences[i]);
+    if (undefined !== this.missingAttested) {
+      for (i = 0; i < this.missingAttested.length; i++) {
+        if ((this.missingAttested[i].value === '') || (this.missingAttested[i].attestation !== '')) {
+          console.log("Empty Attestation: " + this.missingAttested[i]);
           continue;
         }
-        console.log("MissingReferences: " + this.missingReferences[i]);
-        promises.push(from(this.reclaimService.addReference(
-          this.identity, this.missingReferences[i])));
+        console.log("Missing Attestation: " + this.missingAttested[i]);
+        promises.push(from(this.reclaimService.addAttribute(
+          this.identity, this.missingAttested[i])));
       }
     }
-    if (undefined !== this.references) {
-      for (i = 0; i < this.references.length; i++) {
+    if (undefined !== this.attributes) {
+      for (i = 0; i < this.attributes.length; i++) {
+        if (this.attributes[i].attestation === '') {
+          continue;
+        }
         promises.push(
-          from(this.reclaimService.addReference(this.identity, this.references[i])));
+          from(this.reclaimService.addAttribute(this.identity, this.attributes[i])));
       }
     }
-    if ((this.newReference.ref_value !== '') || (this.newReference.ref_id !== '')) {
-      promises.push(from(this.reclaimService.addReference(this.identity, this.newReference)));
+    if ((this.newAttested.value !== '') && (this.newAttested.attestation !== '')
+        && (this.newAttested.name !== '')) {
+      promises.push(from(this.reclaimService.addAttribute(this.identity, this.newAttested)));
     }
 
     return forkJoin(promises);
   }
 
-  addReference() {
-    this.storeReferences()
+  addAttested() {
+    this.storeAttested()
     .pipe(
       finalize(() => {
-        this.newReference.name = '';
-        this.newReference.ref_value= '';
-        this.newReference.ref_id = '';
-        this.updateReferences();
+        this.newAttested.name = '';
+        this.newAttested.value= '';
+        this.newAttested.id = '';
+        this.newAttested.attestation = '';
         this.updateAttributes();
       }))
       .subscribe(res => {
@@ -476,65 +439,65 @@ export class EditIdentityComponent implements OnInit {
 
 
   isAttestation(attribute) {
-    if (attribute.flag ==='1') {
+    if (attribute.attestation !== '') {
       return true;
     }
     return false;
   }
 
-  canAddReference(reference) {
-    if ((reference.name === '') || (reference.ref_value === '') || (reference.ref_id === '')) {
+  canAddAttested(attribute) {
+    if ((attribute.name === '') || (attribute.value === '') || (attribute.attestation === '')) {
       return false;
     }
-    if (reference.name.indexOf(' ') >= 0) {
+    if (attribute.name.indexOf(' ') >= 0) {
       return false;
     }
-    return !this.isRefInConflict(reference);
+    return !this.isAttestedInConflict(attribute);
   }
 
-  referenceNameValid(reference) {
-    if (reference.name === '' && reference.ref_value === '' && reference.ref_id === '') {
+  attestedNameValid(attribute) {
+    if (attribute.name === '' && attribute.value === '' && attribute.attestation === '') {
       return true;
     }
-    if (reference.name.indexOf(' ') >= 0) {
+    if (attribute.name.indexOf(' ') >= 0) {
       return false;
     }
-    if (!/^[a-zA-Z0-9-_]+$/.test(reference.name)) {
+    if (!/^[a-zA-Z0-9-_]+$/.test(attribute.name)) {
       return false;
     }
-    return !this.isRefInConflict(reference);
+    return !this.isAttestedInConflict(attribute);
   }
 
-  referenceValueValid(reference: Reference) {
-    if (reference.ref_value === '') {
-      return reference.name === '';
+  attestedValueValid(attribute: Attribute) {
+    if (attribute.value === '') {
+      return attribute.name === '';
     }
     return true;
   }
 
-  referenceIDValid(reference: Reference) {
-    if (reference.ref_id === '') {
-      return reference.name === '';
+  attestedAttestationValid(attribute: Attribute) {
+    if (attribute.attestation === '') {
+      return attribute.name === '';
     }
     return true;
   }
 
 
-  isRefRequested(reference: Reference) {
-    if (undefined === this.requestedReferences) {
+  isAttestedRequested(attribute: Attribute) {
+    if (undefined === this.requestedAttested) {
       return false;
     } else {
       return -1 !==
-        this.requestedReferences.indexOf(reference);
+        this.requestedAttested.indexOf(attribute);
     }
   }
 
   isAttrRefRequested(attribute: Attribute) {
-    if (undefined === this.requestedReferences) {
+    if (undefined === this.requestedAttested) {
       return false;
     } else {
-      for (var j = 0; j < this.requestedReferences.length; j++) {
-        if (attribute.name === this.requestedReferences[j].name) {
+      for (var j = 0; j < this.requestedAttested.length; j++) {
+        if (attribute.name === this.requestedAttested[j].name) {
           return true;
         }
       }
@@ -542,31 +505,31 @@ export class EditIdentityComponent implements OnInit {
     }
   }
 
-  isoptRefRequested(reference: Reference) {
-    if (undefined === this.optionalReferences) {
+  isoptAttestedRequested(attribute: Attribute) {
+    if (undefined === this.optionalAttested) {
       return false;
     } else {
       return -1 !==
-        this.optionalReferences.indexOf(reference);
+        this.optionalAttested.indexOf(attribute);
     }
   }
 
-  isReferenceMissing() {
+  isAttestedMissing() {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedReferences) {
+    if (undefined === this.requestedAttested) {
       return false;
     }
-    for (var i = 0; i < this.oidcService.getRefScope().length; i++) {
-      if (this.oidcService.getRefScope()[i][1] === true) {
+    for (var i = 0; i < this.oidcService.getAttestedScope().length; i++) {
+      if (this.oidcService.getAttestedScope()[i][1] === true) {
         var j;
-        for (j = 0; j < this.requestedReferences.length; j++) {
-          if (this.oidcService.getRefScope()[i][0] === this.requestedReferences[j].name){
+        for (j = 0; j < this.requestedAttested.length; j++) {
+          if (this.oidcService.getAttestedScope()[i][0] === this.requestedAttested[j].name){
             break;
           }
         }
-        if (j === this.requestedReferences.length){
+        if (j === this.requestedAttested.length){
           return true;
         }
       }
@@ -585,9 +548,9 @@ export class EditIdentityComponent implements OnInit {
   });
   }*/
 
-  isReferenceValid(reference: Reference) {
+  isAttestedValid(attribute: Attribute) {
     for (let i = 0; i < this.attestations.length; i++) {
-      if (reference.ref_id === this.attestations[i].id) {
+      if (attribute.attestation === this.attestations[i].id) {
         return this.isAttestationValid(this.attestations[i]);
       }
     }
@@ -598,22 +561,22 @@ export class EditIdentityComponent implements OnInit {
     //FIXME JWT specific
     //FIXME the expiration of the JWT should be a property of the attestation
     //Not part of the values
-    const now = Date.now().valueOf() / 1000;
-    if (this.attestationValues[attestation.id] === undefined) {
-      return false;
-    }
-    if (this.attestationValues[attestation.id]['exp'] === 'undefined') {
-      return false;
-    }
-    return this.attestationValues[attestation.id]['exp'] > now;
+    return true;
   }
 
+  attestationValuesForAttested(attribute: Attribute) {
+    for (let i = 0; i < this.attestations.length; i++) {
+      if (this.attestations[i].id == attribute.attestation) {
+        return this.attestations[i].attributes;
+      }
+    }
+  }
 
   isAnyAttestationInvalid() {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedReferences) {
+    if (undefined === this.requestedAttested) {
       return false;
     }
     for (var j = 0; j < this.attestations.length; j++) {
@@ -624,41 +587,9 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
-  attestationValuesForReference(reference: Reference) {
-    return Object.keys(this.attestationValues[reference.ref_id]);
-  }
-
-  //FIXME JWT specific, this should be provided as part of API
-  private findReferenceForAttribute(attribute: Attribute) {
-    if (this.references === undefined) {
-      return null;
-    }
-    for (let i = 0; i < this.references.length; i++) {
-      if (this.references[i].ref_id === attribute.id) {
-        return this.references[i];
-      }
-    }
-    return null;
-  }
+  //FIXME attestations need an issuer field
   getIssuer(attribute: Attribute) {
-    let ref = this.findReferenceForAttribute(attribute);
-    if (null != ref && (this.attestationValues[ref.ref_id] !== undefined)) {
-      return this.attestationValues[ref.ref_id]['iss'];
-    }
     return "UNKNOWN";
-  }
-  getReferencedName(attribute: Attribute) {
-    let ref = this.findReferenceForAttribute(attribute);
-    if (null != ref) {
-      return ref.ref_value;
-    }
-    return "UNKNOWN";
-  }
-  deleteReferenceByAttribute(attribute: Attribute) {
-    let ref = this.findReferenceForAttribute(attribute);
-    if (null != ref) {
-      this.deleteReference(ref);
-    }
   }
 
   getFhGAttestation() {
