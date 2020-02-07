@@ -589,7 +589,24 @@ export class EditIdentityComponent implements OnInit {
 
   //FIXME attestations need an issuer field
   getIssuer(attribute: Attribute) {
-    return "UNKNOWN";
+    for (let i = 0; i < this.attestations.length; i++) {
+      if (this.attestations[i].id == attribute.attestation) {
+        return this.attestations[i].issuer;
+      }
+    }
+  }
+
+  getAttestedValue(attribute: Attribute) {
+    for (let i = 0; i < this.attestations.length; i++) {
+      if (this.attestations[i].id == attribute.attestation) {
+        for (let j = 0; j < this.attestations[i].attributes.length; j++) {
+          if (attribute.value == this.attestations[i].attributes[j].name) {
+            return this.attestations[i].attributes[j].value;
+          }
+        }
+      }
+    }
+    return "?";
   }
 
   getFhGAttestation() {
