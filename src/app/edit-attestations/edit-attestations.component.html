@@ -13,7 +13,7 @@
         <tr>
           <th>Name</th>
           <th>Type</th>
-          <th>Value</th>
+          <th>Expires</th>
           <!--<th>Issuer</th>-->
           <th>Issuer</th>
         </tr>
@@ -25,7 +25,7 @@
             <div>{{attestation.type}}</div>
           </td>
           <td>
-            <input placeholder="Attestation Value" [(ngModel)]="attestation.value">
+            <div>{{getExpiration(attestation)}}</div>
           </td>
 <!--ISSUER          <td>
             <div style="min-width: 15em">
