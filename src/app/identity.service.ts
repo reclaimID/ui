@@ -11,7 +11,7 @@ export class IdentityService {
   constructor(private http: HttpClient, private config: ConfigService) { }
 
   getIdentities(): Observable<Identity[]> {
-    return this.http.get<any[]>(this.config.get().apiUrl + '/identity/all');
+    return this.http.get<any[]>(this.config.get().apiUrl + '/identity');
   }
 
   getIdentity(identityId: string) {
