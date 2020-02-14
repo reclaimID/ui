@@ -46,7 +46,10 @@ export class EditIdentityComponent implements OnInit {
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
-      this.activatedRoute.params.subscribe(p => {
+    if (undefined !== this.activatedRoute.snapshot.queryParams["experiments"]) {
+      this.setExperimental("true" === this.activatedRoute.snapshot.queryParams["experiments"]);
+    }
+    this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
       }
@@ -612,6 +615,19 @@ export class EditIdentityComponent implements OnInit {
   getFhGAttestation() {
     localStorage.setItem('userForAttestation', this.identity.name);
     window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+  }
+
+  setExperimental(set) {
+    if (set) {
+      localStorage.setItem('reclaimExperiments', 'enabled');
+    } else {
+      localStorage.setItem('reclaimExperiments', '');
+    }
+  }
+
+  isExperimental() {
+    var exp = localStorage.getItem('reclaimExperiments');
+    return ((undefined !== exp) && ("" !== exp));
   }
 
 }

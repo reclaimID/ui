@@ -141,7 +141,7 @@
         <li>IDs and values may not be empty!</li>
       </ul>
     </div>
-    <button class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
+    <button *ngIf="isExperimental()" class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
       <span class="fa fa-user"></span> Link Fraunhofer Account
     </button>
     <hr/>
@@ -163,4 +163,3 @@
     </div>
   </div>
 </div>
-
