@@ -155,7 +155,7 @@
         <span class="fa fa-openid"></span>
         Manage authorizations
       </button>
-      <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-attestations', identity.name]" [style.float]="'right'">
+      <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/edit-attestations', identity.name]" [style.float]="'right'">
         <span class="fa fa-openid"></span>
         Manage attestations
       </button>
