@@ -277,7 +277,7 @@ export class EditIdentityComponent implements OnInit {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = 'STRING';
-          this.updateAttributes;
+          this.updateAttributes();
         }))
       .subscribe(res => {
         console.log(res);
@@ -442,10 +442,7 @@ export class EditIdentityComponent implements OnInit {
 
 
   isAttestation(attribute) {
-    if (attribute.attestation !== '') {
-      return true;
-    }
-    return false;
+    return attribute.flag === '1';
   }
 
   canAddAttested(attribute) {
