@@ -16,7 +16,7 @@
       "node_modules/web-ext-types"
     ],
     "lib": [
-      "es2017",
+      "es2018",
       "dom"
     ]
   }
