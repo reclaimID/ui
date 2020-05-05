@@ -153,11 +153,11 @@ export class IdentityListComponent implements OnInit {
       let i;
       for (i = 0; i < attributes.length; i++) {
         this.attributes[identity.pubkey].push(attributes[i]);
-        if ((attributes[i].attestation === '') &&
+        if ((attributes[i].flag === '0') &&
             this.oidcService.getScope().includes(attributes[i].name)) {
           this.requestedAttributes[identity.pubkey].push(attributes[i]);
         }
-        if ((attributes[i].attestation !== '') &&
+        if ((attributes[i].flag === '1') &&
             this.oidcService.getAttestedScope().includes(attributes[i].name)) {
           this.requestedAttested[identity.pubkey].push(attributes[i]);
         }
@@ -312,7 +312,7 @@ export class IdentityListComponent implements OnInit {
       return false;
     } else {
       for (var j = 0; j < this.requestedAttested[identity.pubkey].length; j++) {
-        if ((attribute.attestation !== '') &&
+        if ((attribute.flag === '1') &&
             (attribute.name === this.requestedAttested[identity.pubkey][j].name)) {
           return true;
         }
@@ -322,7 +322,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   isAttestation(attribute: Attribute) {
-    if (attribute.attestation !== '') {
+    if (attribute.flag === '1') {
       return true;
     }
     return false;
