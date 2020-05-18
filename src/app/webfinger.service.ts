@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs';
-import { IdProvider } from './id-provider'
 
 // https://github.com/d-koppenhagen/webfinger
 
@@ -15,8 +14,8 @@ export class WebfingerService {
 
     
  
-    getLink (email: string): Observable<IdProvider>{
-        return this.http.get<IdProvider>(this.webfingerEndpoint + '/.well-known/webfinger?resource=acct:' + email);
+    getLink (email: string): Observable<any>{
+        return this.http.get<any>(this.webfingerEndpoint + '/.well-known/webfinger?resource=acct:' + email);
     }
 
 }
