@@ -11,7 +11,6 @@ import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import {WebfingerService} from '../webfinger.service';
-import { IdProvider } from '../id-provider'
 
 @Component({
   selector: 'app-edit-identity',
@@ -32,7 +31,7 @@ export class EditIdentityComponent implements OnInit {
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
   webfingerEmail: string;
-  idProvider: IdProvider;
+  idProvider: string;
   emailNotFoundAlertClosed: boolean;
 
   constructor(private reclaimService: ReclaimService,
@@ -50,6 +49,7 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
+    this.idProvider = localStorage.getItem('idProvider');
     this.emailNotFoundAlertClosed = true;
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
@@ -624,7 +624,9 @@ export class EditIdentityComponent implements OnInit {
     localStorage.setItem('userForAttestation', this.identity.name);
     this.isValidEmailforDiscovery();
     this.webfingerService.getLink(this.webfingerEmail).subscribe (idProvider => {
-      this.idProvider = idProvider;
+      this.idProvider = (idProvider.links [0]).href;
+      localStorage.setItem('idProvider', this.idProvider);
+      console.log(this.idProvider);
     },
     error => {
       if (error.status == 404){
@@ -641,6 +643,21 @@ export class EditIdentityComponent implements OnInit {
       return false;
     }
     return true;
+  }
+
+  idProviderFound(){
+    if (this.idProvider == null){
+      return false;
+    }
+    return true;
+  }
+
+  getIdProviderName(){
+    return this.idProvider.split('//')[1];
+  }
+
+  loginFhgAccount(){
+    window.location.href= this.idProvider + '/api/login';
   }
 
   setExperimental(set) {
