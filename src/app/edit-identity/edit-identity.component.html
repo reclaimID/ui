@@ -141,9 +141,26 @@
         <li>IDs and values may not be empty!</li>
       </ul>
     </div>
+
+    <div class="input-group my-2 col-lg-4">
+      <div class="input-group-prepend">
+        <span class="input-group-text">@</span>
+      </div>
+      <input placeholder="E-Mail Adress" class="form-control"  [(ngModel)]="webfingerEmail">
+    </div>
+    <!--Issuer Discovery Warning-->
+    <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> This is not a valid e-mail adress
+    </div>
+    <!--Email not found Warning-->
+    <div *ngIf="!emailNotFoundAlertClosed" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+      <span class="fa fa-warning"></span> No account found with email: {{webfingerEmail}}
+    </div>
     <button *ngIf="isExperimental()" class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
       <span class="fa fa-user"></span> Link Fraunhofer Account
     </button>
+
+    
     <hr/>
 
     <!-- Edit card buttons -->

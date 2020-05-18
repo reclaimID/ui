@@ -10,6 +10,8 @@ import { Attestation } from '../attestation';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
+import {WebfingerService} from '../webfinger.service';
+import { IdProvider } from '../id-provider'
 
 @Component({
   selector: 'app-edit-identity',
@@ -29,6 +31,9 @@ export class EditIdentityComponent implements OnInit {
   missingAttested: Attribute[];
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
+  webfingerEmail: string;
+  idProvider: IdProvider;
+  emailNotFoundAlertClosed: boolean;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -36,13 +41,16 @@ export class EditIdentityComponent implements OnInit {
               private oidcService: OpenIdService,
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
-              private router: Router) { }
+              private router: Router,
+              private webfingerService: WebfingerService) { }
 
   ngOnInit() {
     this.attributes = [];
     this.attestations = [];
     this.optionalAttested = [];
     this.attestationValues = {};
+    this.webfingerEmail = '';
+    this.emailNotFoundAlertClosed = true;
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
@@ -610,8 +618,29 @@ export class EditIdentityComponent implements OnInit {
   }
 
   getFhGAttestation() {
+    if (this.webfingerEmail == ''){
+      return;
+    }
     localStorage.setItem('userForAttestation', this.identity.name);
-    window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+    this.isValidEmailforDiscovery();
+    this.webfingerService.getLink(this.webfingerEmail).subscribe (idProvider => {
+      this.idProvider = idProvider;
+    },
+    error => {
+      if (error.status == 404){
+        this.emailNotFoundAlertClosed = false;
+        setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
+      }
+      console.log (error);
+    });
+    //window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+  }
+
+  isValidEmailforDiscovery(){
+    if (!this.webfingerEmail.includes('@') && this.webfingerEmail != ''){
+      return false;
+    }
+    return true;
   }
 
   setExperimental(set) {
