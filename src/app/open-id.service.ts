@@ -116,6 +116,9 @@ export class OpenIdService {
     if (!this.inOpenIdFlow()) {
       return [];
     }
+    if (this.params['claims'] === undefined) {
+      return [];
+    }
     var scope = [];
     var json = JSON.parse(this.params['claims'])['userinfo'];
     for(var key in json)
