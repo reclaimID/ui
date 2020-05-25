@@ -657,7 +657,12 @@ export class EditIdentityComponent implements OnInit {
   }
 
   loginFhgAccount(){
-    window.location.href= this.idProvider + '/api/login';
+    window.location.href= this.idProvider + '/login';
+    //window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+  }
+
+  addAttestation(){
+    
   }
 
   setExperimental(set) {
