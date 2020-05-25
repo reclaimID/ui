@@ -73,6 +73,7 @@
               </button>
             </td>
           </tr>
+          <!-- New Attribute -->
           <tr [class.alert-danger]="isInConflict(newAttribute)">
             <td>
               <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
@@ -86,6 +87,7 @@
               </button>
             </td>
           </tr>
+          <!--new Attested Attribute-->
           <tr [class.alert-danger]="isAttestedInConflict(newAttested)" *ngIf="0 != attestations.length">
             <td>
               <input [class.text-danger]="!attestedNameValid(newAttested)" placeholder="Attested attribute" [(ngModel)]="newAttested.name">
