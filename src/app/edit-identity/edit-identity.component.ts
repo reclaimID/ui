@@ -11,6 +11,9 @@ import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import {WebfingerService} from '../webfinger.service';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { OauthHelperService } from '../oauth-helper.service'
+
 
 @Component({
   selector: 'app-edit-identity',
@@ -41,7 +44,9 @@ export class EditIdentityComponent implements OnInit {
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
-              private webfingerService: WebfingerService) { }
+              private webfingerService: WebfingerService,
+              private oauthService: OAuthService,
+              private oauthHelperService: OauthHelperService) { }
 
   ngOnInit() {
     this.attributes = [];
@@ -657,8 +662,15 @@ export class EditIdentityComponent implements OnInit {
   }
 
   loginFhgAccount(){
-    window.location.href= this.idProvider + '/login';
+    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig();
+    this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.loadDiscoveryDocumentAndLogin();
+    this.getId();
     //window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+  }
+
+  getId (): any{
+    return this.oauthService.getIdentityClaims();
   }
 
   addAttestation(){
