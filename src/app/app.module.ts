@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app.component';
 import { IdentityListComponent } from './identity-list/identity-list.component';
@@ -15,7 +16,8 @@ import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
-import { WebfingerService } from './webfinger.service'
+import { WebfingerService } from './webfinger.service';
+import { OauthHelperService } from './oauth-helper.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
@@ -38,7 +40,8 @@ import { EditAttestationsComponent } from './edit-attestations/edit-attestations
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    OAuthModule.forRoot()
   ],
   providers: [
     IdentityService,
@@ -49,6 +52,7 @@ import { EditAttestationsComponent } from './edit-attestations/edit-attestations
     GnsService,
     OpenIdService,
     ConfigService,
+    OauthHelperService,
     WebfingerService,
     {
       provide: APP_INITIALIZER,
