@@ -640,7 +640,6 @@ export class EditIdentityComponent implements OnInit {
       }
       console.log (error);
     });
-    //window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
   }
 
   isValidEmailforDiscovery(){
@@ -666,7 +665,7 @@ export class EditIdentityComponent implements OnInit {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
     this.getId();
-    //window.location.href = "http://localhost:4567/authorize?redirect_uri=http%3A%2F%2Flocalhost:4200%2Findex.html&client_id=reclaimid&response_type=code&scopes=openid";
+    this.addAttestation();
   }
 
   getId (): any{
@@ -674,7 +673,17 @@ export class EditIdentityComponent implements OnInit {
   }
 
   addAttestation(){
-    
+    const newAttestation = new Attestation (this.getId().name, this.getId().id, this.getId().type, 'openID', this.idProvider, this.getAttestationExpiration(), []);
+    this.reclaimService.addAttestation(this.identity, newAttestation).subscribe(res => {
+      console.log(res);
+    },
+    err => {
+      console.log(err);
+    });
+  }
+
+  getAttestationExpiration(){
+    return this.oauthService.getIdTokenExpiration()
   }
 
   setExperimental(set) {
