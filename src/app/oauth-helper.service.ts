@@ -12,11 +12,11 @@ export class OauthHelperService {
       issuer: localStorage.getItem('idProvider'),
   
       // URL of the SPA to redirect the user to after login
-      redirectUri: window.location.origin + '/index.html',
+      redirectUri: window.location.origin,
   
       // The SPA's id. The SPA is registerd with this id at the auth-server
       // clientId: 'server.code',
-      clientId: 'reclaim:ID',
+      clientId: 'reclaimid',
   
       // Just needed if your auth server demands a secret. In general, this
       // is a sign that the auth server is not configured with SPAs in mind
