@@ -6,13 +6,13 @@ export class OauthHelperService {
 
   constructor() { }
 
-  getOauthConfig(){
+  getOauthConfig(identityName: string){
     const authCodeFlowConfig: AuthConfig = {
       // Url of the Identity Provider
       issuer: localStorage.getItem('idProvider'),
   
       // URL of the SPA to redirect the user to after login
-      redirectUri: window.location.href,
+      redirectUri: window.location.origin + '/edit-attestations/' + identityName,
   
       // The SPA's id. The SPA is registerd with this id at the auth-server
       // clientId: 'server.code',

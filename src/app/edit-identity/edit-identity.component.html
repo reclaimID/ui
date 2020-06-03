@@ -156,8 +156,8 @@
       <span class="fa fa-warning"></span> This is not a valid e-mail adress
     </div>
     <!--Email not found Warning-->
-    <div *ngIf="!emailNotFoundAlertClosed" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
-      <span class="fa fa-warning"></span> No account found with email: {{webfingerEmail}}
+    <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+      <span class="fa fa-warning"></span> No account found with this email
     </div>
     <button *ngIf="isExperimental() && !idProviderFound()" class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
       <span class="fa fa-user"></span> Link Fraunhofer Account
