@@ -34,7 +34,8 @@ export class EditIdentityComponent implements OnInit {
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
   webfingerEmail: string;
-  idProvider: string;
+  idProvider: string[];
+  newIdProvider: string;
   emailNotFoundAlertClosed: boolean;
 
   constructor(private reclaimService: ReclaimService,
@@ -54,7 +55,8 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
-    this.idProvider = localStorage.getItem('idProvider');
+    this.idProvider = this.getAllIdProvider();
+    this.newIdProvider = '';
     this.emailNotFoundAlertClosed = true;
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
@@ -629,9 +631,8 @@ export class EditIdentityComponent implements OnInit {
     localStorage.setItem('userForAttestation', this.identity.name);
     this.isValidEmailforDiscovery();
     this.webfingerService.getLink(this.webfingerEmail).subscribe (idProvider => {
-      this.idProvider = (idProvider.links [0]).href;
-      localStorage.setItem('idProvider', this.idProvider);
-      console.log(this.idProvider);
+      this.newIdProvider = (idProvider.links [0]).href; 
+      console.log(this.newIdProvider);
       this.webfingerEmail == '';
     },
     error => {
@@ -652,39 +653,70 @@ export class EditIdentityComponent implements OnInit {
   }
 
   idProviderFound(){
-    if (this.idProvider == null){
+    if (localStorage.getItem('idProvider') == null){
       return false;
     }
     return true;
   }
 
-  getIdProviderName(){
-    return this.idProvider.split('//')[1];
+  newIdProviderDiscovered(){
+    if (this.newIdProvider == ''){
+      return false;
+    }
+    return true;
+  }
+
+  getNewIdProviderName(){
+    return this.newIdProvider.split('//')[1];
+  }
+
+  getAllIdProvider(){
+    if (!this.idProviderFound()){
+      return [];
+    }
+    return localStorage.getItem('idProvider').split(',');
   }
 
   loginFhgAccount(){
-    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.identity.name);
+    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
     if (this.getId() == null){
-      console.log("error: can't get id")
+      console.log("error: can't get id");
+      return;
     }
-    localStorage.setItem('idProvider', this.getId());
-    //this.addAttestation();
+    this.idProvider.push(this.newIdProvider);
+    this.newIdProvider = '';
+    localStorage.setItem('idProvider', localStorage.getItem('idProvider') + ',' + this.getId().name);
+    this.addAttestation().subscribe(res => {
+      console.log(res);
+      this.updateAttestations();
+    },
+    err => {
+      console.log(err);
+      //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+      EMPTY
+    });;
   }
 
   getId (): any{
     return this.oauthService.getIdentityClaims();
   }
 
-  addAttestation(){
-    const newAttestation = new Attestation (this.getId().name, this.getId().id, this.getId().type, 'openID', this.idProvider, this.getAttestationExpiration(), []);
-    this.reclaimService.addAttestation(this.identity, newAttestation).subscribe(res => {
-      console.log(res);
-    },
-    err => {
-      console.log(err);
-    });
+  addAttestation() {
+    const newAttestation = new Attestation (this.getId().name, this.getId().id, this.getId().type, 'openID', this.newIdProvider, this.getAttestationExpiration(), []);
+    const promises = [];
+    let i;
+    if (undefined !== this.attestations) {
+      for (i = 0; i < this.attestations.length; i++) {
+        promises.push(
+          from(this.reclaimService.addAttestation(this.identity, this.attestations[i])));
+      }
+    }
+    if ((newAttestation.value !== '') || (newAttestation.type !== '')) {
+      promises.push(from(this.reclaimService.addAttestation(this.identity, newAttestation)));
+    }
+    return forkJoin(promises);
   }
 
   getAttestationExpiration(){
