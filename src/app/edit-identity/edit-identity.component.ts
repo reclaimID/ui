@@ -632,12 +632,14 @@ export class EditIdentityComponent implements OnInit {
       this.idProvider = (idProvider.links [0]).href;
       localStorage.setItem('idProvider', this.idProvider);
       console.log(this.idProvider);
+      this.webfingerEmail == '';
     },
     error => {
       if (error.status == 404){
         this.emailNotFoundAlertClosed = false;
         setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
       }
+      this.webfingerEmail = '';
       console.log (error);
     });
   }
@@ -661,11 +663,14 @@ export class EditIdentityComponent implements OnInit {
   }
 
   loginFhgAccount(){
-    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig();
+    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.identity.name);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
-    this.getId();
-    this.addAttestation();
+    if (this.getId() == null){
+      console.log("error: can't get id")
+    }
+    localStorage.setItem('idProvider', this.getId());
+    //this.addAttestation();
   }
 
   getId (): any{
