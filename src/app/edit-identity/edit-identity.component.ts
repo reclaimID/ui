@@ -34,7 +34,8 @@ export class EditIdentityComponent implements OnInit {
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
   webfingerEmail: string;
-  idProvider: string[];
+  idProvider: any[];
+  accessToken: any[];
   newIdProvider: string;
   emailNotFoundAlertClosed: boolean;
 
@@ -55,9 +56,9 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
-    this.idProvider = this.getAllIdProvider();
     this.newIdProvider = '';
     this.emailNotFoundAlertClosed = true;
+    this.loadIdProviderAndAccessTokenFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
@@ -652,6 +653,13 @@ export class EditIdentityComponent implements OnInit {
     return true;
   }
 
+  discoveredIdProviderExistsAlready(){
+    if (this.idProvider.includes(this.newIdProvider)){
+      return true;
+    }
+    return false;
+  }
+
   idProviderFound(){
     if (localStorage.getItem('idProvider') == null){
       return false;
@@ -670,13 +678,6 @@ export class EditIdentityComponent implements OnInit {
     return this.newIdProvider.split('//')[1];
   }
 
-  getAllIdProvider(){
-    if (!this.idProviderFound()){
-      return [];
-    }
-    return localStorage.getItem('idProvider').split(',');
-  }
-
   loginFhgAccount(){
     var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
@@ -687,8 +688,11 @@ export class EditIdentityComponent implements OnInit {
     }
     this.idProvider.push(this.newIdProvider);
     this.newIdProvider = '';
-    localStorage.setItem('idProvider', localStorage.getItem('idProvider') + ',' + this.getId().name);
-    this.addAttestation().subscribe(res => {
+    console.log (this.getAccessToken());
+    this.accessToken.push(this.getAccessToken());
+    localStorage.setItem('idProvider', localStorage.getItem('idProvider') + "{" + this.getId().name + ";" + this.getAccessToken() + "}");
+    
+    /* this.addAttestation().subscribe(res => {
       console.log(res);
       this.updateAttestations();
     },
@@ -696,11 +700,28 @@ export class EditIdentityComponent implements OnInit {
       console.log(err);
       //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
       EMPTY
-    });;
+    });; */
   }
 
   getId (): any{
     return this.oauthService.getIdentityClaims();
+  }
+
+  getAccessToken () {
+    return this.oauthService.getAccessToken();
+  }
+
+  loadIdProviderAndAccessTokenFromLocalStorage(){
+    this.idProvider = [];
+    this.accessToken = [];
+    if (!this.idProviderFound()){
+      return;
+    }
+    const idProviderAndAccessToken = localStorage.getItem('idProvider').split('{');
+    idProviderAndAccessToken.forEach(element => {
+      this.idProvider.push(element.split(';')[0]);
+      this.accessToken.push((element.split(';')[1]).split('}')[0]);
+    });
   }
 
   addAttestation() {

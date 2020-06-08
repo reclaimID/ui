@@ -162,9 +162,12 @@
     <button *ngIf="isExperimental() && !newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
       <span class="fa fa-user"></span> Link Fraunhofer Account
     </button>
-
+    <!--IdProvider Exists already warning-->
+    <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+      <span class="fa fa-warning"></span> This Provider linked to this website is already linked.
+    </div>
     <!--Link account-->
-    <button *ngIf="isExperimental() && newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
+    <button *ngIf="isExperimental() && newIdProviderDiscovered() && !discoveredIdProviderExistsAlready()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
       <span class="fa fa-user"></span> Link {{getNewIdProviderName()}} Account
     </button>
 
