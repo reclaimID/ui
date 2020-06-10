@@ -170,6 +170,10 @@
     <button *ngIf="isExperimental() && newIdProviderDiscovered() && !discoveredIdProviderExistsAlready()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
       <span class="fa fa-user"></span> Link {{getNewIdProviderName()}} Account
     </button>
+    <!--Save account-->
+    <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProviderinLocalStorage()">
+      <span class="fa fa-user"></span> Save {{getNewIdProviderName()}} Account
+    </button>
 
     
     <hr/>
