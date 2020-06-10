@@ -13,6 +13,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 import {WebfingerService} from '../webfinger.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { OauthHelperService } from '../oauth-helper.service'
+import { AccessToken } from '../accessToken';
 
 
 @Component({
@@ -34,8 +35,7 @@ export class EditIdentityComponent implements OnInit {
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
   webfingerEmail: string;
-  idProvider: any[];
-  accessToken: any[];
+  accessToken: AccessToken[];
   newIdProvider: string;
   emailNotFoundAlertClosed: boolean;
 
@@ -58,7 +58,7 @@ export class EditIdentityComponent implements OnInit {
     this.webfingerEmail = '';
     this.newIdProvider = '';
     this.emailNotFoundAlertClosed = true;
-    this.loadIdProviderAndAccessTokenFromLocalStorage();
+    this.loadAccessTokenFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
@@ -626,6 +626,7 @@ export class EditIdentityComponent implements OnInit {
   }
 
   getFhGAttestation() {
+    this.logOutFromOauthService();
     if (this.webfingerEmail == ''){
       return;
     }
@@ -654,17 +655,12 @@ export class EditIdentityComponent implements OnInit {
   }
 
   discoveredIdProviderExistsAlready(){
-    if (this.idProvider.includes(this.newIdProvider)){
-      return true;
-    }
+    this.accessToken.forEach(token => {
+      if (token.idProvider == this.newIdProvider){
+        return true;
+      }
+    });
     return false;
-  }
-
-  idProviderFound(){
-    if (localStorage.getItem('idProvider') == null){
-      return false;
-    }
-    return true;
   }
 
   newIdProviderDiscovered(){
@@ -682,15 +678,7 @@ export class EditIdentityComponent implements OnInit {
     var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
-    if (this.getId() == null){
-      console.log("error: can't get id");
-      return;
-    }
-    this.idProvider.push(this.newIdProvider);
-    this.newIdProvider = '';
-    console.log (this.getAccessToken());
-    this.accessToken.push(this.getAccessToken());
-    localStorage.setItem('idProvider', localStorage.getItem('idProvider') + "{" + this.getId().name + ";" + this.getAccessToken() + "}");
+    
     
     /* this.addAttestation().subscribe(res => {
       console.log(res);
@@ -703,6 +691,19 @@ export class EditIdentityComponent implements OnInit {
     });; */
   }
 
+  saveIdProviderinLocalStorage(){
+    const newAccessToken: AccessToken = {
+      idProvider: this.newIdProvider,
+      accessToken: this.getAccessToken(),
+    }
+    this.accessToken.push(newAccessToken);
+    localStorage.setItem('idProvider:' + this.newIdProvider, this.getAccessToken());
+    //addAttestation()      --> idProvider needs to be saved in gnunet? Why save IdProvider in LocalStorage if I store attestations with value on gnunetserver?
+    const newAttestation = new Attestation (this.newIdProvider, this.getId().id, 'STRING', 'openID', this.newIdProvider, this.getAttestationExpiration(), this.getAttestationAttributes());
+    this.attestations.push(newAttestation);
+    this.newIdProvider = '';
+  }
+
   getId (): any{
     return this.oauthService.getIdentityClaims();
   }
@@ -711,21 +712,44 @@ export class EditIdentityComponent implements OnInit {
     return this.oauthService.getAccessToken();
   }
 
-  loadIdProviderAndAccessTokenFromLocalStorage(){
-    this.idProvider = [];
+  grantedAccessToIdProvider(){
+    if (this.oauthService.hasValidAccessToken()){
+      console.log("logged in");
+      return true;
+    };
+    return false;
+  }
+
+  loadAccessTokenFromLocalStorage(){
     this.accessToken = [];
-    if (!this.idProviderFound()){
-      return;
-    }
-    const idProviderAndAccessToken = localStorage.getItem('idProvider').split('{');
-    idProviderAndAccessToken.forEach(element => {
-      this.idProvider.push(element.split(';')[0]);
-      this.accessToken.push((element.split(';')[1]).split('}')[0]);
+    var potentialIdProviders = Object.keys(localStorage);
+    potentialIdProviders.forEach(element => {
+      if (element.includes('idProvider')){
+        var idProvider = element.replace('idProvider:', '');
+        const newAccessToken: AccessToken = {
+          idProvider: idProvider,
+          accessToken: localStorage.getItem(idProvider),
+        }
+        this.accessToken.push(newAccessToken);
+      }
+      
     });
   }
 
+  logOutFromOauthService(){
+    if (!this.oauthService.hasValidAccessToken()){
+      return;
+    }
+    this.oauthService.logOut();
+    if (!this.oauthService.hasValidAccessToken()){
+      console.log("logged out from outhService");
+    }
+  }
+
+
+
   addAttestation() {
-    const newAttestation = new Attestation (this.getId().name, this.getId().id, this.getId().type, 'openID', this.newIdProvider, this.getAttestationExpiration(), []);
+    const newAttestation = new Attestation (this.newIdProvider, this.newIdProvider, 'STRING', 'openID', this.newIdProvider, this.getAttestationExpiration(), this.getAttestationAttributes());
     const promises = [];
     let i;
     if (undefined !== this.attestations) {
@@ -742,6 +766,24 @@ export class EditIdentityComponent implements OnInit {
 
   getAttestationExpiration(){
     return this.oauthService.getIdTokenExpiration()
+  }
+
+  getAttestationAttributes(): Attribute[]{
+    var attestationAttributes: Attribute [] = [];
+    const attributesObject = this.getId();
+    Object.keys(attributesObject).forEach (attributeKey => {
+      console.log(attributeKey);
+      var tempAttribute: Attribute = {
+        name: attributeKey,
+        id: this.newIdProvider, //Don't think this is correct id
+        attestation: this.newIdProvider,
+        value: attributesObject[attributeKey],
+        type: 'STRING',
+        flag: '1',
+      }
+      attestationAttributes.push(tempAttribute);
+    });
+    return attestationAttributes;
   }
 
   setExperimental(set) {
