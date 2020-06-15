@@ -39,6 +39,7 @@
     "@angular/language-service": "^9.0",
     "codelyzer": "^5.2.0",
     "eslint": "^6",
+    "typescript": ">=3.6 <3.9",
     "tslint": "^5.9.1",
     "web-ext-types": "^3.1.0"
   }
