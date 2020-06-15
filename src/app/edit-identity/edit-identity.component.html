@@ -159,20 +159,30 @@
     <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
       <span class="fa fa-warning"></span> No account found with this email
     </div>
+    <!--IdProvider Exists already warning-->
+    <div *ngIf="discoveredIdProviderExistsAlready() && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+      <span class="fa fa-warning"></span> The Provider linked to this website is already linked.
+    </div>
+    
     <button *ngIf="isExperimental() && !newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="getFhGAttestation()">
       <span class="fa fa-user"></span> Link Fraunhofer Account
     </button>
-    <!--IdProvider Exists already warning-->
-    <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
-      <span class="fa fa-warning"></span> This Provider linked to this website is already linked.
-    </div>
     <!--Link account-->
-    <button *ngIf="isExperimental() && newIdProviderDiscovered() && !discoveredIdProviderExistsAlready()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
+    <button *ngIf="isExperimental() && newIdProviderDiscovered() && !discoveredIdProviderExistsAlready() && !grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
       <span class="fa fa-user"></span> Link {{getNewIdProviderName()}} Account
     </button>
     <!--Save account-->
-    <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProviderinLocalStorage()">
+    <div *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" class="input-group my-2 col-lg-4">
+      <div class="input-group-prepend">
+        <span class="input-group-text">Attestation Name</span>
+      </div>
+      <input placeholder="Attestation Name" class="form-control"  [(ngModel)]="newAttestation.name">
+    </div>
+    <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" [disabled]="newAttestation.name==''" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProvider()">
       <span class="fa fa-user"></span> Save {{getNewIdProviderName()}} Account
+    </button>
+    <button *ngIf="isExperimental() && newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancleLinking()">
+      Cancle Linking
     </button>
 
     
