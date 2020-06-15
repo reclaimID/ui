@@ -54,9 +54,14 @@ export class ReclaimService {
   }
 
   addAttestation(identity: Identity, attestation: Attestation) {
-    return this.http.post<Attestation>(this.config.get().apiUrl +
+    var json = {
+      "name": attestation.name,
+      "type": attestation.type,
+      "value": attestation.value
+    }
+    return this.http.post(this.config.get().apiUrl +
       '/reclaim/attestation/' + identity.name,
-      attestation);
+      json);
   }
 
   deleteAttestation(identity: Identity, attestation: Attestation) {

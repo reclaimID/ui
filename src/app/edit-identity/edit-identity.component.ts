@@ -31,6 +31,7 @@ export class EditIdentityComponent implements OnInit {
   missingAttributes: Attribute[];
   newAttribute: Attribute;
   newAttested: Attribute;
+  newAttestation: Attestation;
   missingAttested: Attribute[];
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
@@ -56,12 +57,13 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
-    this.newIdProvider = '';
+    this.newIdProvider = localStorage.getItem('newIdProvider') || '';
     this.emailNotFoundAlertClosed = true;
     this.loadAccessTokenFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
+    this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
     if (undefined !== this.activatedRoute.snapshot.queryParams["experiments"]) {
       this.setExperimental("true" === this.activatedRoute.snapshot.queryParams["experiments"]);
     }
@@ -607,7 +609,7 @@ export class EditIdentityComponent implements OnInit {
   getIssuer(attribute: Attribute) {
     for (let i = 0; i < this.attestations.length; i++) {
       if (this.attestations[i].id == attribute.attestation) {
-        return this.attestations[i].issuer;
+        return this.attestations[i].iss;
       }
     }
   }
@@ -634,6 +636,7 @@ export class EditIdentityComponent implements OnInit {
     this.isValidEmailforDiscovery();
     this.webfingerService.getLink(this.webfingerEmail).subscribe (idProvider => {
       this.newIdProvider = (idProvider.links [0]).href; 
+      localStorage.setItem('newIdProvider', this.newIdProvider);
       console.log(this.newIdProvider);
       this.webfingerEmail == '';
     },
@@ -678,17 +681,6 @@ export class EditIdentityComponent implements OnInit {
     var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
-    
-    
-    /* this.addAttestation().subscribe(res => {
-      console.log(res);
-      this.updateAttestations();
-    },
-    err => {
-      console.log(err);
-      //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      EMPTY
-    });; */
   }
 
   saveIdProviderinLocalStorage(){
@@ -697,11 +689,31 @@ export class EditIdentityComponent implements OnInit {
       accessToken: this.getAccessToken(),
     }
     this.accessToken.push(newAccessToken);
-    localStorage.setItem('idProvider:' + this.newIdProvider, this.getAccessToken());
-    //addAttestation()      --> idProvider needs to be saved in gnunet? Why save IdProvider in LocalStorage if I store attestations with value on gnunetserver?
-    const newAttestation = new Attestation (this.newIdProvider, this.getId().id, 'STRING', 'openID', this.newIdProvider, this.getAttestationExpiration(), this.getAttestationAttributes());
-    this.attestations.push(newAttestation);
-    this.newIdProvider = '';
+    localStorage.setItem('idProvider:' + this.newIdProvider, "RedirectUri:" +  this.oauthService.redirectUri + ";ClientId: " + this.oauthService.clientId + "; AccessToken: " + this.getAccessToken());
+  }
+
+  addAttestation() {
+    this.newAttestation.value = this.getAccessToken();
+    this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
+      console.log("Saved Attestation");
+      console.log(res);
+      this.newIdProvider = '';
+      localStorage.removeItem('newIdProvider');
+      this.updateAttestations();
+    },
+    err => {
+      console.log("Failed saving attestation");
+      console.log(err);
+      //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+      EMPTY
+    });
+    this.newAttestation.name = '';
+    this.newAttestation.value = '';
+  }
+
+  saveIdProvider(){
+    this.saveIdProviderinLocalStorage();
+    this.addAttestation();
   }
 
   getId (): any{
@@ -746,22 +758,13 @@ export class EditIdentityComponent implements OnInit {
     }
   }
 
-
-
-  addAttestation() {
-    const newAttestation = new Attestation (this.newIdProvider, this.newIdProvider, 'STRING', 'openID', this.newIdProvider, this.getAttestationExpiration(), this.getAttestationAttributes());
-    const promises = [];
-    let i;
-    if (undefined !== this.attestations) {
-      for (i = 0; i < this.attestations.length; i++) {
-        promises.push(
-          from(this.reclaimService.addAttestation(this.identity, this.attestations[i])));
-      }
+  cancleLinking(){
+    if (this.oauthService.hasValidAccessToken()){
+      this.oauthService.logOut();
     }
-    if ((newAttestation.value !== '') || (newAttestation.type !== '')) {
-      promises.push(from(this.reclaimService.addAttestation(this.identity, newAttestation)));
-    }
-    return forkJoin(promises);
+    this.newIdProvider = '';
+    localStorage.removeItem('newIdProvider');
+    this.webfingerEmail = '';
   }
 
   getAttestationExpiration(){
