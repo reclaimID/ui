@@ -13,7 +13,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 import {WebfingerService} from '../webfinger.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { OauthHelperService } from '../oauth-helper.service'
-import { AccessToken } from '../accessToken';
+import { Authorization } from '../authorization';
 
 
 @Component({
@@ -36,7 +36,7 @@ export class EditIdentityComponent implements OnInit {
   requestedAttested: Attribute[];
   optionalAttested: Attribute[];
   webfingerEmail: string;
-  accessToken: AccessToken[];
+  authorizations: Authorization[];
   newIdProvider: string;
   emailNotFoundAlertClosed: boolean;
 
@@ -59,7 +59,7 @@ export class EditIdentityComponent implements OnInit {
     this.webfingerEmail = '';
     this.newIdProvider = localStorage.getItem('newIdProvider') || '';
     this.emailNotFoundAlertClosed = true;
-    this.loadAccessTokenFromLocalStorage();
+    this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
@@ -609,7 +609,7 @@ export class EditIdentityComponent implements OnInit {
   getIssuer(attribute: Attribute) {
     for (let i = 0; i < this.attestations.length; i++) {
       if (this.attestations[i].id == attribute.attestation) {
-        return this.attestations[i].iss;
+        return this.attestations[i].issuer;
       }
     }
   }
@@ -657,8 +657,10 @@ export class EditIdentityComponent implements OnInit {
     return true;
   }
 
+
+  //not sure if needed -> should be able to link two different accounts from same provider
   discoveredIdProviderExistsAlready(){
-    this.accessToken.forEach(token => {
+    this.authorizations.forEach(token => {
       if (token.idProvider == this.newIdProvider){
         return true;
       }
@@ -684,12 +686,16 @@ export class EditIdentityComponent implements OnInit {
   }
 
   saveIdProviderinLocalStorage(){
-    const newAccessToken: AccessToken = {
+    const newAuthorization: Authorization = {
       idProvider: this.newIdProvider,
+      attestationName: this.newAttestation.name,
+      redirectUri: this.oauthService.redirectUri,
+      clientId: this.oauthService.clientId,
       accessToken: this.getAccessToken(),
+      idToken: this.oauthService.getIdToken()
     }
-    this.accessToken.push(newAccessToken);
-    localStorage.setItem('idProvider:' + this.newIdProvider, "RedirectUri:" +  this.oauthService.redirectUri + ";ClientId: " + this.oauthService.clientId + "; AccessToken: " + this.getAccessToken());
+    this.authorizations.push(newAuthorization);
+    localStorage.setItem("Authorization: " + this.newAttestation.name, 'idProvider: ' + this.newIdProvider + ";redirectUri: " +  this.oauthService.redirectUri + ";clientId: " + this.oauthService.clientId + ";accessToken: " + this.getAccessToken() + ";idToken: " + this.oauthService.getIdToken());
   }
 
   addAttestation() {
@@ -709,6 +715,7 @@ export class EditIdentityComponent implements OnInit {
     });
     this.newAttestation.name = '';
     this.newAttestation.value = '';
+    this.logOutFromOauthService
   }
 
   saveIdProvider(){
@@ -732,20 +739,32 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
-  loadAccessTokenFromLocalStorage(){
-    this.accessToken = [];
+  loadAuthorizationsFromLocalStorage(){
+    this.authorizations = [];
     var potentialIdProviders = Object.keys(localStorage);
     potentialIdProviders.forEach(element => {
-      if (element.includes('idProvider')){
-        var idProvider = element.replace('idProvider:', '');
-        const newAccessToken: AccessToken = {
-          idProvider: idProvider,
-          accessToken: localStorage.getItem(idProvider),
+      if (element.includes('Authorization')){
+        const newAuthorization: Authorization = {
+          attestationName: element.replace('Authorization: ', ''),
+          idProvider: '',
+          redirectUri: '',
+          clientId: '',
+          accessToken: '',
+          idToken: ''
         }
-        this.accessToken.push(newAccessToken);
+        var content = localStorage.getItem(element);
+        content.split(";").forEach(authInfo => {
+          var key = authInfo.split(": ")[0];
+          var value = authInfo.split(": ")[1];
+          newAuthorization[key] = value;
+        }
+          )
+  
+        this.authorizations.push(newAuthorization);
       }
       
     });
+    console.log(this.authorizations);
   }
 
   logOutFromOauthService(){

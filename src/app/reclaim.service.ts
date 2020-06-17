@@ -56,8 +56,8 @@ export class ReclaimService {
   addAttestation(identity: Identity, attestation: Attestation) {
     var json = {
       "name": attestation.name,
-      "type": attestation.type,
-      "value": attestation.value
+      "value": attestation.value,
+      "type": attestation.type
     }
     return this.http.post(this.config.get().apiUrl +
       '/reclaim/attestation/' + identity.name,

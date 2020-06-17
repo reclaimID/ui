@@ -5,7 +5,7 @@ export class Attestation {
               public id: string,
               public value: string,
               public type: string,
-              public iss: string,
+              public issuer: string,
               public expiration: number,
               public attributes: Attribute[]) {}
 }
