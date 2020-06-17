@@ -32,7 +32,7 @@ export class OauthHelperService {
       // The api scope is a usecase specific one
       scope: 'openid profile omejdn:api',
   
-      showDebugInformation: true,
+      showDebugInformation: true,  
     };
 
     return authCodeFlowConfig;

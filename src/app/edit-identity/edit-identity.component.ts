@@ -49,7 +49,7 @@ export class EditIdentityComponent implements OnInit {
               private router: Router,
               private webfingerService: WebfingerService,
               private oauthService: OAuthService,
-              private oauthHelperService: OauthHelperService) { }
+              private oauthHelperService: OauthHelperService) {}
 
   ngOnInit() {
     this.attributes = [];
@@ -64,6 +64,12 @@ export class EditIdentityComponent implements OnInit {
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
+
+    if (this.newIdProvider !== ''){
+      this.oauthService.configure(this.oauthHelperService.getOauthConfig(this.newIdProvider));
+      this.oauthService.loadDiscoveryDocumentAndTryLogin();
+    }
+
     if (undefined !== this.activatedRoute.snapshot.queryParams["experiments"]) {
       this.setExperimental("true" === this.activatedRoute.snapshot.queryParams["experiments"]);
     }
@@ -627,7 +633,7 @@ export class EditIdentityComponent implements OnInit {
     return "?";
   }
 
-  getFhGAttestation() {
+  discoverIdProvider() {
     this.logOutFromOauthService();
     if (this.webfingerEmail == ''){
       return;
@@ -683,6 +689,7 @@ export class EditIdentityComponent implements OnInit {
     var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
+    this.getId();
   }
 
   saveIdProviderinLocalStorage(){
@@ -764,7 +771,6 @@ export class EditIdentityComponent implements OnInit {
       }
       
     });
-    console.log(this.authorizations);
   }
 
   logOutFromOauthService(){
