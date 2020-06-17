@@ -88,13 +88,6 @@ export class EditAttestationsComponent implements OnInit {
 
   private storeAttestation() {
     const promises = [];
-    let i;
-    if (undefined !== this.attestations) {
-      for (i = 0; i < this.attestations.length; i++) {
-        promises.push(
-          from(this.reclaimService.addAttestation(this.identity, this.attestations[i])));
-      }
-    }
     if ((this.newAttestation.value !== '') || (this.newAttestation.type !== '')) {
       promises.push(from(this.reclaimService.addAttestation(this.identity, this.newAttestation)));
     }
