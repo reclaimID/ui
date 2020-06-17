@@ -10,9 +10,8 @@ import { Attestation } from '../attestation';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
-import {WebfingerService} from '../webfinger.service';
+import { AttestationService } from '../attestation.service';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { OauthHelperService } from '../oauth-helper.service'
 import { Authorization } from '../authorization';
 
 
@@ -47,9 +46,8 @@ export class EditIdentityComponent implements OnInit {
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
-              private webfingerService: WebfingerService,
-              private oauthService: OAuthService,
-              private oauthHelperService: OauthHelperService) {}
+              private attestationService: AttestationService,
+              private oauthService: OAuthService) {}
 
   ngOnInit() {
     this.attributes = [];
@@ -66,7 +64,7 @@ export class EditIdentityComponent implements OnInit {
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
 
     if (this.newIdProvider !== ''){
-      this.oauthService.configure(this.oauthHelperService.getOauthConfig(this.newIdProvider));
+      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
       this.oauthService.loadDiscoveryDocumentAndTryLogin();
     }
 
@@ -640,7 +638,7 @@ export class EditIdentityComponent implements OnInit {
     }
     localStorage.setItem('userForAttestation', this.identity.name);
     this.isValidEmailforDiscovery();
-    this.webfingerService.getLink(this.webfingerEmail).subscribe (idProvider => {
+    this.attestationService.getLink(this.webfingerEmail).subscribe (idProvider => {
       this.newIdProvider = (idProvider.links [0]).href; 
       localStorage.setItem('newIdProvider', this.newIdProvider);
       console.log(this.newIdProvider);
@@ -686,7 +684,7 @@ export class EditIdentityComponent implements OnInit {
   }
 
   loginFhgAccount(){
-    var authCodeFlowConfig = this.oauthHelperService.getOauthConfig(this.newIdProvider);
+    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
     this.getId();

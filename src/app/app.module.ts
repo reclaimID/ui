@@ -16,8 +16,7 @@ import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
-import { WebfingerService } from './webfinger.service';
-import { OauthHelperService } from './oauth-helper.service';
+import { AttestationService } from './attestation.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
@@ -52,8 +51,7 @@ import { EditAttestationsComponent } from './edit-attestations/edit-attestations
     GnsService,
     OpenIdService,
     ConfigService,
-    OauthHelperService,
-    WebfingerService,
+    AttestationService,
     {
       provide: APP_INITIALIZER,
       useFactory: (config: ConfigService) => () => config.load(),
