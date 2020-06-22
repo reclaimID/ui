@@ -21,6 +21,10 @@ export class AttestationService {
       
           // URL of the SPA to redirect the user to after login
           redirectUri: window.location.href,
+
+          postLogoutRedirectUri: window.location.href,
+
+          logoutUrl: idProvider + '/logout',
       
           // The SPA's id. The SPA is registerd with this id at the auth-server
           // clientId: 'server.code',
@@ -44,10 +48,6 @@ export class AttestationService {
         };
     
         return authCodeFlowConfig;
-    }
-
-    serversideLogout(idProvider: string){
-      return this.http.get<any>(idProvider + '/logout');
     }
 
 }
