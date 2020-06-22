@@ -174,7 +174,10 @@
       </div>
       <input placeholder="Attestation Name" class="form-control"  [(ngModel)]="newAttestation.name">
     </div>
-    <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" [disabled]="newAttestation.name==''" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProvider()">
+    <div *ngIf="newIdProviderDiscovered() && grantedAccessToIdProvider() && attestationNameDuplicate()" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+      <span class="fa fa-warning"></span> You already have an attestation with this name.
+    </div>
+    <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" [disabled]="attestationNameDuplicate() || newAttestation.name==''" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProvider()">
       <span class="fa fa-user"></span> Save {{getNewIdProviderName()}} Account
     </button>
     <button *ngIf="isExperimental() && newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancleLinking()">

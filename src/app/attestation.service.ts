@@ -44,6 +44,10 @@ export class AttestationService {
         };
     
         return authCodeFlowConfig;
-      }
+    }
+
+    serversideLogout(idProvider: string){
+      return this.http.get<any>(idProvider + '/logout');
+    }
 
 }
