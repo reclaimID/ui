@@ -723,7 +723,21 @@ export class EditIdentityComponent implements OnInit {
     this.logOutFromOauthService
   }
 
+  attestationNameDuplicate(){
+    let i;
+    for (i = 0; i < this.attestations.length; i++) {
+      if (this.newAttestation.name === this.attestations[i].name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   saveIdProvider(){
+    if (this.attestationNameDuplicate()){
+      console.log("name duplicate");
+      return;
+    }
     this.saveIdProviderinLocalStorage();
     this.addAttestation();
   }
@@ -775,16 +789,21 @@ export class EditIdentityComponent implements OnInit {
     if (!this.oauthService.hasValidAccessToken()){
       return;
     }
+    const idProvider = this.oauthService.issuer;
     this.oauthService.logOut();
+    this.attestationService.serversideLogout(idProvider).subscribe(res => {
+      console.log("logged out on server")},
+      error => {
+        console.log("serverside logout gone wrong");
+        console.log(error);}
+    );
     if (!this.oauthService.hasValidAccessToken()){
       console.log("logged out from outhService");
     }
   }
 
   cancleLinking(){
-    if (this.oauthService.hasValidAccessToken()){
-      this.oauthService.logOut();
-    }
+    this.logOutFromOauthService();
     this.newIdProvider = '';
     localStorage.removeItem('newIdProvider');
     this.webfingerEmail = '';
