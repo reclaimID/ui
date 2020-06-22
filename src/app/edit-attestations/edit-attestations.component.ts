@@ -37,20 +37,6 @@ export class EditAttestationsComponent implements OnInit {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
               this.updateAttestation();
-              let code = localStorage.getItem('attestationCode');
-              if (undefined !== code) {
-                console.log(code);
-                this.reclaimService.fixmeExchangeCode(code).subscribe(response => {
-                  if (undefined !== response["id_token"]) {
-                    this.newAttestation.value = response["id_token"];
-                    this.newAttestation.type = "JWT";
-                    this.newAttestation.name = "FraunhoferAISEC";
-                    this.addAttestation();
-                    localStorage.setItem('attestationCode', null);
-                    this.router.navigate(['/edit-identity', this.identity.name]);
-                  }
-                });;
-              }
             }
           }
         });
