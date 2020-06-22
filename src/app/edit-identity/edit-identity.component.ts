@@ -711,16 +711,20 @@ export class EditIdentityComponent implements OnInit {
       this.newIdProvider = '';
       localStorage.removeItem('newIdProvider');
       this.updateAttestations();
+      this.newAttestation.name = '';
+      this.newAttestation.value = '';
+      this.logOutFromOauthService();
     },
     err => {
       console.log("Failed saving attestation");
       console.log(err);
       //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
       EMPTY
+      this.newAttestation.name = '';
+      this.newAttestation.value = '';
+      this.logOutFromOauthService();
     });
-    this.newAttestation.name = '';
-    this.newAttestation.value = '';
-    this.logOutFromOauthService
+
   }
 
   attestationNameDuplicate(){
@@ -752,7 +756,6 @@ export class EditIdentityComponent implements OnInit {
 
   grantedAccessToIdProvider(){
     if (this.oauthService.hasValidAccessToken()){
-      console.log("logged in");
       return true;
     };
     return false;
@@ -789,17 +792,7 @@ export class EditIdentityComponent implements OnInit {
     if (!this.oauthService.hasValidAccessToken()){
       return;
     }
-    const idProvider = this.oauthService.issuer;
-    this.oauthService.logOut();
-    this.attestationService.serversideLogout(idProvider).subscribe(res => {
-      console.log("logged out on server")},
-      error => {
-        console.log("serverside logout gone wrong");
-        console.log(error);}
-    );
-    if (!this.oauthService.hasValidAccessToken()){
-      console.log("logged out from outhService");
-    }
+    this.oauthService.logOut(false);
   }
 
   cancleLinking(){
