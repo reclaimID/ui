@@ -161,11 +161,11 @@
     </div>
     
     <button *ngIf="isExperimental() && !newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
-      <span class="fa fa-user"></span> Link Fraunhofer Account
+      <span class="fa fa-user"></span> Find Id Provider
     </button>
     <!--Link account-->
     <button *ngIf="isExperimental() && newIdProviderDiscovered() && !grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
-      <span class="fa fa-user"></span> Link {{getNewIdProviderName()}} Account
+      <span class="fa fa-user"></span> Grant Access to {{getNewIdProviderName()}}
     </button>
     <!--Save account-->
     <div *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" class="input-group my-2 col-lg-4">
