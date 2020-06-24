@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { Observable } from 'rxjs';
 import { ConfigService } from './config.service'
 import { AuthConfig } from 'angular-oauth2-oidc';
+import { IdProvider } from './idProvider';
 
 @Injectable()
 export class AttestationService {
@@ -14,17 +15,17 @@ export class AttestationService {
         return this.http.get<any>(this.config.get().webfingerUrl + '/.well-known/webfinger?resource=acct:' + email);
     }
 
-    getOauthConfig(idProvider: string){
+    getOauthConfig(idProvider: IdProvider){
         const authCodeFlowConfig: AuthConfig = {
           // Url of the Identity Provider
-          issuer: idProvider,
+          issuer: idProvider.url,
       
           // URL of the SPA to redirect the user to after login
           redirectUri: window.location.href,
 
           postLogoutRedirectUri: window.location.href,
 
-          logoutUrl: idProvider + '/logout',
+          logoutUrl: idProvider.logoutURL + '/logout',
       
           // The SPA's id. The SPA is registerd with this id at the auth-server
           // clientId: 'server.code',
