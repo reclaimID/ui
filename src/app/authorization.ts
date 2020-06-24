@@ -4,5 +4,6 @@ export interface Authorization{
     redirectUri: string,
     clientId: string,
     accessToken: string,
-    idToken: string
+    idToken: string,
+    logoutURL: string
 }

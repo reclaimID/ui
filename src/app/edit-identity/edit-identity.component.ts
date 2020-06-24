@@ -13,6 +13,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 import { AttestationService } from '../attestation.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Authorization } from '../authorization';
+import { IdProvider } from '../idProvider';
 
 
 @Component({
@@ -36,7 +37,7 @@ export class EditIdentityComponent implements OnInit {
   optionalAttested: Attribute[];
   webfingerEmail: string;
   authorizations: Authorization[];
-  newIdProvider: string;
+  newIdProvider: IdProvider;
   emailNotFoundAlertClosed: boolean;
 
   constructor(private reclaimService: ReclaimService,
@@ -55,15 +56,16 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
-    this.newIdProvider = localStorage.getItem('newIdProvider') || '';
     this.emailNotFoundAlertClosed = true;
+    this.newIdProvider = new IdProvider ('', '', '');
+    this.loadIdProviderFromLocalStorage();
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
 
-    if (this.newIdProvider !== ''){
+    if (this.newIdProvider.url !== ''){
       this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
       this.oauthService.loadDiscoveryDocumentAndTryLogin();
     }
@@ -639,8 +641,11 @@ export class EditIdentityComponent implements OnInit {
     localStorage.setItem('userForAttestation', this.identity.name);
     this.isValidEmailforDiscovery();
     this.attestationService.getLink(this.webfingerEmail).subscribe (idProvider => {
-      this.newIdProvider = (idProvider.links [0]).href; 
-      localStorage.setItem('newIdProvider', this.newIdProvider);
+      this.newIdProvider.url = (idProvider.links [0]).href; 
+      localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
+      this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+      (idProvider.links.length > 1)? this.newIdProvider.logoutURL = (idProvider.links [1]).href : this.newIdProvider.logoutURL = this.newIdProvider.url;
+       localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
       console.log(this.newIdProvider);
       this.webfingerEmail == '';
     },
@@ -665,7 +670,7 @@ export class EditIdentityComponent implements OnInit {
   //not sure if needed -> should be able to link two different accounts from same provider
   discoveredIdProviderExistsAlready(){
     this.authorizations.forEach(token => {
-      if (token.idProvider == this.newIdProvider){
+      if (token.idProvider == this.newIdProvider.url){
         return true;
       }
     });
@@ -673,14 +678,14 @@ export class EditIdentityComponent implements OnInit {
   }
 
   newIdProviderDiscovered(){
-    if (this.newIdProvider == ''){
+    if (this.newIdProvider.url == ''){
       return false;
     }
     return true;
   }
 
-  getNewIdProviderName(){
-    return this.newIdProvider.split('//')[1];
+  getNewIdProviderName(url: string){
+    return url.split('//')[1];
   }
 
   loginFhgAccount(){
@@ -692,15 +697,16 @@ export class EditIdentityComponent implements OnInit {
 
   saveIdProviderinLocalStorage(){
     const newAuthorization: Authorization = {
-      idProvider: this.newIdProvider,
+      idProvider: this.newIdProvider.url,
       attestationName: this.newAttestation.name,
       redirectUri: this.oauthService.redirectUri,
       clientId: this.oauthService.clientId,
       accessToken: this.getAccessToken(),
-      idToken: this.oauthService.getIdToken()
+      idToken: this.oauthService.getIdToken(),
+      logoutURL: this.newIdProvider.logoutURL
     }
     this.authorizations.push(newAuthorization);
-    localStorage.setItem("Authorization: " + this.newAttestation.name, 'idProvider: ' + this.newIdProvider + ";redirectUri: " +  this.oauthService.redirectUri + ";clientId: " + this.oauthService.clientId + ";accessToken: " + this.getAccessToken() + ";idToken: " + this.oauthService.getIdToken());
+    localStorage.setItem('Authorization: ' + this.newAttestation.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
   }
 
   addAttestation() {
@@ -708,8 +714,7 @@ export class EditIdentityComponent implements OnInit {
     this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
       console.log("Saved Attestation");
       console.log(res);
-      this.newIdProvider = '';
-      localStorage.removeItem('newIdProvider');
+      this.resetNewIdProvider();
       this.updateAttestations();
       this.newAttestation.name = '';
       this.newAttestation.value = '';
@@ -761,6 +766,12 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
+  loadIdProviderFromLocalStorage(){
+    this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
+    this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+    this.newIdProvider.logoutURL = localStorage.getItem("newIdProviderLogoutURL") || '';
+  }
+
   loadAuthorizationsFromLocalStorage(){
     this.authorizations = [];
     var potentialIdProviders = Object.keys(localStorage);
@@ -772,7 +783,8 @@ export class EditIdentityComponent implements OnInit {
           redirectUri: '',
           clientId: '',
           accessToken: '',
-          idToken: ''
+          idToken: '',
+          logoutURL: '',
         }
         var content = localStorage.getItem(element);
         content.split(";").forEach(authInfo => {
@@ -797,9 +809,16 @@ export class EditIdentityComponent implements OnInit {
 
   cancleLinking(){
     this.logOutFromOauthService();
-    this.newIdProvider = '';
-    localStorage.removeItem('newIdProvider');
+    this.resetNewIdProvider();
     this.webfingerEmail = '';
+  }
+
+  resetNewIdProvider(){
+    this.newIdProvider.url = '';
+    this.newIdProvider.logoutURL = '';
+    this.newIdProvider.name = '';
+    localStorage.removeItem('newIdProviderURL');
+    localStorage.removeItem('newIdProviderLogoutURL')
   }
 
   getAttestationExpiration(){
@@ -813,8 +832,8 @@ export class EditIdentityComponent implements OnInit {
       console.log(attributeKey);
       var tempAttribute: Attribute = {
         name: attributeKey,
-        id: this.newIdProvider, //Don't think this is correct id
-        attestation: this.newIdProvider,
+        id: this.newIdProvider.url, //Don't think this is correct id
+        attestation: this.newIdProvider.url,
         value: attributesObject[attributeKey],
         type: 'STRING',
         flag: '1',

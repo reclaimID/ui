@@ -165,7 +165,7 @@
     </button>
     <!--Link account-->
     <button *ngIf="isExperimental() && newIdProviderDiscovered() && !grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
-      <span class="fa fa-user"></span> Grant Access to {{getNewIdProviderName()}}
+      <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
     </button>
     <!--Save account-->
     <div *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" class="input-group my-2 col-lg-4">
@@ -178,7 +178,7 @@
       <span class="fa fa-warning"></span> You already have an attestation with this name.
     </div>
     <button *ngIf="isExperimental() && newIdProviderDiscovered() && grantedAccessToIdProvider()" [disabled]="attestationNameDuplicate() || newAttestation.name==''" class="btn btn-primary mb-4 fhg-link" (click)="saveIdProvider()">
-      <span class="fa fa-user"></span> Save {{getNewIdProviderName()}} Account
+      <span class="fa fa-user"></span> Save {{newIdProvider.name}} Account
     </button>
     <button *ngIf="isExperimental() && newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancleLinking()">
       Cancle Linking
