@@ -646,7 +646,7 @@ export class EditIdentityComponent implements OnInit {
       this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
       (idProvider.links.length > 1)? this.newIdProvider.logoutURL = (idProvider.links [1]).href : this.newIdProvider.logoutURL = this.newIdProvider.url;
        localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
-      console.log(this.newIdProvider);
+      console.log(this.newIdProvider.url);
       this.webfingerEmail == '';
     },
     error => {
