@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core'
-import { Observable } from 'rxjs';
+import { Observable} from 'rxjs';
 import { ConfigService } from './config.service'
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { IdProvider } from './idProvider';
@@ -16,12 +16,20 @@ export class AttestationService {
     }
 
     getOauthConfig(idProvider: IdProvider){
+        let redirectUri;
+        try {
+            redirectUri = browser.runtime.getURL('index.html');
+        } catch (error) {
+            console.log(error);
+            redirectUri = window.location.href;
+        }
+
         const authCodeFlowConfig: AuthConfig = {
           // Url of the Identity Provider
           issuer: idProvider.url,
       
           // URL of the SPA to redirect the user to after login
-          redirectUri: window.location.href,
+          redirectUri: redirectUri,
 
           postLogoutRedirectUri: window.location.href,
 
