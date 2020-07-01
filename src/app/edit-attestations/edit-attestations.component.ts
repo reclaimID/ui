@@ -6,6 +6,10 @@ import { Attestation } from '../attestation';
 import { IdentityService } from '../identity.service';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { finalize } from 'rxjs/operators';
+import { AttestationService } from '../attestation.service';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { IdProvider } from '../idProvider';
+import { ConstantPool } from '@angular/compiler';
 
 @Component({
   selector: 'app-edit-attestations',
@@ -17,16 +21,25 @@ export class EditAttestationsComponent implements OnInit {
   identity: Identity;
   attestations: Attestation[];
   newAttestation: Attestation;
+  newIdProvider: IdProvider;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
               private activatedRoute: ActivatedRoute,
-              private router: Router) { }
+              private router: Router,
+              private attestationService: AttestationService,
+              private oauthService: OAuthService) { }
 
   ngOnInit() {
-    this.newAttestation = new Attestation('', '', '', '', '', 0, []);
+    this.newAttestation = new Attestation('', '', '', 'JWT', '', 0, []);
     this.identity = new Identity('','');
+    this.newIdProvider = new IdProvider ('', '', '');
+    this.loadIdProviderFromLocalStorage();
     this.attestations = [];
+    if (this.newIdProvider.url !== ''){
+      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
+      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => console.log("logged in")).catch(err => console.log(err));
+    }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -36,14 +49,14 @@ export class EditAttestationsComponent implements OnInit {
           for (let i = 0; i < ids.length; i++) {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
-              this.updateAttestation();
+              this.updateAttestations();
             }
           }
         });
     });
   }
 
-  private updateAttestation() {
+  private updateAttestations() {
     this.reclaimService.getAttestations(this.identity).subscribe(attestation => {
       this.attestations = attestation;
     },
@@ -53,23 +66,35 @@ export class EditAttestationsComponent implements OnInit {
     });
   }
 
+  saveIdProvider(){
+    this.saveIdProviderinLocalStorage();
+    this.addAttestation();
+  }
+
   addAttestation() {
-    this.storeAttestation()
-    .pipe(
-      finalize(() => {
-        this.newAttestation.name = '';
-        this.newAttestation.type = '';
-        this.newAttestation.value = '';
-        this.updateAttestation();
-      }))
-      .subscribe(res => {
-        console.log(res);
-      },
-      err => {
-        console.log(err);
-        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-        EMPTY
-      });
+    this.newAttestation.value = this.oauthService.getAccessToken();
+    this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
+      console.log("Saved Attestation");
+      console.log(res);
+      this.resetNewIdProvider();
+      this.updateAttestations();
+      this.newAttestation.name = '';
+      this.newAttestation.value = '';
+      this.logOutFromOauthService();
+    },
+    err => {
+      console.log("Failed saving attestation");
+      console.log(err);
+      //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
+      EMPTY
+      this.newAttestation.name = '';
+      this.newAttestation.value = '';
+      this.logOutFromOauthService();
+    });
+  }
+
+  saveIdProviderinLocalStorage(){
+    localStorage.setItem('Authorization: ' + this.newAttestation.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
   }
 
   private storeAttestation() {
@@ -80,14 +105,15 @@ export class EditAttestationsComponent implements OnInit {
     return forkJoin(promises);
   }
 
-  canSaveAttestation() {
-    if (this.canAddAttestation(this.newAttestation)) {
+  canGoBack() {
+    if (this.newIdProvider.url === ''){
       return true;
     }
-    return ((this.newAttestation.name === '') &&
-      (this.newAttestation.value === '') &&
-      (this.newAttestation.type === '')) &&
-      !this.isAttestInConflict(this.newAttestation);
+    return false;
+  }
+
+  goBack() {
+    this.router.navigate(['/edit-identity', this.identity.name]);
   }
 
   isAttestInConflict(attestation: Attestation) {
@@ -102,31 +128,11 @@ export class EditAttestationsComponent implements OnInit {
     return false;
   }
 
-  saveAttestation() {
-    this.storeAttestation()
-      .pipe(
-        finalize(() => {
-          this.newAttestation.name = '';
-          this.newAttestation.value = '';
-          this.newAttestation.type = '';
-          this.router.navigate(['/edit-identity', this.identity.name]);
-        }))
-      .subscribe(res => {
-        //FIXME success dialog/banner
-        this.updateAttestation();
-      },
-      err => {
-        console.log(err);
-        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      });
-  }
-
-
   deleteAttestation(attestation: Attestation) {
     this.reclaimService.deleteAttestation(this.identity, attestation)
       .subscribe(res => {
         //FIXME info dialog
-        this.updateAttestation();
+        this.updateAttestations();
       },
       err => {
         //this.errorInfos.push("Failed to delete attestation ``" + attestation.name + "''");
@@ -135,7 +141,11 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   canAddAttestation(attestation: Attestation) {
-    if ((attestation.name === '') || (attestation.value === '') || (attestation.type === '')) {
+    if(!this.oauthService.hasValidAccessToken()){
+      console.log("not logged in");
+      return false;
+    }
+    if ((attestation.name === '')) {
       return false;
     }
     if (attestation.name.indexOf(' ') >= 0) {
@@ -178,4 +188,51 @@ export class EditAttestationsComponent implements OnInit {
   isAttestationValid(attestation: Attestation) {
     return true;
   }
+
+  loadIdProviderFromLocalStorage(){
+    this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
+    this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+    this.newIdProvider.logoutURL = localStorage.getItem("newIdProviderLogoutURL") || '';
+  }
+
+  getNewIdProviderName(url: string){
+    return url.split('//')[1];
+  }
+
+  newAccessGranted(){
+    if (this.newIdProvider.url !== ''){
+      return true;
+    }
+    return false;
+  }
+
+  getNewAttestationExpiration(){
+    var exp = new Date();
+    exp.setMilliseconds(this.oauthService.getIdTokenExpiration() / 1000);
+    return exp.toLocaleString();
+  }
+
+  resetNewIdProvider(){
+    this.newIdProvider.url = '';
+    this.newIdProvider.logoutURL = '';
+    this.newIdProvider.name = '';
+    localStorage.removeItem('newIdProviderURL');
+    localStorage.removeItem('newIdProviderLogoutURL')
+  }
+
+  logOutFromOauthService(){
+    if (!this.oauthService.hasValidAccessToken()){
+      return;
+    }
+    this.oauthService.logOut(false);
+  }
+
+  cancleAdding(){
+    this.logOutFromOauthService();
+    this.resetNewIdProvider();
+    this.newAttestation.value = '';
+    this.newAttestation.name = '';
+  }
+
+
 }

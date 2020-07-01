@@ -4,6 +4,7 @@ import { Observable} from 'rxjs';
 import { ConfigService } from './config.service'
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { IdProvider } from './idProvider';
+import { Identity } from './identity';
 
 @Injectable()
 export class AttestationService {
@@ -16,12 +17,13 @@ export class AttestationService {
     }
 
     getOauthConfig(idProvider: IdProvider){
-        let redirectUri;
-        try {
-            redirectUri = browser.runtime.getURL('index.html');
-        } catch (error) {
-            console.log(error);
-            redirectUri = window.location.href;
+        var redirectUri;
+        if (window.location.href.includes('localhost')){
+            const user = localStorage.getItem('userForAttestation');
+            redirectUri = 'http://localhost:4200/edit-attestations/' + user;
+        }
+        else {
+            redirectUri = "https://ui.reclaim";
         }
 
         const authCodeFlowConfig: AuthConfig = {

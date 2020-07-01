@@ -41,28 +41,28 @@
             <div *ngIf= "!isAttestationValid(attestation)"> <span style="color:#f00"> Expired </span> <span class="fa fa-times"></span> </div>
           </td>
         </tr>
-        <tr [class.alert-danger]="isAttestInConflict(newAttestation)">
+        <tr [class.alert-danger]="isAttestInConflict(newAttestation)" *ngIf="newAccessGranted()">
           <td>
             <input [class.text-danger]="!attestationNameValid(newAttestation)" placeholder="Attestation" [(ngModel)]="newAttestation.name">
           </td>
+          <td><div style="min-width: 15em">JWT</div></td>
           <td>
-            <input placeholder="Type [JWT]" [class.text-danger]="!attestationTypeValid(newAttestation)" [(ngModel)]="newAttestation.type">
+            {{getNewAttestationExpiration()}}
           </td>
+          <td><div style="min-width: 15em">{{newIdProvider.url}}</div></td>
           <td>
-            <input placeholder="Attestation Value" [class.text-danger]="!attestationValueValid(newAttestation)" [(ngModel)]="newAttestation.value">
-          </td>
-          <td>
-          </td>
-          <td>
-            <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="addAttestation()">
+            <button [disabled]="!canAddAttestation(newAttestation)" class="btn btn-primary"  (click)="saveIdProvider()">
               <span class="fa fa-plus"></span> 
+            </button>
+            <button class="btn btn-primary ml-2"  (click)="cancleAdding()">
+              <span class="fa fa-trash"></span>
             </button>
           </td>
         </tr>
       </tbody>
     </table>
     <!-- Attestation creation warning -->
-    <div *ngIf="!attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)" class="alert alert-primary alert-dismissible fade show" role="alert">
+    <div *ngIf="newAccessGranted() && !attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)" class="alert alert-primary alert-dismissible fade show" role="alert">
       <span class="fa fa-warning"></span> Note:
       <ul>
         <li>Only use alphanumeric attestation names.</li>
@@ -73,8 +73,8 @@
     <hr/>
     <!-- Edit card buttons -->
     <div>
-      <button class="btn btn-primary" (click)="saveAttestation()" [disabled]="!canSaveAttestation()">
-        <span class="fa fa-save"></span> Save and Back
+      <button class="btn btn-primary" (click)="goBack()" [disabled]="!canGoBack()">
+        <span class="fa fa-save"></span> Back
       </button>
     </div>
   </div>
