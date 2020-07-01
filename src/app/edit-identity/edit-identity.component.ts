@@ -695,43 +695,6 @@ export class EditIdentityComponent implements OnInit {
     this.getId();
   }
 
-  saveIdProviderinLocalStorage(){
-    const newAuthorization: Authorization = {
-      idProvider: this.newIdProvider.url,
-      attestationName: this.newAttestation.name,
-      redirectUri: this.oauthService.redirectUri,
-      clientId: this.oauthService.clientId,
-      accessToken: this.getAccessToken(),
-      idToken: this.oauthService.getIdToken(),
-      logoutURL: this.newIdProvider.logoutURL
-    }
-    this.authorizations.push(newAuthorization);
-    localStorage.setItem('Authorization: ' + this.newAttestation.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
-  }
-
-  addAttestation() {
-    this.newAttestation.value = this.getAccessToken();
-    this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
-      console.log("Saved Attestation");
-      console.log(res);
-      this.resetNewIdProvider();
-      this.updateAttestations();
-      this.newAttestation.name = '';
-      this.newAttestation.value = '';
-      this.logOutFromOauthService();
-    },
-    err => {
-      console.log("Failed saving attestation");
-      console.log(err);
-      //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      EMPTY
-      this.newAttestation.name = '';
-      this.newAttestation.value = '';
-      this.logOutFromOauthService();
-    });
-
-  }
-
   attestationNameDuplicate(){
     let i;
     for (i = 0; i < this.attestations.length; i++) {
@@ -742,21 +705,8 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
-  saveIdProvider(){
-    if (this.attestationNameDuplicate()){
-      console.log("name duplicate");
-      return;
-    }
-    this.saveIdProviderinLocalStorage();
-    this.addAttestation();
-  }
-
   getId (): any{
     return this.oauthService.getIdentityClaims();
-  }
-
-  getAccessToken () {
-    return this.oauthService.getAccessToken();
   }
 
   grantedAccessToIdProvider(){
