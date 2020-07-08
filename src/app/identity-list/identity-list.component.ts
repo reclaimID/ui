@@ -264,7 +264,7 @@ export class IdentityListComponent implements OnInit {
         this.updateAttributes(identity);
         this.updateAttestations(identity);
       });
-      if (!this.modalOpened) {
+      if (this.modalOpened) {
         this.closeModal('GnunetInfo');
       }
       this.connected = true;

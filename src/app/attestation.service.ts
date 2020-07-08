@@ -1,19 +1,21 @@
 import { HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core'
 import { Observable} from 'rxjs';
-import { ConfigService } from './config.service'
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { IdProvider } from './idProvider';
-import { Identity } from './identity';
 
 @Injectable()
 export class AttestationService {
 
-    constructor(private http: HttpClient, private config: ConfigService) {
+    constructor(private http: HttpClient) {
     }
  
     getLink (email: string): Observable<any>{
-        return this.http.get<any>(this.config.get().webfingerUrl + '/.well-known/webfinger?resource=acct:' + email);
+        //test
+        if (email.split('@')[1].includes('localhost')){
+            return this.http.get<any>('http://localhost:4567/.well-known/webfinger?resource=acct:' + email)
+        }
+        return this.http.get<any>('https://' + email.split('@')[1] + '/.well-known/webfinger?resource=acct:' + email);
     }
 
     getOauthConfig(idProvider: IdProvider){
@@ -33,7 +35,7 @@ export class AttestationService {
           // URL of the SPA to redirect the user to after login
           redirectUri: redirectUri,
 
-          postLogoutRedirectUri: window.location.href,
+          postLogoutRedirectUri: redirectUri,
 
           logoutUrl: idProvider.logoutURL + '/logout',
       
