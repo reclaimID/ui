@@ -38,7 +38,12 @@ export class EditAttestationsComponent implements OnInit {
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
       this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
-      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => console.log("logged in")).catch(err => console.log(err));
+      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => {
+        console.log("ngOnInit: logged in");
+        console.log(res);
+        console.log("Has valid accessToken: " + this.oauthService.hasValidAccessToken());
+        console.log("AccessToken: " + this.oauthService.getAccessToken());
+      }).catch(err => console.log(err));
     }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
@@ -72,6 +77,13 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   addAttestation() {
+    if (!this.oauthService.hasValidAccessToken()){
+      console.log("No AccessToken");
+      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
+      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => {
+        console.log("AddAttestation: logged in");
+        console.log(this.oauthService.getAccessToken());}).catch(err => console.log(err));
+    }
     this.newAttestation.value = this.oauthService.getAccessToken();
     this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
       console.log("Saved Attestation");
