@@ -159,19 +159,17 @@
     <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
       <span class="fa fa-warning"></span> No account found with this email
     </div>
-    
     <button *ngIf="isExperimental() && !newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
-      <span class="fa fa-user"></span> Find Id Provider
+      <span class="fa fa-openid"></span> Link account
     </button>
     <!--Link account-->
     <button *ngIf="isExperimental() && newIdProviderDiscovered() && !grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
       <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
     </button>
     <button *ngIf="isExperimental() && newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancleLinking()">
-      Cancle Linking
+      Cancel Linking
     </button>
 
-    
     <hr/>
 
     <!-- Edit card buttons -->
