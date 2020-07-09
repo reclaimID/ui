@@ -239,7 +239,7 @@ export class EditAttestationsComponent implements OnInit {
     this.oauthService.logOut(false);
   }
 
-  cancleAdding(){
+  cancelAdding(){
     this.logOutFromOauthService();
     this.resetNewIdProvider();
     this.newAttestation.value = '';

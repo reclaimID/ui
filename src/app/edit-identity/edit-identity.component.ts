@@ -757,7 +757,7 @@ export class EditIdentityComponent implements OnInit {
     this.oauthService.logOut(false);
   }
 
-  cancleLinking(){
+  cancelLinking(){
     this.logOutFromOauthService();
     this.resetNewIdProvider();
     this.webfingerEmail = '';
