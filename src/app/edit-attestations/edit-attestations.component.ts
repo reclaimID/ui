@@ -138,6 +138,7 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   deleteAttestation(attestation: Attestation) {
+    localStorage.removeItem("Authorization: " + attestation.name);
     this.reclaimService.deleteAttestation(this.identity, attestation)
       .subscribe(res => {
         //FIXME info dialog

@@ -35,7 +35,7 @@ export class AttestationService {
           // URL of the SPA to redirect the user to after login
           redirectUri: redirectUri,
 
-          postLogoutRedirectUri: redirectUri,
+          postLogoutRedirectUri: redirectUri + "?logout=true",
 
           logoutUrl: idProvider.logoutURL + '/logout',
       

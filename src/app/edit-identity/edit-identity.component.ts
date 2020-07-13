@@ -226,6 +226,7 @@ export class EditIdentityComponent implements OnInit {
 
 
   saveIdentity() {
+    localStorage.removeItem("userForAttestation");
     this.saveIdentityAttributes();
   }
 
