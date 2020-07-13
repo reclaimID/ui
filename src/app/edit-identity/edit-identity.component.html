@@ -164,7 +164,7 @@
       <span class="fa fa-openid"></span> Link account
     </button>
     <!--Link account-->
-    <button *ngIf="newIdProviderDiscovered() && !grantedAccessToIdProvider()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
+    <button *ngIf="newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
       <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
     </button>
     <button *ngIf="newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancelLinking()">
