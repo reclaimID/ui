@@ -9,7 +9,6 @@ import { finalize } from 'rxjs/operators';
 import { AttestationService } from '../attestation.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
-import { ConstantPool } from '@angular/compiler';
 import { LoginOptions } from 'angular-oauth2-oidc';
 
 @Component({
@@ -23,6 +22,8 @@ export class EditAttestationsComponent implements OnInit {
   attestations: Attestation[];
   newAttestation: Attestation;
   newIdProvider: IdProvider;
+  webfingerEmail: string;
+  emailNotFoundAlertClosed: boolean;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -35,6 +36,8 @@ export class EditAttestationsComponent implements OnInit {
     this.newAttestation = new Attestation('', '', '', 'JWT', '', 0, []);
     this.identity = new Identity('','');
     this.newIdProvider = new IdProvider ('', '', '');
+    this.webfingerEmail = '';
+    this.emailNotFoundAlertClosed = true;
     this.loadIdProviderFromLocalStorage();
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
@@ -43,7 +46,13 @@ export class EditAttestationsComponent implements OnInit {
       }
       console.log(loginOptions.customHashFragment);
       this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
-      this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions);
+      if (!localStorage.getItem("attestationCode")){
+        this.oauthService.loadDiscoveryDocumentAndTryLogin();
+      }
+      else{
+        this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions);
+      }
+      
     }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
@@ -208,13 +217,6 @@ export class EditAttestationsComponent implements OnInit {
     return url.split('//')[1];
   }
 
-  newAccessGranted(){
-    if (this.newIdProvider.url !== ''){
-      return true;
-    }
-    return false;
-  }
-
   getNewAttestationExpiration(){
     var exp = new Date();
     exp.setMilliseconds(this.oauthService.getIdTokenExpiration() / 1000);
@@ -236,12 +238,77 @@ export class EditAttestationsComponent implements OnInit {
     this.oauthService.logOut(false);
   }
 
+  loggedIn(){
+    return this.oauthService.hasValidAccessToken();
+  }
+
   cancelAdding(){
     this.logOutFromOauthService();
     this.resetNewIdProvider();
     this.newAttestation.value = '';
     this.newAttestation.name = '';
   }
+
+
+  //Webfinger
+  
+  discoverIdProvider() {
+    if (this.webfingerEmail == ''){
+      return;
+    }
+    localStorage.setItem('userForAttestation', this.identity.name);
+    this.isValidEmailforDiscovery();
+    this.attestationService.getLink(this.webfingerEmail).subscribe (idProvider => {
+      this.newIdProvider.url = (idProvider.links [0]).href; 
+      localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
+      this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+      (idProvider.links.length > 1)? this.newIdProvider.logoutURL = (idProvider.links [1]).href : this.newIdProvider.logoutURL = this.newIdProvider.url;
+       localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
+      console.log(this.newIdProvider.url);
+      this.webfingerEmail == '';
+    },
+    error => {
+      if (error.status == 404){
+        this.emailNotFoundAlertClosed = false;
+        setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
+      }
+      this.webfingerEmail = '';
+      console.log (error);
+    });
+  }
+
+  newIdProviderDiscovered(){
+    if (this.newIdProvider.url == ''){
+      return false;
+    }
+    return true;
+  }
+
+  isValidEmailforDiscovery(){
+    if (!this.webfingerEmail.includes('@') && this.webfingerEmail != ''){
+      return false;
+    }
+    return true;
+  }
+
+  loginFhgAccount(){
+    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
+    this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.loadDiscoveryDocumentAndLogin();
+  }
+
+  cancelLinking(){
+    this.resetNewIdProvider();
+    this.webfingerEmail = '';
+  }
+
+  isExperimental() {
+    var exp = localStorage.getItem('reclaimExperiments');
+    return ((undefined !== exp) && ("" !== exp));
+  }
+
+  
+
 
 
 }
