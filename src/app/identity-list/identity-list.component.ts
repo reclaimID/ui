@@ -41,7 +41,7 @@ export class IdentityListComponent implements OnInit {
     private namestoreService: NamestoreService,
     private gnsService: GnsService,
     private modalService: ModalService,
-    private router: Router) {
+    private router: Router,) {
   }
 
   ngOnInit() {
@@ -58,6 +58,8 @@ export class IdentityListComponent implements OnInit {
     this.modalOpened = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
       localStorage.setItem('attestationCode', this.route.snapshot.queryParams["code"]);
+      localStorage.setItem('attestationState', this.route.snapshot.queryParams["state"]);
+      localStorage.setItem('attestationSession_State', this.route.snapshot.queryParams["session_state"]);
       var user = localStorage.getItem('userForAttestation');
       this.router.navigate(['/edit-attestations', user]);
     }
