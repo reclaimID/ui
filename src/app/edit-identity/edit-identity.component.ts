@@ -666,17 +666,6 @@ export class EditIdentityComponent implements OnInit {
     return true;
   }
 
-
-  //not sure if needed -> should be able to link two different accounts from same provider
-  discoveredIdProviderExistsAlready(){
-    this.authorizations.forEach(token => {
-      if (token.idProvider == this.newIdProvider.url){
-        return true;
-      }
-    });
-    return false;
-  }
-
   newIdProviderDiscovered(){
     if (this.newIdProvider.url == ''){
       return false;
@@ -693,16 +682,6 @@ export class EditIdentityComponent implements OnInit {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.loadDiscoveryDocumentAndLogin();
     this.getId();
-  }
-
-  attestationNameDuplicate(){
-    let i;
-    for (i = 0; i < this.attestations.length; i++) {
-      if (this.newAttestation.name === this.attestations[i].name) {
-        return true;
-      }
-    }
-    return false;
   }
 
   getId (): any{

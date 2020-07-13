@@ -10,6 +10,7 @@ import { AttestationService } from '../attestation.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
 import { ConstantPool } from '@angular/compiler';
+import { LoginOptions } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-edit-attestations',
@@ -37,13 +38,12 @@ export class EditAttestationsComponent implements OnInit {
     this.loadIdProviderFromLocalStorage();
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
+      const loginOptions: LoginOptions = {
+        customHashFragment: "?code="+localStorage.getItem("attestationCode") + "&state=" + localStorage.getItem("attestationState") + "&session_state="+ localStorage.getItem("attestationSession_State"),
+      }
+      console.log(loginOptions.customHashFragment);
       this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
-      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => {
-        console.log("ngOnInit: logged in");
-        console.log(res);
-        console.log("Has valid accessToken: " + this.oauthService.hasValidAccessToken());
-        console.log("AccessToken: " + this.oauthService.getAccessToken());
-      }).catch(err => console.log(err));
+      this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions);
     }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
@@ -79,10 +79,7 @@ export class EditAttestationsComponent implements OnInit {
   addAttestation() {
     if (!this.oauthService.hasValidAccessToken()){
       console.log("No AccessToken");
-      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
-      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(res => {
-        console.log("AddAttestation: logged in");
-        console.log(this.oauthService.getAccessToken());}).catch(err => console.log(err));
+      return;
     }
     this.newAttestation.value = this.oauthService.getAccessToken();
     this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
@@ -154,7 +151,6 @@ export class EditAttestationsComponent implements OnInit {
 
   canAddAttestation(attestation: Attestation) {
     if(!this.oauthService.hasValidAccessToken()){
-      console.log("not logged in");
       return false;
     }
     if ((attestation.name === '')) {

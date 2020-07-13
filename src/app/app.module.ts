@@ -22,6 +22,7 @@ import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 import { EditAuthorizationsComponent } from './edit-authorizations/edit-authorizations.component';
 import { EditAttestationsComponent } from './edit-attestations/edit-attestations.component';
+import { OAuthStorage } from 'angular-oauth2-oidc';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { EditAttestationsComponent } from './edit-attestations/edit-attestations
       provide: APP_INITIALIZER,
       useFactory: (config: ConfigService) => () => config.load(),
       deps: [ConfigService], multi: true
-    }
+    },
+    { provide: OAuthStorage, useValue: localStorage },
   ],
   bootstrap: [AppComponent]
 })
