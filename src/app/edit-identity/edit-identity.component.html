@@ -144,34 +144,6 @@
       </ul>
     </div>
 
-    <!--IdProvider-Discovery-->
-    <div *ngIf="isExperimental()">
-    <div *ngIf="!newIdProviderDiscovered()" class="input-group my-2 col-lg-4">
-      <div class="input-group-prepend">
-        <span class="input-group-text">Email: </span>
-      </div>
-      <input placeholder="E-Mail Adress" class="form-control"  [(ngModel)]="webfingerEmail">
-    </div>
-    <!--Issuer Discovery Warning-->
-    <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
-      <span class="fa fa-warning"></span> This is not a valid e-mail adress
-    </div>
-    <!--Email not found Warning-->
-    <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''" class="alert alert-danger alert-dismissible fade show my-2" role="alert">
-      <span class="fa fa-warning"></span> No account found with this email
-    </div>
-    <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
-      <span class="fa fa-openid"></span> Link account
-    </button>
-    <!--Link account-->
-    <button *ngIf="newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="loginFhgAccount()">
-      <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
-    </button>
-    <button *ngIf="newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="cancelLinking()">
-      Cancel Linking
-    </button>
-    </div>
-
     <hr/>
 
     <!-- Edit card buttons -->

@@ -19,50 +19,93 @@
         </tr>
       </thead>
       <tbody>
-        <tr [class.alert-danger]="newAttestation.name === attestation.name" [class.alert-warning]="!isAttestationValid(attestation)" *ngFor="let attestation of attestations">
-          <td><div style="min-width: 15em">{{attestation.name}}</div></td>
+        <tr [class.alert-danger]="newAttestation.name === attestation.name"
+          [class.alert-warning]="!isAttestationValid(attestation)" *ngFor="let attestation of attestations">
+          <td>
+            <div style="min-width: 15em">{{attestation.name}}</div>
+          </td>
           <td>
             <div>{{attestation.type}}</div>
           </td>
           <td>
             <div>{{getExpiration(attestation)}}</div>
           </td>
-<!--ISSUER          <td>
+          <!--ISSUER          <td>
             <div style="min-width: 15em">
             </div>
 </td>-->
-          <td><div style="min-width: 15em">{{attestation.issuer}}</div></td>
           <td>
-            <button class="btn btn-primary"  (click)="deleteAttestation(attestation)">
+            <div style="min-width: 15em">{{attestation.issuer}}</div>
+          </td>
+          <td>
+            <button class="btn btn-primary" (click)="deleteAttestation(attestation)">
               <span class="fa fa-trash"></span>
             </button>
           </td>
           <td>
-            <div *ngIf= "!isAttestationValid(attestation)"> <span style="color:#f00"> Expired </span> <span class="fa fa-times"></span> </div>
+            <div *ngIf="!isAttestationValid(attestation)"> <span style="color:#f00"> Expired </span> <span
+                class="fa fa-times"></span> </div>
           </td>
         </tr>
-        <tr [class.alert-danger]="isAttestInConflict(newAttestation)" *ngIf="newAccessGranted()">
+        <tr [class.alert-danger]="isAttestInConflict(newAttestation)" *ngIf="loggedIn()">
           <td>
-            <input [class.text-danger]="!attestationNameValid(newAttestation)" placeholder="Attestation" [(ngModel)]="newAttestation.name">
+            <input [class.text-danger]="!attestationNameValid(newAttestation)" placeholder="Attestation"
+              [(ngModel)]="newAttestation.name">
           </td>
-          <td><div style="min-width: 15em">JWT</div></td>
+          <td>
+            <div style="min-width: 15em">JWT</div>
+          </td>
           <td>
             {{getNewAttestationExpiration()}}
           </td>
-          <td><div style="min-width: 15em">{{newIdProvider.url}}</div></td>
+          <td>
+            <div style="min-width: 15em">{{newIdProvider.url}}</div>
+          </td>
           <td>
             <button class="btn btn-primary" [disabled]="!canAddAttestation(newAttestation)" (click)="saveIdProvider()">
-              <span class="fa fa-plus"></span> 
+              <span class="fa fa-plus"></span>
             </button>
-            <button class="btn btn-primary ml-2"  (click)="cancelAdding()">
+            <button class="btn btn-primary ml-2" (click)="cancelAdding()">
               <span class="fa fa-trash"></span>
             </button>
           </td>
         </tr>
       </tbody>
     </table>
+    
+    <!--IdProvider-Discovery-->
+    <div *ngIf="isExperimental()">
+      <div *ngIf="!newIdProviderDiscovered()" class="input-group my-2 col-lg-4">
+        <div class="input-group-prepend">
+          <span class="input-group-text">Email: </span>
+        </div>
+        <input placeholder="E-Mail Adress" class="form-control" [(ngModel)]="webfingerEmail">
+      </div>
+      <!--Issuer Discovery Warning-->
+      <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
+        <span class="fa fa-warning"></span> This is not a valid e-mail adress
+      </div>
+      <!--Email not found Warning-->
+      <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''"
+        class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+        <span class="fa fa-warning"></span> No account found with this email
+      </div>
+      <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
+        <span class="fa fa-openid"></span> Link account
+      </button>
+      <!--Link account-->
+      <button *ngIf="newIdProviderDiscovered() && !loggedIn()" class="btn btn-primary mb-4 fhg-link"
+        (click)="loginFhgAccount()">
+        <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
+      </button>
+      <button *ngIf="newIdProviderDiscovered() && !loggedIn()" class="btn btn-primary mb-4 fhg-link" (click)="cancelLinking()">
+        Cancel Linking
+      </button>
+    </div>
     <!-- Attestation creation warning -->
-    <div *ngIf="newAccessGranted() && !attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)" class="alert alert-primary alert-dismissible fade show" role="alert">
+    <div
+      *ngIf="loggedIn() && !attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)"
+      class="alert alert-primary alert-dismissible fade show" role="alert">
       <span class="fa fa-warning"></span> Note:
       <ul>
         <li>Only use alphanumeric attestation names.</li>
@@ -70,7 +113,7 @@
         <li>Types and values may not be empty!</li>
       </ul>
     </div>
-    <hr/>
+    <hr />
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="goBack()" [disabled]="!canGoBack()">
@@ -79,4 +122,3 @@
     </div>
   </div>
 </div>
-

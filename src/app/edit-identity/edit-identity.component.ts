@@ -10,10 +10,8 @@ import { Attestation } from '../attestation';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
-import { AttestationService } from '../attestation.service';
 import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
-import { OAuthService } from 'angular-oauth2-oidc';
 
 
 @Component({
@@ -46,9 +44,7 @@ export class EditIdentityComponent implements OnInit {
               private oidcService: OpenIdService,
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
-              private router: Router,
-              private attestationService: AttestationService,
-              private oauthService: OAuthService) {}
+              private router: Router,) {}
 
   ngOnInit() {
     this.attributes = [];
@@ -58,7 +54,6 @@ export class EditIdentityComponent implements OnInit {
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
     this.newIdProvider = new IdProvider ('', '', '');
-    this.loadIdProviderFromLocalStorage();
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
@@ -630,54 +625,6 @@ export class EditIdentityComponent implements OnInit {
     return "?";
   }
 
-  discoverIdProvider() {
-    if (this.webfingerEmail == ''){
-      return;
-    }
-    localStorage.setItem('userForAttestation', this.identity.name);
-    this.isValidEmailforDiscovery();
-    this.attestationService.getLink(this.webfingerEmail).subscribe (idProvider => {
-      this.newIdProvider.url = (idProvider.links [0]).href; 
-      localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
-      this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
-      (idProvider.links.length > 1)? this.newIdProvider.logoutURL = (idProvider.links [1]).href : this.newIdProvider.logoutURL = this.newIdProvider.url;
-       localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
-      console.log(this.newIdProvider.url);
-      this.webfingerEmail == '';
-    },
-    error => {
-      if (error.status == 404){
-        this.emailNotFoundAlertClosed = false;
-        setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
-      }
-      this.webfingerEmail = '';
-      console.log (error);
-    });
-  }
-
-  isValidEmailforDiscovery(){
-    if (!this.webfingerEmail.includes('@') && this.webfingerEmail != ''){
-      return false;
-    }
-    return true;
-  }
-
-  newIdProviderDiscovered(){
-    if (this.newIdProvider.url == ''){
-      return false;
-    }
-    return true;
-  }
-
-  getNewIdProviderName(url: string){
-    return url.split('//')[1];
-  }
-
-  loadIdProviderFromLocalStorage(){
-    this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
-    this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
-    this.newIdProvider.logoutURL = localStorage.getItem("newIdProviderLogoutURL") || '';
-  }
 
   loadAuthorizationsFromLocalStorage(){
     this.authorizations = [];
@@ -705,26 +652,6 @@ export class EditIdentityComponent implements OnInit {
       }
       
     });
-  }
-
-  loginFhgAccount(){
-    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
-    this.oauthService.configure(authCodeFlowConfig);
-    this.oauthService.loadDiscoveryDocumentAndLogin();
-  }
-
-
-  cancelLinking(){
-    this.resetNewIdProvider();
-    this.webfingerEmail = '';
-  }
-
-  resetNewIdProvider(){
-    this.newIdProvider.url = '';
-    this.newIdProvider.logoutURL = '';
-    this.newIdProvider.name = '';
-    localStorage.removeItem('newIdProviderURL');
-    localStorage.removeItem('newIdProviderLogoutURL')
   }
 
   setExperimental(set) {
