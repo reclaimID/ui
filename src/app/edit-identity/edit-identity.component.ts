@@ -11,9 +11,9 @@ import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { AttestationService } from '../attestation.service';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 
 @Component({
@@ -65,10 +65,6 @@ export class EditIdentityComponent implements OnInit {
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
 
-    if (this.newIdProvider.url !== ''){
-      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
-      this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    }
 
     if (undefined !== this.activatedRoute.snapshot.queryParams["experiments"]) {
       this.setExperimental("true" === this.activatedRoute.snapshot.queryParams["experiments"]);
@@ -634,7 +630,6 @@ export class EditIdentityComponent implements OnInit {
   }
 
   discoverIdProvider() {
-    this.logOutFromOauthService();
     if (this.webfingerEmail == ''){
       return;
     }
@@ -677,24 +672,6 @@ export class EditIdentityComponent implements OnInit {
     return url.split('//')[1];
   }
 
-  loginFhgAccount(){
-    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
-    this.oauthService.configure(authCodeFlowConfig);
-    this.oauthService.loadDiscoveryDocumentAndLogin();
-    this.getId();
-  }
-
-  getId (): any{
-    return this.oauthService.getIdentityClaims();
-  }
-
-  grantedAccessToIdProvider(){
-    if (this.oauthService.hasValidAccessToken()){
-      return true;
-    };
-    return false;
-  }
-
   loadIdProviderFromLocalStorage(){
     this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
     this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
@@ -729,15 +706,14 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
-  logOutFromOauthService(){
-    if (!this.oauthService.hasValidAccessToken()){
-      return;
-    }
-    this.oauthService.logOut(false);
+  loginFhgAccount(){
+    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
+    this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 
+
   cancelLinking(){
-    this.logOutFromOauthService();
     this.resetNewIdProvider();
     this.webfingerEmail = '';
   }
@@ -748,28 +724,6 @@ export class EditIdentityComponent implements OnInit {
     this.newIdProvider.name = '';
     localStorage.removeItem('newIdProviderURL');
     localStorage.removeItem('newIdProviderLogoutURL')
-  }
-
-  getAttestationExpiration(){
-    return this.oauthService.getIdTokenExpiration()
-  }
-
-  getAttestationAttributes(): Attribute[]{
-    var attestationAttributes: Attribute [] = [];
-    const attributesObject = this.getId();
-    Object.keys(attributesObject).forEach (attributeKey => {
-      console.log(attributeKey);
-      var tempAttribute: Attribute = {
-        name: attributeKey,
-        id: this.newIdProvider.url, //Don't think this is correct id
-        attestation: this.newIdProvider.url,
-        value: attributesObject[attributeKey],
-        type: 'STRING',
-        flag: '1',
-      }
-      attestationAttributes.push(tempAttribute);
-    });
-    return attestationAttributes;
   }
 
   setExperimental(set) {
