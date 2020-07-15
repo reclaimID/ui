@@ -199,7 +199,7 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   getExpiration(attestation: Attestation) {
-    var exp = new Date();
+    var exp = new Date(0);
     exp.setMilliseconds(attestation.expiration / 1000);
     return exp.toLocaleString();
   }
@@ -220,8 +220,8 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   getNewAttestationExpiration(){
-    var exp = new Date();
-    exp.setMilliseconds(this.oauthService.getIdTokenExpiration() / 1000);
+    var exp = new Date(0);
+    exp.setMilliseconds(this.oauthService.getIdTokenExpiration());
     return exp.toLocaleString();
   }
 
