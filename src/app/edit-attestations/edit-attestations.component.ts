@@ -24,6 +24,7 @@ export class EditAttestationsComponent implements OnInit {
   newIdProvider: IdProvider;
   webfingerEmail: string;
   emailNotFoundAlertClosed: boolean;
+  errorMassage: string;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -38,6 +39,7 @@ export class EditAttestationsComponent implements OnInit {
     this.newIdProvider = new IdProvider ('', '', '');
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
+    this.errorMassage = '';
     this.loadIdProviderFromLocalStorage();
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
@@ -269,9 +271,13 @@ export class EditAttestationsComponent implements OnInit {
     },
     error => {
       if (error.status == 404){
-        this.emailNotFoundAlertClosed = false;
-        setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
+        this.errorMassage = 'No account found with this email'
       }
+      else{
+        this.errorMassage = 'An Error has occured - This may have been caused by a wrong e-mail address'
+      }
+      this.emailNotFoundAlertClosed = false;
+        setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
       this.webfingerEmail = '';
       console.log (error);
     });
