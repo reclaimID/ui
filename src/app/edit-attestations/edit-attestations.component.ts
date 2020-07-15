@@ -10,6 +10,7 @@ import { AttestationService } from '../attestation.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
+import { Scope } from '../scope';
 
 @Component({
   selector: 'app-edit-attestations',
@@ -25,6 +26,7 @@ export class EditAttestationsComponent implements OnInit {
   webfingerEmail: string;
   emailNotFoundAlertClosed: boolean;
   errorMassage: string;
+  scopes: Scope[];
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -40,14 +42,14 @@ export class EditAttestationsComponent implements OnInit {
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
     this.errorMassage = '';
+    this.scopes = [];
     this.loadIdProviderFromLocalStorage();
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
       const loginOptions: LoginOptions = {
         customHashFragment: "?code="+localStorage.getItem("attestationCode") + "&state=" + localStorage.getItem("attestationState") + "&session_state="+ localStorage.getItem("attestationSession_State"),
       }
-      console.log(loginOptions.customHashFragment);
-      this.oauthService.configure(this.attestationService.getOauthConfig(this.newIdProvider));
+      this.configureOauthService();
       if (!localStorage.getItem("attestationCode")){
         this.oauthService.loadDiscoveryDocumentAndTryLogin();
       }
@@ -253,7 +255,7 @@ export class EditAttestationsComponent implements OnInit {
 
 
   //Webfinger
-  
+
   discoverIdProvider() {
     if (this.webfingerEmail == ''){
       return;
@@ -268,6 +270,7 @@ export class EditAttestationsComponent implements OnInit {
        localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
       console.log(this.newIdProvider.url);
       this.webfingerEmail == '';
+      this.getScopes();
     },
     error => {
       if (error.status == 404){
@@ -281,6 +284,20 @@ export class EditAttestationsComponent implements OnInit {
       this.webfingerEmail = '';
       console.log (error);
     });
+  }
+
+  getScopes(){
+    this.configureOauthService();
+    this.attestationService.getDiscoveryDocument(this.oauthService.issuer).subscribe(openidConfig => {
+      openidConfig["scopes_supported"].forEach(scope => {
+        const scopeInterface: Scope = {
+          scope: scope,
+          chosen: true,
+        }
+        this.scopes.push(scopeInterface)
+      });
+      console.log(this.scopes);
+      });  
   }
 
   newIdProviderDiscovered(){
@@ -298,9 +315,12 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   loginFhgAccount(){
+    this.oauthService.loadDiscoveryDocumentAndLogin();
+  }
+
+  configureOauthService(){
     var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
     this.oauthService.configure(authCodeFlowConfig);
-    this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 
   cancelLinking(){
@@ -312,8 +332,6 @@ export class EditAttestationsComponent implements OnInit {
     var exp = localStorage.getItem('reclaimExperiments');
     return ((undefined !== exp) && ("" !== exp));
   }
-
-  
 
 
 
