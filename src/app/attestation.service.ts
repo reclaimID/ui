@@ -58,9 +58,19 @@ export class AttestationService {
           scope: 'openid profile',
       
           showDebugInformation: true,  
+
+          requireHttps: false,
         };
     
         return authCodeFlowConfig;
+    }
+
+    getDiscoveryDocument(url: string){
+        if (!url.endsWith('/')) {
+            url += '/';
+          }
+          url += '.well-known/openid-configuration';
+        return this.http.get<any>(url);
     }
 
 }
