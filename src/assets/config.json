@@ -1,3 +1,4 @@
 {
-    "apiUrl": "http://localhost:7776"
+    "apiUrl": "http://localhost:7776",
+    "experiments": false
 }

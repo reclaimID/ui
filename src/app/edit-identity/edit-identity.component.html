@@ -29,17 +29,17 @@
           <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttested.name === missing.name" class="text-primary" *ngFor="let missing of missingAttested">
             <td><div style="min-width: 15em">{{missing.name}}</div></td>
             <td>
-              <select (change)="missing.attestation=$event.target.value; ">
-                <option value="">Attestation</option>
+              <select class="custom-select" (change)="missing.attestation=$event.target.value; ">
+                <option value="">Select attestation source</option>
                 <option *ngFor="let attest of attestations" value={{attest.id}}>
                   {{attest.name}}
                 </option>
               </select>
 
-              <select *ngIf="missing.attestation !== ''" (change)="missing.value=$event.target.value">
-                <option value="">Source</option>
+              <select class="custom-select" *ngIf="missing.attestation !== ''" (change)="missing.value=$event.target.value">
+                <option value="">Select claim</option>
                 <option *ngFor="let claim of attestationValuesForAttested(missing)" value={{claim.name}}>
-                  {{claim.name}}
+                  {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
             </td>
@@ -93,17 +93,17 @@
               <input [class.text-danger]="!attestedNameValid(newAttested)" placeholder="Attested attribute" [(ngModel)]="newAttested.name">
             </td>
             <td>
-              <select (change)="newAttested.attestation=$event.target.value; ">
-                <option value="">(-)</option>
+              <select class="custom-select" (change)="newAttested.attestation=$event.target.value; ">
+                <option value="">Select attestation source</option>
                 <option *ngFor="let attest of attestations" value={{attest.id}}>
                 {{attest.name}}
                 </option>
               </select>
 
-              <select *ngIf="newAttested.attestation !== ''" (change)="newAttested.value=$event.target.value">
-                <option value="">(-)</option>
+              <select class="custom-select" *ngIf="newAttested.attestation !== ''" (change)="newAttested.value=$event.target.value">
+                <option value="">Select claim</option>
                 <option *ngFor="let claim of attestationValuesForAttested(newAttested)" value={{claim.name}}>
-                  {{claim.name}}
+                {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
             </td>
