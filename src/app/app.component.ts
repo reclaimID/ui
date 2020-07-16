@@ -15,11 +15,11 @@ export class AppComponent {
   }
 
   isExperimental() {
-    return this.configService.get().experimental;
+    return this.configService.get().experiments;
   }
 
   toggleExperimental() {
-    this.configService.get().experimental = !this.configService.get().experimental;
+    this.configService.get().experiments = !this.configService.get().experiments;
   }
 
 }
