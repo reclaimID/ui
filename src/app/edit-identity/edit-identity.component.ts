@@ -12,6 +12,7 @@ import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
+import { ConfigService } from '../config.service';
 
 
 @Component({
@@ -44,6 +45,7 @@ export class EditIdentityComponent implements OnInit {
               private oidcService: OpenIdService,
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
+              private configService: ConfigService,
               private router: Router,) {}
 
   ngOnInit() {
@@ -59,11 +61,6 @@ export class EditIdentityComponent implements OnInit {
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
     this.newAttested = new Attribute('', '', '', '', 'STRING', '');
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
-
-
-    if (undefined !== this.activatedRoute.snapshot.queryParams["experiments"]) {
-      this.setExperimental("true" === this.activatedRoute.snapshot.queryParams["experiments"]);
-    }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -647,24 +644,13 @@ export class EditIdentityComponent implements OnInit {
           newAuthorization[key] = value;
         }
           )
-  
         this.authorizations.push(newAuthorization);
       }
-      
     });
   }
 
-  setExperimental(set) {
-    if (set) {
-      localStorage.setItem('reclaimExperiments', 'enabled');
-    } else {
-      localStorage.setItem('reclaimExperiments', '');
-    }
-  }
-
   isExperimental() {
-    var exp = localStorage.getItem('reclaimExperiments');
-    return ((undefined !== exp) && ("" !== exp));
+    return this.configService.get().experimental;
   }
 
 }

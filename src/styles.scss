@@ -23,10 +23,15 @@ div.card {
   background-color: lightgray;
 }
 
+.custom-select {
+  width: auto;
+}
+
 button.btn, a.btn {
   box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border-radius: 10rem;
   background-image: none;
+  margin: 0.5em;
 }
 
 button.btn:hover, a.button:hover {
