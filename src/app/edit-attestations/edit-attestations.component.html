@@ -2,11 +2,59 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      Manage attestations for <i>{{ identity.name }}</i>
+      Third party attestations for <i>{{ identity.name }}</i>
     </div>
   </div>
   <!-- Attestation management -->
   <div class="card-body">
+    <h3>Link account:</h3>
+    <!--IdProvider-Discovery-->
+    <div>
+      <!--Email not found Warning-->
+      <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''"
+        class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+        <span class="fa fa-warning"></span> {{errorMassage}}
+      </div>
+      <!--Issuer Discovery Warning-->
+      <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
+        <span class="fa fa-warning"></span> This account is not compatible with re:claimID.
+      </div>
+      <div *ngIf="!newIdProviderDiscovered()" class="my-2 col-lg-4">
+        <input placeholder="E-Mail Adress" [(ngModel)]="webfingerEmail">
+        <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
+          <span class="fa fa-search"></span> Check compatibility
+        </button>
+      </div>
+      <!--Link account-->
+      <div *ngIf="newIdProviderDiscovered() && !loggedIn()" class="mb-3 px-2">
+          <div class="mx-n2">Available claims to request:</div>
+          <div *ngFor="let scope of scopes" class="form-check mx-2">
+            <input type="checkbox" class="form-check-input" id="scopes" [(ngModel)]="scope.chosen">
+            <label class="form-check-label" for="scope.chosen">{{scope.scope}}</label>
+          </div>
+        <button class="btn btn-primary mb-1 mt-2 fhg-link" (click)="loginFhgAccount()">
+          <span class="fa fa-link"></span> Link
+        </button>
+        <button class="btn btn-primary mb-1 fhg-link" (click)="cancelLinking()">
+          <span class="fa fa-close"></span> Cancel
+        </button>
+      </div>
+    </div>
+    <hr />
+
+    <h3>Attestations:</h3>
+    <!-- Attestation creation warning -->
+    <div
+      *ngIf="loggedIn() && !attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)"
+      class="alert alert-primary alert-dismissible fade show" role="alert">
+      <span class="fa fa-warning"></span> Note:
+      <ul>
+        <li>Only use alphanumeric attestation names.</li>
+        <li>You cannot define the same name twice.</li>
+        <li>Types and values may not be empty!</li>
+      </ul>
+    </div>
+
     <!-- Requested attestation -->
     <table class="table pb-1" style="">
       <thead>
@@ -73,54 +121,6 @@
       </tbody>
     </table>
 
-    <!--IdProvider-Discovery-->
-    <div *ngIf="isExperimental()">
-      <div *ngIf="!newIdProviderDiscovered()" class="input-group my-2 col-lg-4">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Email: </span>
-        </div>
-        <input placeholder="E-Mail Adress" class="form-control" [(ngModel)]="webfingerEmail">
-      </div>
-      <!--Issuer Discovery Warning-->
-      <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
-        <span class="fa fa-warning"></span> This is not a valid e-mail adress
-      </div>
-      <!--Email not found Warning-->
-      <div *ngIf="!emailNotFoundAlertClosed && webfingerEmail==''"
-        class="alert alert-danger alert-dismissible fade show my-2" role="alert">
-        <span class="fa fa-warning"></span> {{errorMassage}}
-      </div>
-      <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
-        <span class="fa fa-openid"></span> Link account
-      </button>
-      <!--Link account-->
-      <div *ngIf="newIdProviderDiscovered() && !loggedIn()" class="card mb-3 px-2">
-          <div class="card-header mx-n2">Scopes</div>
-          <div *ngFor="let scope of scopes" class="form-check mx-2">
-            <input type="checkbox" class="form-check-input" id="scopes" [(ngModel)]="scope.chosen">
-            <label class="form-check-label" for="scope.chosen">{{scope.scope}}</label>
-          </div>
-        <button class="btn btn-primary mb-1 mt-2 fhg-link" (click)="loginFhgAccount()">
-          <span class="fa fa-user"></span> Grant Access to {{newIdProvider.name}}
-        </button>
-        <button class="btn btn-primary mb-1 fhg-link" (click)="cancelLinking()">
-          Cancel Linking
-        </button>
-      </div>
-
-    </div>
-    <!-- Attestation creation warning -->
-    <div
-      *ngIf="loggedIn() && !attestationNameValid(newAttestation) || !attestationTypeValid(newAttestation) || !attestationValueValid(newAttestation)"
-      class="alert alert-primary alert-dismissible fade show" role="alert">
-      <span class="fa fa-warning"></span> Note:
-      <ul>
-        <li>Only use alphanumeric attestation names.</li>
-        <li>You cannot define the same name twice.</li>
-        <li>Types and values may not be empty!</li>
-      </ul>
-    </div>
-    <hr />
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="goBack()" [disabled]="!canGoBack()">
