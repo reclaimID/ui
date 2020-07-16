@@ -328,11 +328,5 @@ export class EditAttestationsComponent implements OnInit {
     this.webfingerEmail = '';
   }
 
-  isExperimental() {
-    var exp = localStorage.getItem('reclaimExperiments');
-    return ((undefined !== exp) && ("" !== exp));
-  }
-
-
 
 }
