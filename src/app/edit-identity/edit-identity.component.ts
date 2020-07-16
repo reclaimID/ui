@@ -650,7 +650,7 @@ export class EditIdentityComponent implements OnInit {
   }
 
   isExperimental() {
-    return this.configService.get().experimental;
+    return this.configService.get().experiments;
   }
 
 }
