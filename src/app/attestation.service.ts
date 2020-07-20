@@ -28,13 +28,18 @@ export class AttestationService {
         else {
             redirectUri = "https://ui.reclaim";
         }
-
-        var scopeValues = '';
-        scopes.forEach(scope => {
-            if (scope.chosen){
-                scopeValues = scopeValues + ' ' + scope.scope;
-            }
-        });
+        if (scopes.length == 0){
+            scopeValues = 'openid profile'
+        }
+        else{
+            var scopeValues = '';
+            scopes.forEach(scope => {
+               if (scope.chosen){
+                   scopeValues = scopeValues + ' ' + scope.scope;
+               }
+            });
+            scopeValues = scopeValues.slice(1);
+        }
         console.log(scopeValues);
 
         const authCodeFlowConfig: AuthConfig = {
@@ -64,13 +69,13 @@ export class AttestationService {
           // The first four are defined by OIDC.
           // Important: Request offline_access to get a refresh token
           // The api scope is a usecase specific one
-          scope: scopeValues.slice(1),
+          scope: scopeValues,
       
           showDebugInformation: true,  
 
           requireHttps: false,
         };
-    
+        console.log(authCodeFlowConfig.scope);
         return authCodeFlowConfig;
     }
 

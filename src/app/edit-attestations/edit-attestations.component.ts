@@ -97,7 +97,6 @@ export class EditAttestationsComponent implements OnInit {
     this.newAttestation.value = this.oauthService.getAccessToken();
     this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
       console.log("Saved Attestation");
-      console.log(res);
       this.resetNewIdProvider();
       this.resetScopes();
       this.updateAttestations();
@@ -335,6 +334,7 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   loginFhgAccount(){
+    this.configureOauthService();
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 

@@ -19,7 +19,7 @@
       <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
         <span class="fa fa-warning"></span> This account is not compatible with re:claimID.
       </div>
-      <div *ngIf="!newIdProviderDiscovered()" class="my-2 col-lg-4">
+      <div *ngIf="!newIdProviderDiscovered()" class="my-2 col-lg-6">
         <input placeholder="E-Mail Adress" [(ngModel)]="webfingerEmail">
         <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
           <span class="fa fa-search"></span> Check compatibility
