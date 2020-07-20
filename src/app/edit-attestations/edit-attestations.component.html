@@ -29,7 +29,7 @@
       <div *ngIf="newIdProviderDiscovered() && !loggedIn()" class="mb-3 px-2">
           <div class="mx-n2">Available claims to request:</div>
           <div *ngFor="let scope of scopes" class="form-check mx-2">
-            <input type="checkbox" class="form-check-input" id="scopes" [(ngModel)]="scope.chosen">
+            <input type="checkbox" class="form-check-input" id="scopes" [disabled]="necessaryScope(scope.scope)" [(ngModel)]="scope.chosen">
             <label class="form-check-label" for="scope.chosen">{{scope.scope}}</label>
           </div>
         <button class="btn btn-primary mb-1 mt-2 fhg-link" (click)="loginFhgAccount()">
