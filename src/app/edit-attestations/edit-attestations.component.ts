@@ -339,7 +339,7 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   configureOauthService(){
-    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
+    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider, this.scopes);
     this.oauthService.configure(authCodeFlowConfig);
   }
 
