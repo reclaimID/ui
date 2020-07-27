@@ -19,12 +19,21 @@
       <div *ngIf="!isValidEmailforDiscovery()" class="alert alert-primary alert-dismissible fade show" role="alert">
         <span class="fa fa-warning"></span> This account is not compatible with re:claimID.
       </div>
+      <div *ngIf="!newIdProviderDiscovered() && !loggedIn()"
+        class="alert alert-secondary alert-dismissible fade show my-2" role="alert">
+        <span class="fa fa-info"> </span>  <b class="ml-2">INFO</b><br/>
+        It is possible to link your external
+        accounts with a re:claimID identity. To do so, enter you email address
+        below and click "Check compatibility". <br/><i>NOTE:</i> Not all external accounts
+        support linking to re:claimID identities.<br/>
+      </div>
       <div *ngIf="!newIdProviderDiscovered()" class="my-2 col-lg-4">
-        <input placeholder="E-Mail Adress" [(ngModel)]="webfingerEmail">
+        <input placeholder="user@example.com" [(ngModel)]="webfingerEmail">
         <button *ngIf="!newIdProviderDiscovered()" class="btn btn-primary mb-4 fhg-link" (click)="discoverIdProvider()">
           <span class="fa fa-search"></span> Check compatibility
         </button>
       </div>
+      <!--Description-->
       <!--Link account-->
       <div *ngIf="newIdProviderDiscovered() && !loggedIn()" class="mb-3 px-2">
           <div class="mx-n2">Available claims to request:</div>

@@ -79,6 +79,11 @@ button.btn:hover, a.button:hover {
 
 div.card-avatar-character {
     font-size: 2em;
+    margin: 0.5em;
+}
+
+div.card-avatar {
+  border-bottom: 1px solid #555;
 }
 
 div.card-avatar-id {
