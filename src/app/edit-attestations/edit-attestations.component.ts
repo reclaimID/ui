@@ -42,7 +42,7 @@ export class EditAttestationsComponent implements OnInit {
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
     this.errorMassage = '';
-    this.scopes = [];
+    this.loadScopesFromLocalStorage()
     this.loadIdProviderFromLocalStorage();
     this.attestations = [];
     if (this.newIdProvider.url !== ''){
@@ -97,8 +97,8 @@ export class EditAttestationsComponent implements OnInit {
     this.newAttestation.value = this.oauthService.getAccessToken();
     this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
       console.log("Saved Attestation");
-      console.log(res);
       this.resetNewIdProvider();
+      this.resetScopes();
       this.updateAttestations();
       this.newAttestation.name = '';
       this.newAttestation.value = '';
@@ -249,6 +249,7 @@ export class EditAttestationsComponent implements OnInit {
   cancelAdding(){
     this.logOutFromOauthService();
     this.resetNewIdProvider();
+    this.resetScopes();
     this.newAttestation.value = '';
     this.newAttestation.name = '';
   }
@@ -296,8 +297,26 @@ export class EditAttestationsComponent implements OnInit {
         }
         this.scopes.push(scopeInterface)
       });
-      console.log(this.scopes);
+      localStorage.setItem("scopes", JSON.stringify(this.scopes));
       });  
+  }
+
+  loadScopesFromLocalStorage(){
+    this.scopes = [];
+    var loadedScopes = localStorage.getItem("scopes");
+    if (loadedScopes==null){
+      return
+    }
+    loadedScopes.split(',{').forEach(scopeObject => {
+      var scopeName = scopeObject.split(',')[0];
+      var scopeChosen = scopeObject.split(',')[1].slice(0, -1);
+      const scopeInterface: Scope = {
+        scope: scopeName.split(':')[1].slice(1,-1),
+        chosen: (/true/i).test(scopeChosen.split(':')[1]),
+      }
+      this.scopes.push(scopeInterface)
+    }
+      );
   }
 
   newIdProviderDiscovered(){
@@ -315,17 +334,31 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   loginFhgAccount(){
+    this.configureOauthService();
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 
   configureOauthService(){
-    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider);
+    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider, this.scopes);
     this.oauthService.configure(authCodeFlowConfig);
   }
 
   cancelLinking(){
     this.resetNewIdProvider();
+    this.resetScopes();
     this.webfingerEmail = '';
+  }
+
+  necessaryScope(scope){
+    if(scope=="openid"||scope=="profile"){
+      return true;
+    }
+    return false;
+  }
+
+  resetScopes(){
+    localStorage.removeItem("scopes");
+    this.scopes = [];
   }
 
 
