@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core'
 import { Observable} from 'rxjs';
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { IdProvider } from './idProvider';
+import { Scope } from './scope';
 
 @Injectable()
 export class AttestationService {
@@ -18,7 +19,7 @@ export class AttestationService {
         return this.http.get<any>('https://' + email.split('@')[1] + '/.well-known/webfinger?resource=acct:' + email);
     }
 
-    getOauthConfig(idProvider: IdProvider){
+    getOauthConfig(idProvider: IdProvider, scopes: Scope[]){
         var redirectUri;
         if (window.location.href.includes('localhost')){
             const user = localStorage.getItem('userForAttestation');
@@ -27,6 +28,19 @@ export class AttestationService {
         else {
             redirectUri = "https://ui.reclaim";
         }
+        if (scopes.length == 0){
+            scopeValues = 'openid profile'
+        }
+        else{
+            var scopeValues = '';
+            scopes.forEach(scope => {
+               if (scope.chosen){
+                   scopeValues = scopeValues + ' ' + scope.scope;
+               }
+            });
+            scopeValues = scopeValues.slice(1);
+        }
+        console.log(scopeValues);
 
         const authCodeFlowConfig: AuthConfig = {
           // Url of the Identity Provider
@@ -55,13 +69,13 @@ export class AttestationService {
           // The first four are defined by OIDC.
           // Important: Request offline_access to get a refresh token
           // The api scope is a usecase specific one
-          scope: 'openid profile',
+          scope: scopeValues,
       
           showDebugInformation: true,  
 
           requireHttps: false,
         };
-    
+        console.log(authCodeFlowConfig.scope);
         return authCodeFlowConfig;
     }
 
