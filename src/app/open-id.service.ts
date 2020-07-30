@@ -106,7 +106,7 @@ export class OpenIdService {
     if (!this.inOpenIdFlow()) {
       return [];
     }
-    if (this.params['scope'] ==== "" || this.params['scope'] === undefined) {
+    if ((this.params['scope'] === "") || (this.params['scope'] === undefined)) {
       return [];
     }
 
@@ -120,7 +120,7 @@ export class OpenIdService {
     if (!this.inOpenIdFlow()) {
       return [];
     }
-    if (this.params['claims'] ==== "" || this.params['claims'] === undefined) {
+    if ((this.params['claims'] === "") || (this.params['claims'] === undefined)) {
       return [];
     }
     var scope = [];
