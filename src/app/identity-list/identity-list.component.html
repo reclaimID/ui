@@ -124,7 +124,7 @@
 
         <div>
           <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || isAttestedMissing(identity) || !isClientVerified() || isReqReferenceInvalid(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share from this identity</span>
+            <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
             <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>
         </div>
