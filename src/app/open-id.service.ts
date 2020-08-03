@@ -131,9 +131,15 @@ export class OpenIdService {
 
     const scopes = this.params['scope'].split(' ');
     var i = scopes.indexOf('openid');
-    scopes.splice(i, 1);
+    if (i >= 0)
+    {
+      scopes.splice(i, 1);
+    }
     i = scopes.indexOf('profile');
-    scopes.splice(i, 1);
+    if (i >= 0)
+    {
+      scopes.splice(i, 1);
+    }
     return scopes;
   }
 
