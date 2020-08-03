@@ -6,10 +6,7 @@
     <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
     <b class="fa-2x"> Verifying request, please stand by...</b>
   </span>
-  <span *ngIf="isClientVerified() !== undefined && !isClientVerified()">
-    <b class="fa-2x"> Authorization failed. </b>
-  </span>
-  <br/> 
+  <br/>
 </div>
 <div class="card" *ngIf="isClientVerified()" style="margin-left:30%; width:40%;">
   <div class="card-body">
@@ -41,9 +38,12 @@
   </div>
 </div>
 <div *ngIf="isClientVerified() !== undefined && !isClientVerified()" style="text-align: center;">
-  <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
-    <span class="fa fa-openid"></span> Retry
-  </button>
+  <div class="alert alert-danger show" role="alert">
+    <b>Authorization failed.</b>
+    <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
+      <span class="fa fa-openid"></span> Retry
+    </button>
+  </div>
 </div>
 <div *ngIf="isClientVerified() === undefined" style="text-align: center;">
   <button class="btn btn-danger mt-4" *ngIf="isClientVerified() === undefined" (click)="cancelRequest()">
