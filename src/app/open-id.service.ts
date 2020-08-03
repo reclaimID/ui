@@ -64,15 +64,34 @@ export class OpenIdService {
     this.inOidcFlow = this.params['redirect_uri'] !== undefined;
   }
 
+  private buildAuthorizeRedirect(): any {
+    var redirectUri = this.config.get().apiUrl + '/openid/authorize';
+    redirectUri += '?client_id=' + this.params['client_id'];
+    redirectUri += '&redirect_uri=' + this.params['redirect_uri'];
+    redirectUri += '&response_type=' + this.params['response_type'];
+    redirectUri += '&scope=' + this.params['scope'];
+    if (this.referenceString !== "")
+    {
+      redirectUri += " " + this.referenceString;
+    }
+    if (this.params['state'] !== undefined)
+    {
+      redirectUri += '&state=' + this.params['state'];
+    }
+    if (this.params['code_challenge'] !== undefined)
+    {
+      redirectUri += '&code_challenge=' + this.params['code_challenge'];
+    }
+    if (this.params['nonce'] !== undefined)
+    {
+      redirectUri += '&nonce=' + this.params['nonce'];
+    }
+    return redirectUri;
+  }
+
   authorize(): any {
     this.inOidcFlow = false;
-    window.location.href = this.config.get().apiUrl + '/openid/authorize?client_id=' + this.params['client_id'] +
-    '&redirect_uri=' + this.params['redirect_uri'] +
-    '&response_type=' + this.params['response_type'] +
-    '&scope=' + this.params['scope'] + " " + this.referenceString +
-    '&state=' + this.params['state'] +
-    '&code_challenge=' + this.params['code_challenge'] +
-    '&nonce=' + this.params['nonce'];
+    window.location.href = this.buildAuthorizeRedirect();
   }
 
   setAttestations(attestations: Attribute[]) {
@@ -111,7 +130,9 @@ export class OpenIdService {
     }
 
     const scopes = this.params['scope'].split(' ');
-    const i = scopes.indexOf('openid');
+    var i = scopes.indexOf('openid');
+    scopes.splice(i, 1);
+    i = scopes.indexOf('profile');
     scopes.splice(i, 1);
     return scopes;
   }
