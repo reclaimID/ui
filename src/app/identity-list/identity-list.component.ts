@@ -152,6 +152,7 @@ export class IdentityListComponent implements OnInit {
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
       this.attributes[identity.pubkey] = [];
       this.requestedAttributes[identity.pubkey] = [];
+      this.requestedAttested = [];
       if (attributes === null) {
         this.getMissingAttributes(identity);
         return;
@@ -247,8 +248,14 @@ export class IdentityListComponent implements OnInit {
     if (undefined === this.requestedAttributes[identity.pubkey]) {
       return false;
     }
-    return this.getScopes().length !==
-      this.requestedAttributes[identity.pubkey].length;
+    var scopes = this.getScopes();
+    for (var i = 0; i < this.requestedAttributes[identity.pubkey].length; i++) {
+      if (!scopes.includes(this.requestedAttributes[identity.pubkey][i].name))
+        {
+        return true;
+      }
+    }
+    return false;
   }
 
   hasAttributes(identity) {
