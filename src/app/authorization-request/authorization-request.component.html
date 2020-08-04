@@ -39,7 +39,7 @@
 </div>
 <div *ngIf="isClientVerified() !== undefined && !isClientVerified()" style="text-align: center;">
   <div class="alert alert-danger show" role="alert">
-    <b>Authorization failed.</b>
+    <b>Authorization failed.</b><br/>
     <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
       <span class="fa fa-openid"></span> Retry
     </button>
