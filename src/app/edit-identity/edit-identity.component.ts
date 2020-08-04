@@ -92,11 +92,11 @@ export class EditIdentityComponent implements OnInit {
       let i;
       this.attributes = attributes;
       for (i = 0; i < attributes.length; i++) {
-        if ((attributes[i].attestation === '') &&
+        if ((attributes[i].flag === '0') &&
             this.oidcService.getScope().includes(attributes[i].name)) {
           this.requestedAttributes.push(attributes[i]);
         }
-        if ((attributes[i].attestation !== '') &&
+        if ((attributes[i].flag === '1') &&
             this.oidcService.getAttestedScope().includes(attributes[i].name)) {
           this.requestedAttested.push(attributes[i]);
         }
@@ -329,8 +329,14 @@ export class EditIdentityComponent implements OnInit {
     if (undefined === this.requestedAttributes) {
       return false;
     }
-    return this.oidcService.getScope().length !==
-      this.requestedAttributes.length;
+    var scopes = this.oidcService.getScope();
+    for (var i = 0; i < this.requestedAttributes.length; i++) {
+      if (!scopes.includes(this.requestedAttributes[i].name))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   private saveIdentityAttested() {
