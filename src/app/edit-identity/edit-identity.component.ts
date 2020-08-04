@@ -58,8 +58,8 @@ export class EditIdentityComponent implements OnInit {
     this.newIdProvider = new IdProvider ('', '', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
-    this.newAttribute = new Attribute('', '', '', '', 'STRING', '');
-    this.newAttested = new Attribute('', '', '', '', 'STRING', '');
+    this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
+    this.newAttested = new Attribute('', '', '', '', 'STRING', '1');
     this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
@@ -136,6 +136,7 @@ export class EditIdentityComponent implements OnInit {
     this.missingAttributes = [];
     for (i = 0; i < scopes.length; i++) {
       const attribute = new Attribute('', '', '', '', 'STRING', '');
+      attribute.flag = '0';
       attribute.name = scopes[i];
       this.missingAttributes.push(attribute);
     }
@@ -229,6 +230,7 @@ export class EditIdentityComponent implements OnInit {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = 'STRING';
+          this.newAttribute.flag = '0';
           this.router.navigate(['/']);
         }))
       .subscribe(res => {
@@ -290,6 +292,7 @@ export class EditIdentityComponent implements OnInit {
           this.newAttribute.name = '';
           this.newAttribute.value = '';
           this.newAttribute.type = 'STRING';
+          this.newAttribute.flag = '0';
           this.updateAttributes();
         }))
       .subscribe(res => {
@@ -347,6 +350,7 @@ export class EditIdentityComponent implements OnInit {
           this.newAttested.attestation = '';
           this.newAttested.id = '';
           this.newAttested.value = '';
+          this.newAttested.flag = '1';
         }))
       .subscribe(res => {
         //FIXME success dialog/banner
@@ -385,6 +389,7 @@ export class EditIdentityComponent implements OnInit {
     this.optionalAttested = [];
     for (i = 0; i < refscopes.length; i++) {
       const attribute = new Attribute('', '', '', '', 'STRING', '');
+      attribute.flag = '1';
       if (refscopes[i][1] === true)
       {
         attribute.name = refscopes[i][0];
@@ -447,6 +452,7 @@ export class EditIdentityComponent implements OnInit {
         this.newAttested.value= '';
         this.newAttested.id = '';
         this.newAttested.attestation = '';
+        this.newAttested.flag = '1';
         this.updateAttributes();
       }))
       .subscribe(res => {
