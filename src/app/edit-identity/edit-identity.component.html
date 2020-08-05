@@ -2,41 +2,215 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      Manage identity: <i>{{ identity.name }}</i>
+      <h2>Manage identity: <i>{{ identity.name }}</i></h2>
     </div>
   </div>
   <!-- Attribute table -->
   <div class="card-body">
     <div>
-      <h6 class="card-subtitle mb-2">Attributes:</h6>
-      <!-- Missing attributes -->
-      <table class="table pb-1" *ngIf="isAttributeMissing() || isAttestedMissing()">
-        <thead>
-          <tr>
-              <th>Attribute Name</th>
-              <th>Attribute Value</th>
-          </tr>
-        </thead>
+      <h3 class="card-subtitle mb-2" (click)="showGeneralInfo = !showGeneralInfo"><span *ngIf="showGeneralInfo" class="fa fa-chevron-down"></span><span class="fa fa-chevron-right" *ngIf="!showGeneralInfo"></span> General user information</h3>
+      <table class="table pb-1" *ngIf="showGeneralInfo">
         <tbody>
-          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttribute.name === missing.name" class="text-primary" *ngFor="let missing of missingAttributes">
-            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+          <!-- Standard "profile" claims first -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of existingProfileClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
             <td>
-              <input placeholder="Value" [(ngModel)]="missing.value">
+              <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+              <button class="btn btn-primary"  (click)="deleteAttribute(claim)" *ngIf="isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <!-- Standard "profile" claims missing on the identity -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of missingProfileClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+              <!-- FIXME Allow adding of attestation OR plain value -->
+              <input placeholder="Value" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </td>
             <td>
             </td>
           </tr>
-          <tr [class.openid]="inOpenIdFlow()" [class.alert-danger]="newAttested.name === missing.name" class="text-primary" *ngFor="let missing of missingAttested">
-            <td><div style="min-width: 15em">{{missing.name}}</div></td>
+        </tbody>
+      </table>
+      <h3 class="card-subtitle mb-2" (click)="showEmailInfo = !showEmailInfo"><span class="fa" [class.fa-eye-slash]="!showEmailInfo" [class.fa-eye]="showEmailInfo"></span> Email</h3>
+
+      <table class="table pb-1">
+        <tbody>
+          <!-- Standard "email" claims first -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of existingEmailClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
             <td>
-              <select class="custom-select" (change)="missing.attestation=$event.target.value; ">
+              <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+              <button class="btn btn-primary"  (click)="deleteAttribute(claim)" *ngIf="isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <!-- Standard "email" claims missing on the identity -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of missingEmailClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+              <!-- FIXME Allow adding of attestation OR plain value -->
+              <input placeholder="Value" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <h6 class="card-subtitle mb-2">Address:</h6>
+      <table class="table pb-1">
+        <tbody>
+          <!-- Standard "address" claims first -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of existingAddressClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+              <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+              <button class="btn btn-primary"  (click)="deleteAttribute(claim)" *ngIf="isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <!-- Standard "profile" claims missing on the identity -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of missingAddressClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+              <!-- FIXME Allow adding of attestation OR plain value -->
+              <input placeholder="Value" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h6 class="card-subtitle mb-2">Phone:</h6>
+      <table class="table pb-1">
+        <tbody>
+          <!-- Standard "phone" claims first -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of existingPhoneClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+            </td>
+            <td>
+              <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+            </td>
+            <td>
+              <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+              <button class="btn btn-primary"  (click)="deleteAttribute(claim)" *ngIf="isClaimAttested(claim)">
+                <span class="fa fa-trash"></span>
+              </button>
+            </td>
+          </tr>
+          <!-- Standard "phone" claims missing on the identity -->
+          <tr [class.openid]="inOpenIdFlow()"
+              [class.text-primary]="isClaimRequested(claim)"
+              [class.alert-danger]="newAttribute.name === claim.name"
+              *ngFor="let claim of missingPhoneClaims">
+            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td>
+              <select class="custom-select" (change)="claim.flag=$event.target.value; ">
+                <option value="0">Plain</option>
+                <option value="1">Attested</option>
+              </select>
+            </td>
+            <td>
+              <input *ngIf="claim.flag == '0'" placeholder="Value" [(ngModel)]="claim.value">
+              <select *ngIf="claim.flag == '1'" class="custom-select"
+                (change)="claim.attestation=$event.target.value; ">
+                <option value="">Select attestation source</option>
+                <option *ngFor="let attest of attestations" value={{attest.id}}>
+                {{attest.name}}
+                </option>
+              </select>
+
+              <select class="custom-select"
+                *ngIf="claim.attestation !== '' && claim.flag == '1'" (change)="claim.value=$event.target.value">
+                <option value="">Select claim</option>
+                <option *ngFor="let att of attestationValuesForClaim(claim)" value={{att.name}}>
+                {{att.value}} <i>({{att.name}})</i>
+                </option>
+              </select>
+
+            </td>
+            <td>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <h6 class="card-subtitle mb-2">Additional information:</h6>
+
+      <!-- Missing "non-standard" claims that are requested -->
+      <table class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
+        <tbody>
+          <tr [class.openid]="inOpenIdFlow()"
+            [class.alert-danger]="newAttribute.name === missing.name"
+            class="text-primary"
+            *ngFor="let missing of missingNonStandardClaims">
+            <td><div style="min-width: 15em"><b>{{missing.name}}</b></div></td>
+            <td>
+              <input *ngIf="!isClaimAttestationRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
+              <select *ngIf="isClaimAttestationRequested(missing)" class="custom-select" (change)="missing.attestation=$event.target.value; ">
                 <option value="">Select attestation source</option>
                 <option *ngFor="let attest of attestations" value={{attest.id}}>
                   {{attest.name}}
                 </option>
               </select>
 
-              <select class="custom-select" *ngIf="missing.attestation !== ''" (change)="missing.value=$event.target.value">
+              <select *ngIf="isClaimAttestationRequested(missing) && missing.attestation !== ''" class="custom-select" (change)="missing.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let claim of attestationValuesForAttested(missing)" value={{claim.name}}>
                   {{claim.value}} <i>({{claim.name}})</i>
@@ -46,29 +220,26 @@
             <td>
             </td>
           </tr>
-
         </tbody>
       </table>
-      <!-- Requested attributes -->
+      <!-- "non-standard" claims which do exist -->
       <table class="table pb-1" style="">
-        <thead *ngIf="!isAttributeMissing()">
-          <tr>
-              <th>Attribute Name</th>
-              <th>Attribute Value</th>
-          </tr>
-        </thead>
         <tbody>
-          <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(attribute)" [class.alert-danger]="newAttribute.name === attribute.name" [class.text-secondary]="isAttestation(attribute)" *ngFor="let attribute of attributes">
-            <td><div style="min-width: 15em">{{ attribute.name }}</div></td>
+          <tr [class.openid]="inOpenIdFlow()"
+            [class.text-primary]="isClaimRequested(attribute)"
+            [class.alert-danger]="newAttribute.name === attribute.name"
+            [class.text-secondary]="isClaimAttested(attribute)"
+            *ngFor="let attribute of existingNonStandardClaims">
+            <td><div style="min-width: 15em"><b>{{ attribute.name }}</b></div></td>
             <td>
-              <input *ngIf="!isAttestation(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
-              <span *ngIf="isAttestation(attribute)" >{{ getAttestedValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
+              <input *ngIf="!isClaimAttested(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
+              <span *ngIf="isClaimAttested(attribute)" >{{ getAttestedValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
             </td>
             <td>
-              <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isAttestation(attribute)">
+              <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isClaimAttested(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
-              <button class="btn btn-primary"  (click)="deleteAttribute(attribute)" *ngIf="isAttestation(attribute)">
+              <button class="btn btn-primary"  (click)="deleteAttribute(attribute)" *ngIf="isClaimAttested(attribute)">
                 <span class="fa fa-trash"></span>
               </button>
             </td>
@@ -79,7 +250,31 @@
               <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
             </td>
             <td>
-              <input placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
+              <select class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
+                <option value="0">Plain</option>
+                <option value="1">Attested</option>
+              </select>
+            </td>
+            <td>
+
+
+              <input *ngIf="newAttribute.flag == '0'" placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
+              <select *ngIf="newAttribute.flag == '1'" class="custom-select"
+                (change)="newAttribute.attestation=$event.target.value; ">
+                <option value="">Select attestation source</option>
+                <option *ngFor="let attest of attestations" value={{attest.id}}>
+                {{attest.name}}
+                </option>
+              </select>
+
+              <select class="custom-select"
+                *ngIf="newAttribute.attestation !== '' && newAttribute.flag == '0'" (change)="newAttribute.value=$event.target.value">
+                <option value="">Select claim</option>
+                <option *ngFor="let claim of attestationValuesForClaim(newAttribute)" value={{claim.name}}>
+                {{claim.value}} <i>({{claim.name}})</i>
+                </option>
+              </select>
+
             </td>
             <td>
               <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute()">
@@ -87,34 +282,6 @@
               </button>
             </td>
           </tr>
-          <!--new Attested Attribute-->
-          <tr [class.alert-danger]="isAttestedInConflict(newAttested)" *ngIf="0 != attestations.length">
-            <td>
-              <input [class.text-danger]="!attestedNameValid(newAttested)" placeholder="Attested attribute" [(ngModel)]="newAttested.name">
-            </td>
-            <td>
-              <select class="custom-select" (change)="newAttested.attestation=$event.target.value; ">
-                <option value="">Select attestation source</option>
-                <option *ngFor="let attest of attestations" value={{attest.id}}>
-                {{attest.name}}
-                </option>
-              </select>
-
-              <select class="custom-select" *ngIf="newAttested.attestation !== ''" (change)="newAttested.value=$event.target.value">
-                <option value="">Select claim</option>
-                <option *ngFor="let claim of attestationValuesForAttested(newAttested)" value={{claim.name}}>
-                {{claim.value}} <i>({{claim.name}})</i>
-                </option>
-              </select>
-            </td>
-
-            <td>
-              <button [disabled]="!canAddAttested(newAttested)" class="btn btn-primary"  (click)="addAttested()">
-                <span class="fa fa-plus"></span> 
-              </button>
-            </td>
-          </tr>
-
         </tbody>
       </table>
     </div>
@@ -125,22 +292,6 @@
         <li>Only use alphanumeric attribute names.</li>
         <li>You cannot define the same name twice.</li>
         <li>Attribute values may not be empty!</li>
-      </ul>
-    </div>
-    <!-- optional attributes information -->
-    <div *ngIf="optionalAttested.length !== 0" class="text-primary">
-      <span class="fa fa-openid"></span> You may optionally provide attestations for:
-      <ul>
-        <li *ngFor="let attribute of optionalAttested"><strong>{{attribute.name}}</strong>
-      </ul>
-    </div>
-    <!-- Attested creation warning -->
-    <div *ngIf="!attestedNameValid(newAttested) || !attestedValueValid(newAttested)" class="alert alert-primary alert-dismissible fade show" role="alert">
-      <span class="fa fa-warning"></span> Note:
-      <ul>
-        <li>Only use alphanumeric attribute names.</li>
-        <li>You cannot define the same name twice.</li>
-        <li>IDs and values may not be empty!</li>
       </ul>
     </div>
 

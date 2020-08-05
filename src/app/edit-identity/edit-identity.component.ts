@@ -26,18 +26,25 @@ export class EditIdentityComponent implements OnInit {
   attributes: Attribute[];
   attestations: Attestation[];
   attestationValues: {};
-  requestedAttributes: Attribute[];
-  missingAttributes: Attribute[];
   newAttribute: Attribute;
-  newAttested: Attribute;
-  newAttestation: Attestation;
+  newAttestedClaim: Attribute;
   missingAttested: Attribute[];
-  requestedAttested: Attribute[];
-  optionalAttested: Attribute[];
+  requestedClaims: Attribute[];
+  optionalClaims: Attribute[];
   webfingerEmail: string;
   authorizations: Authorization[];
   newIdProvider: IdProvider;
   emailNotFoundAlertClosed: boolean;
+  existingProfileClaims: Attribute[];
+  missingProfileClaims: Attribute[];
+  existingPhoneClaims: Attribute[];
+  missingPhoneClaims: Attribute[];
+  existingEmailClaims: Attribute[];
+  missingEmailClaims: Attribute[];
+  existingAddressClaims: Attribute[];
+  missingAddressClaims: Attribute[];
+  existingNonStandardClaims: Attribute[];
+  missingNonStandardClaims: Attribute[];
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -51,7 +58,7 @@ export class EditIdentityComponent implements OnInit {
   ngOnInit() {
     this.attributes = [];
     this.attestations = [];
-    this.optionalAttested = [];
+    this.optionalClaims = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
@@ -59,8 +66,7 @@ export class EditIdentityComponent implements OnInit {
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
-    this.newAttested = new Attribute('', '', '', '', 'STRING', '1');
-    this.newAttestation = new Attestation('', '', '', 'JWT', '', null, []);
+    this.newAttestedClaim = new Attribute('', '', '', '', 'STRING', '1');
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -78,31 +84,67 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
+  getDescription(claim: Attribute) : string {
+    return this.oidcService.getClaimDescription(claim);
+  }
 
+  private bootstrapClaimArray(claimTemplate: Object): Attribute[] {
+    var result = [];
+    for (let claim in claimTemplate) {
+      let attr = new Attribute(claim, '', '', '', 'STRING', '0');
+      result.push(attr);
+    }
+    return result;
+  }
+
+  private updateClaimArray(claimArray: Attribute[], attr: Attribute): Attribute[] {
+    var result = [];
+    for (let i = 0; i < claimArray.length; i++) {
+      if (claimArray[i].name === attr.name) {
+        result.push(attr);
+      } else {
+        result.push(claimArray[i]);
+      }
+    }
+    return result;
+  }
+
+  private cleanupClaimArray(claimArray: Attribute[]) {
+    var result = []
+    for (let attr of claimArray) {
+      if (attr.value !== '') {
+        result.push(attr);
+      }
+    }
+    return result;
+  }
 
   private updateAttributes() {
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
-      this.attributes = [];
-      this.requestedAttributes = [];
-      this.requestedAttested = [];
-      if (attributes === null) {
-        this.getMissingAttributes();
-        return;
-      }
-      let i;
+      this.existingProfileClaims = this.bootstrapClaimArray (this.oidcService.getStandardProfileClaims());
+      this.existingEmailClaims = this.bootstrapClaimArray (this.oidcService.getStandardEmailClaims());
+      this.existingPhoneClaims = this.bootstrapClaimArray (this.oidcService.getStandardPhoneClaims());
+      this.existingAddressClaims = this.bootstrapClaimArray (this.oidcService.getStandardAddressClaims());
+      this.existingNonStandardClaims = [];
       this.attributes = attributes;
-      for (i = 0; i < attributes.length; i++) {
-        if ((attributes[i].flag === '0') &&
-            this.oidcService.getScope().includes(attributes[i].name)) {
-          this.requestedAttributes.push(attributes[i]);
-        }
-        if ((attributes[i].flag === '1') &&
-            this.oidcService.getAttestedScope().includes(attributes[i].name)) {
-          this.requestedAttested.push(attributes[i]);
+      for (let attr of this.attributes) {
+        if (this.oidcService.isStandardProfileClaim(attr)) {
+          this.existingProfileClaims = this.updateClaimArray(this.existingProfileClaims, attr);
+        } else if (this.oidcService.isStandardEmailClaim(attr)) {
+          this.existingEmailClaims = this.updateClaimArray(this.existingEmailClaims, attr);
+        } else if (this.oidcService.isStandardAddressClaim(attr)) {
+          this.existingAddressClaims = this.updateClaimArray(this.existingAddressClaims, attr);
+        } else if (this.oidcService.isStandardPhoneClaim(attr)) {
+          this.existingPhoneClaims = this.updateClaimArray(this.existingPhoneClaims, attr);
+        } else {
+          this.existingNonStandardClaims.push(attr);
         }
       }
-      this.getMissingAttributes();
-      this.getMissingAttested();
+      this.existingProfileClaims = this.cleanupClaimArray(this.existingProfileClaims);
+      this.existingEmailClaims = this.cleanupClaimArray(this.existingEmailClaims);
+      this.existingPhoneClaims = this.cleanupClaimArray(this.existingPhoneClaims);
+      this.existingAddressClaims = this.cleanupClaimArray(this.existingAddressClaims);
+      this.updateMissingAttributes();
     },
     err => {
       //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -114,47 +156,52 @@ export class EditIdentityComponent implements OnInit {
     return this.oidcService.inOpenIdFlow();
   }
 
-  isRequested(attribute) {
-    if (undefined === this.requestedAttributes) {
+  isClaimRequested(attribute) {
+    const claims = this.oidcService.getClaimNamesForRequest();
+    if (undefined === claims) {
       return false;
     } else {
       return -1 !==
-        this.requestedAttributes.indexOf(attribute);
+        claims.indexOf(attribute.name);
     }
   }
 
-  getMissingAttributes() {
-    const scopes = this.oidcService.getScope();
-    let i;
-    for (i = 0; i < this.requestedAttributes.length; i++) {
+  updateMissingAttributes() {
+    var claims = this.oidcService.getStandardClaimNames();
+    for (let attr of this.attributes) {
       const j =
-        scopes.indexOf(this.requestedAttributes[i].name);
+        claims.indexOf(attr.name);
       if (j >= 0) {
-        scopes.splice(j, 1);
+        claims.splice(j, 1);
       }
     }
-    this.missingAttributes = [];
-    for (i = 0; i < scopes.length; i++) {
+    this.missingProfileClaims = [];
+    this.missingEmailClaims = [];
+    this.missingPhoneClaims = [];
+    this.missingAddressClaims = [];
+    this.missingNonStandardClaims = [];
+    for (let claim of claims) {
       const attribute = new Attribute('', '', '', '', 'STRING', '');
       attribute.flag = '0';
-      attribute.name = scopes[i];
-      this.missingAttributes.push(attribute);
+      attribute.name = claim;
+      if (this.oidcService.isStandardProfileClaim(attribute)) {
+        this.missingProfileClaims.push(attribute);
+      } else if (this.oidcService.isStandardEmailClaim(attribute)) {
+        this.missingEmailClaims.push(attribute);
+      } else if (this.oidcService.isStandardPhoneClaim(attribute)) {
+        this.missingPhoneClaims.push(attribute);
+      } else if (this.oidcService.isStandardAddressClaim(attribute)) {
+        this.missingAddressClaims.push(attribute);
+      } else {
+        this.missingNonStandardClaims.push(attribute);
+      }
     }
   }
 
-  isInConflict(attribute) {
-    let i;
-    if (undefined !== this.missingAttributes) {
-      for (i = 0; i < this.missingAttributes.length; i++) {
-        if (attribute.name ===
-          this.missingAttributes[i].name) {
-          return true;
-        }
-      }
-    }
-    if (undefined !== this.attributes) {
-      for (i = 0; i < this.attributes.length; i++) {
-        if (attribute.name === this.attributes[i].name) {
+  checkConflict(attrs: Attribute[], attribute: Attribute): boolean {
+    if (undefined !== attrs) {
+      for (let attr of attrs) {
+        if (attribute.name === attr.name) {
           return true;
         }
       }
@@ -162,7 +209,16 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
-  canAddAttribute(attribute) {
+  isInConflict(attribute: Attribute): boolean {
+    return this.checkConflict(this.missingProfileClaims, attribute) ||
+           this.checkConflict(this.missingEmailClaims, attribute) ||
+           this.checkConflict(this.missingPhoneClaims, attribute) ||
+           this.checkConflict(this.missingAddressClaims, attribute) ||
+           this.checkConflict(this.missingNonStandardClaims, attribute) ||
+           this.checkConflict(this.attributes, attribute);
+  }
+
+  canAddAttribute(attribute: Attribute): boolean {
     if ((attribute.name === '') || (attribute.value === '')) {
       return false;
     }
@@ -172,12 +228,15 @@ export class EditIdentityComponent implements OnInit {
     return !this.isInConflict(attribute);
   }
 
-  canSaveIdentity() {
-    return (this.canSaveAttribute() &&
-            this.canSaveAttested());
+  canSaveIdentity(): boolean {
+    return this.canSaveAttributes();
   }
 
-  canSaveAttribute() {
+  /**
+   * TODO fix newAttribute so that we can make
+   * it either attested or plain
+   */
+  canSaveAttributes(): boolean {
     if (this.canAddAttribute(this.newAttribute)) {
       return true;
     }
@@ -186,44 +245,18 @@ export class EditIdentityComponent implements OnInit {
       !this.isInConflict(this.newAttribute);
   }
 
-  canSaveAttested() {
-    if (this.canAddAttested(this.newAttested)) {
-      return true;
-    }
-    return ((this.newAttested.name === '') &&
-      (this.newAttested.attestation === '') &&
-      (this.newAttested.id === '')) &&
-      !this.isAttestedInConflict(this.newAttested);
-  }
-
-
-  isAttestedInConflict(attested) {
-    let i;
-    if (undefined !== this.missingAttested) {
-      for (i = 0; i < this.missingAttested.length; i++) {
-        if (attested.name ===
-          this.missingAttested[i].name) {
-          return true;
-        }
-      }
-    }
-    if (undefined !== this.attributes) {
-      for (i = 0; i < this.attributes.length; i++) {
-        if (attested.name === this.attributes[i].name) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-
   saveIdentity() {
     localStorage.removeItem("userForAttestation");
     this.saveIdentityAttributes();
   }
 
   saveIdentityAttributes() {
+    if (this.newAttribute.flag === '0') {
+      /**
+       * Make sure attestation is not still set
+       */
+      this.newAttribute.attestation = '';
+    }
     this.storeAttributes()
       .pipe(
         finalize(() => {
@@ -257,25 +290,45 @@ export class EditIdentityComponent implements OnInit {
       });
   }
 
-  private storeAttributes() {
+  private storeMissingAttributes(missing: Attribute[]): any {
     const promises = [];
     let i;
-    if (undefined !== this.missingAttributes) {
-      for (i = 0; i < this.missingAttributes.length; i++) {
-        if (this.missingAttributes[i].value === '') {
+    if (undefined !== missing) {
+      for (let attr of missing) {
+        if (attr.value === '') {
           continue;
         }
+        if (attr.flag === '0') {
+          attr.attestation = '';
+        }
         promises.push(from(this.reclaimService.addAttribute(
-          this.identity, this.missingAttributes[i])));
+          this.identity, attr)));
       }
     }
+    return promises;
+  }
+
+  /**
+   * FIXME incorporate attested attributes here!
+   */
+  private storeAttributes() {
+    var promises = [];
+    promises = promises.concat (this.storeMissingAttributes (this.missingProfileClaims));
+    promises = promises.concat (this.storeMissingAttributes (this.missingEmailClaims));
+    promises = promises.concat (this.storeMissingAttributes (this.missingPhoneClaims));
+    promises = promises.concat (this.storeMissingAttributes (this.missingAddressClaims));
+    promises = promises.concat (this.storeMissingAttributes (this.missingNonStandardClaims));
+
     if (undefined !== this.attributes) {
-      for (i = 0; i < this.attributes.length; i++) {
-        if (this.attributes[i].flag === '1') {
+      for (let attr of this.attributes) {
+        /*if (attr.flag === '1') {
           continue; //Is an attestation
+        }*/
+        if (attr.flag === '0') {
+          attr.attestation = '';
         }
         promises.push(
-          from(this.reclaimService.addAttribute(this.identity, this.attributes[i])));
+          from(this.reclaimService.addAttribute(this.identity, attr)));
       }
     }
     if (this.newAttribute.value !== '') {
@@ -285,6 +338,9 @@ export class EditIdentityComponent implements OnInit {
     return forkJoin(promises);
   }
 
+  /**
+   * Adds a new attribute, stores all changes and STAYS on this page.
+   */
   addAttribute() {
     this.storeAttributes()
       .pipe(
@@ -305,7 +361,7 @@ export class EditIdentityComponent implements OnInit {
       });
   }
 
-  attributeNameValid(attribute) {
+  attributeNameValid(attribute: Attribute): boolean {
     if (attribute.name === '' && attribute.value === '') {
       return true;
     }
@@ -325,83 +381,66 @@ export class EditIdentityComponent implements OnInit {
     return true;
   }
 
-  isAttributeMissing() {
-    if (!this.oidcService.inOpenIdFlow()) {
-      return false;
-    }
-    if (undefined === this.requestedAttributes) {
-      return false;
-    }
-    var scopes = this.oidcService.getScope();
-    for (var i = 0; i < this.requestedAttributes.length; i++) {
-      if (!scopes.includes(this.requestedAttributes[i].name))
-      {
+  isAttributeNameInList(name: string, attrs: Attribute[]) {
+    for (let attr of attrs) {
+      if (name === attr.name) {
         return true;
       }
     }
     return false;
   }
 
-  private saveIdentityAttested() {
-    this.storeAttested()
-      .pipe(
-        finalize(() => {
-          this.newAttested.name = '';
-          this.newAttested.attestation = '';
-          this.newAttested.id = '';
-          this.newAttested.value = '';
-          this.newAttested.flag = '1';
-        }))
-      .subscribe(res => {
-        //FIXME success dialog/banner
-        this.updateAttributes();
-      },
-      err => {
-        console.log(err);
-        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      });
-  }
-
-  deleteAttested(attribute) {
-    this.reclaimService.deleteAttribute(this.identity, attribute)
-      .subscribe(res => {
-        //FIXME info dialog
-        this.updateAttributes();
-      },
-      err => {
-        //this.errorInfos.push("Failed to delete reference ``" + reference.name + "''");
-        console.log(err);
-      });
-  }
-
-
-  getMissingAttested() {
-    const refscopes = this.oidcService.getAttestedScope();
-    let i;
-    for (i = 0; i < this.requestedAttested.length; i++) {
-      for (var j = 0; j < refscopes.length; j++) {
-        if (this.requestedAttested[i].name === refscopes[j][0] ) {
-          refscopes.splice(j,1);
-        }
+  isAnyRequestedNonStandardClaimMissing(): boolean {
+    if (!this.oidcService.inOpenIdFlow()) {
+      return false;
+    }
+    var requestedClaims = this.oidcService.getClaimNamesForRequest();
+    for (let claim in requestedClaims) {
+      if (this.isAttributeNameInList(claim, this.missingNonStandardClaims)) {
+        return true;
       }
     }
-    this.missingAttested = [];
-    this.optionalAttested = [];
-    for (i = 0; i < refscopes.length; i++) {
-      const attribute = new Attribute('', '', '', '', 'STRING', '');
-      attribute.flag = '1';
-      if (refscopes[i][1] === true)
-      {
-        attribute.name = refscopes[i][0];
-        this.missingAttested.push(attribute);
-      }
-      if (refscopes[i][1] === false)
-      {
-        attribute.name = refscopes[i][0];
-        this.optionalAttested.push(attribute);
+    return false;
+
+  }
+
+  isAnyRequestedAttributeMissing(): boolean {
+    if (!this.oidcService.inOpenIdFlow()) {
+      return false;
+    }
+    var requestedClaims = this.oidcService.getClaimNamesForRequest();
+    for (let claim in requestedClaims) {
+      if (this.isAttributeNameInList(claim, this.missingProfileClaims) ||
+          this.isAttributeNameInList(claim, this.missingEmailClaims) ||
+          this.isAttributeNameInList(claim, this.missingAddressClaims) ||
+          this.isAttributeNameInList(claim, this.missingPhoneClaims) ||
+          this.isAttributeNameInList(claim, this.missingNonStandardClaims)) {
+        return true;
       }
     }
+    return false;
   }
+
+  isClaimAttestationRequested(attr: Attribute) {
+    //TODO check if this claim is in claims parameter and needs attestation
+    var claims = this.oidcService.getRequestedClaims();
+    for (let claim of claims) {
+      if (claim[0] == attr.name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isClaimOptional(claim: Attribute) {
+    //TODO check if this claim is in claims parameter and optional
+    var claims = this.oidcService.getRequestedClaims();
+    for (let claim of claims) {
+      return claim[1];
+    }
+    return true;
+  }
+
 
   private updateAttestations() {
     this.reclaimService.getAttestations(this.identity).subscribe(attestations => {
@@ -413,94 +452,11 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
-  private storeAttested() {
-    const promises = [];
-    let i;
-    if (undefined !== this.missingAttested) {
-      for (i = 0; i < this.missingAttested.length; i++) {
-        if ((this.missingAttested[i].value === '') || (this.missingAttested[i].attestation !== '')) {
-          console.log("Empty Attestation: " + this.missingAttested[i]);
-          continue;
-        }
-        console.log("Missing Attestation: " + this.missingAttested[i]);
-        promises.push(from(this.reclaimService.addAttribute(
-          this.identity, this.missingAttested[i])));
-      }
-    }
-    if (undefined !== this.attributes) {
-      for (i = 0; i < this.attributes.length; i++) {
-        if (this.attributes[i].attestation === '') {
-          continue;
-        }
-        promises.push(
-          from(this.reclaimService.addAttribute(this.identity, this.attributes[i])));
-      }
-    }
-    if ((this.newAttested.value !== '') && (this.newAttested.attestation !== '')
-        && (this.newAttested.name !== '')) {
-      promises.push(from(this.reclaimService.addAttribute(this.identity, this.newAttested)));
-    }
-
-    return forkJoin(promises);
-  }
-
-  addAttested() {
-    this.storeAttested()
-    .pipe(
-      finalize(() => {
-        this.newAttested.name = '';
-        this.newAttested.value= '';
-        this.newAttested.id = '';
-        this.newAttested.attestation = '';
-        this.newAttested.flag = '1';
-        this.updateAttributes();
-      }))
-      .subscribe(res => {
-        console.log(res);
-      },
-      err => {
-        console.log(err);
-        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-        EMPTY
-      });
-  }
-
-
-  isAttestation(attribute) {
+  isClaimAttested(attribute) {
     return attribute.flag === '1';
   }
 
-  canAddAttested(attribute) {
-    if ((attribute.name === '') || (attribute.value === '') || (attribute.attestation === '')) {
-      return false;
-    }
-    if (attribute.name.indexOf(' ') >= 0) {
-      return false;
-    }
-    return !this.isAttestedInConflict(attribute);
-  }
-
-  attestedNameValid(attribute) {
-    if (attribute.name === '' && attribute.value === '' && attribute.attestation === '') {
-      return true;
-    }
-    if (attribute.name.indexOf(' ') >= 0) {
-      return false;
-    }
-    if (!/^[a-zA-Z0-9-_]+$/.test(attribute.name)) {
-      return false;
-    }
-    return !this.isAttestedInConflict(attribute);
-  }
-
-  attestedValueValid(attribute: Attribute) {
-    if (attribute.value === '') {
-      return attribute.name === '';
-    }
-    return true;
-  }
-
-  attestedAttestationValid(attribute: Attribute) {
+  isClaimAttestationValid(attribute: Attribute) {
     if (attribute.attestation === '') {
       return attribute.name === '';
     }
@@ -508,108 +464,12 @@ export class EditIdentityComponent implements OnInit {
   }
 
 
-  isAttestedRequested(attribute: Attribute) {
-    if (undefined === this.requestedAttested) {
-      return false;
-    } else {
-      return -1 !==
-        this.requestedAttested.indexOf(attribute);
-    }
-  }
-
-  isAttrRefRequested(attribute: Attribute) {
-    if (undefined === this.requestedAttested) {
-      return false;
-    } else {
-      for (var j = 0; j < this.requestedAttested.length; j++) {
-        if (attribute.name === this.requestedAttested[j].name) {
-          return true;
-        }
-      }
-      return false;
-    }
-  }
-
-  isoptAttestedRequested(attribute: Attribute) {
-    if (undefined === this.optionalAttested) {
-      return false;
-    } else {
-      return -1 !==
-        this.optionalAttested.indexOf(attribute);
-    }
-  }
-
-  isAttestedMissing() {
-    if (!this.inOpenIdFlow()) {
-      return false;
-    }
-    if (undefined === this.requestedAttested) {
-      return false;
-    }
-    for (var i = 0; i < this.oidcService.getAttestedScope().length; i++) {
-      if (this.oidcService.getAttestedScope()[i][1] === true) {
-        var j;
-        for (j = 0; j < this.requestedAttested.length; j++) {
-          if (this.oidcService.getAttestedScope()[i][0] === this.requestedAttested[j].name){
-            break;
-          }
-        }
-        if (j === this.requestedAttested.length){
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  /*private setAttestationValue(attestation) {
-    var value_string="";
-    return this.reclaimService.parseAttest(attestation).subscribe(json_string =>{
-    this.attestation_val[attestation.id]=json_string;
-    },
-    err => {
-  //this.errorInfos.push("Error parsing attestation ``" + attestation.name + "''");
-  console.log(err);
-  });
-  }*/
-
-  isAttestedValid(attribute: Attribute) {
-    for (let i = 0; i < this.attestations.length; i++) {
-      if (attribute.attestation === this.attestations[i].id) {
-        return this.isAttestationValid(this.attestations[i]);
-      }
-    }
-    return false;
-  }
-
-  isAttestationValid(attestation: Attestation) {
-    //FIXME JWT specific
-    //FIXME the expiration of the JWT should be a property of the attestation
-    //Not part of the values
-    return true;
-  }
-
-  attestationValuesForAttested(attribute: Attribute) {
+  attestationValuesForClaim(attribute: Attribute) {
     for (let i = 0; i < this.attestations.length; i++) {
       if (this.attestations[i].id == attribute.attestation) {
         return this.attestations[i].attributes;
       }
     }
-  }
-
-  isAnyAttestationInvalid() {
-    if (!this.inOpenIdFlow()) {
-      return false;
-    }
-    if (undefined === this.requestedAttested) {
-      return false;
-    }
-    for (var j = 0; j < this.attestations.length; j++) {
-      if (!this.isAttestationValid(this.attestations[j])) {
-        return true;
-      }
-    }
-    return false;
   }
 
   //FIXME attestations need an issuer field

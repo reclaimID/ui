@@ -21,11 +21,14 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 
 export class IdentityListComponent implements OnInit {
 
-  requestedAttributes: any;
-  requestedAttested: any;
-  missingAttributes: any;
-  missingAttestations: any;
-  optionalAttested: any;
+  profileAttributes: any;
+  emailAttribute: any;
+  phoneAttribute: any;
+  addressAttributes: any;
+  requestedScopes: any;
+  requestedClaims: any;
+  missingClaims: any;
+  optionalClaims: any;
   attributes: any;
   attestations: any;
   identities: Identity[];
@@ -34,6 +37,7 @@ export class IdentityListComponent implements OnInit {
   modalOpened: any;
   errorInfos: any;
   searchTerm: any;
+  sortAttributeByStandardClaim: any;
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
     private identityService: IdentityService,
@@ -49,11 +53,10 @@ export class IdentityListComponent implements OnInit {
     this.attestations = {};
     this.identities = [];
     this.showConfirmDelete = null;
-    this.requestedAttributes = {};
-    this.missingAttributes = {};
-    this.requestedAttested = {};
-    this.missingAttestations = {};
-    this.optionalAttested = {};
+    this.requestedScopes = {};
+    this.missingClaims = {};
+    this.requestedClaims = {};
+    this.optionalClaims = {};
     this.connected = false;
     this.modalOpened = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
@@ -89,54 +92,41 @@ export class IdentityListComponent implements OnInit {
 
   hideConfirmDelete() { this.showConfirmDelete = null; }
 
-  getMissingAttributes(identity) {
-    const scopes = this.getScopes();
+  /**
+   * Returns missing claims specifically requested
+   * through the "claims" OIDC parameter
+   */
+  updateMissingClaims(identity) {
+    const refscopes = this.oidcService.getRequestedClaims();
     let i;
-    for (i = 0; i < this.requestedAttributes[identity.pubkey].length; i++) {
-      const j =
-        scopes.indexOf(this.requestedAttributes[identity.pubkey][i].name);
-      if (j >= 0) {
-        scopes.splice(j, 1);
-      }
-    }
-    this.missingAttributes[identity.pubkey] = [];
-    for (i = 0; i < scopes.length; i++) {
-      const attribute = new Attribute('', '', '', '', 'STRING', '');
-      attribute.name = scopes[i];
-      this.missingAttributes[identity.pubkey].push(attribute);
-    }
-  }
-
-  getMissingAttested(identity) {
-    const refscopes = this.oidcService.getAttestedScope();
-    let i;
-    for (i = 0; i < this.requestedAttested[identity.pubkey].length; i++) {
+    for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
       for (var j = 0; j < refscopes.length; j++) {
-        if (this.requestedAttested[identity.pubkey][i].name === refscopes[j][0] ) {
+        if (this.attributes[identity.pubkey][i].name === refscopes[j][0] ) {
           refscopes.splice(j,1);
         }
       }
     }
-    this.missingAttestations[identity.pubkey] = [];
-    this.optionalAttested[identity.pubkey] = [];
+    this.missingClaims[identity.pubkey] = [];
+    this.optionalClaims[identity.pubkey] = [];
     for (i = 0; i < refscopes.length; i++) {
       const attested = new Attribute('', '', '', '', 'STRING', '');
       if (refscopes[i][1] === true)
       {
         attested.name = refscopes[i][0];
-        this.missingAttestations[identity.pubkey].push(attested);
+        this.missingClaims[identity.pubkey].push(attested);
       }
       if (refscopes[i][1] === false)
       {
         attested.name = refscopes[i][0];
-        this.optionalAttested[identity.pubkey].push(attested);
+        this.optionalClaims[identity.pubkey].push(attested);
       }
     }
   }
 
   private updateAttestations(identity) {
     this.attestations[identity.pubkey] = [];
-    this.requestedAttested[identity.pubkey] = [];
+    this.requestedClaims[identity.pubkey] = [];
+    this.optionalClaims[identity.pubkey] = [];
     this.reclaimService.getAttestations(identity).subscribe(attestations => {
       if (attestations !== null) {
         this.attestations[identity.pubkey] = attestations;
@@ -148,29 +138,28 @@ export class IdentityListComponent implements OnInit {
     });
   }
 
+  getAttributeDescription(attr: Attribute): string {
+    return this.oidcService.getClaimDescription(attr);
+  }
+
+  sortAttributeByStandardClaims(mylist: string[]) {
+    return function(a1: Attribute, a2: Attribute) {
+      var claimNames = mylist;
+      let idx1 = claimNames.indexOf(a1.name);
+      let idx2 = claimNames.indexOf(a2.name);
+      if ((idx1 == -1) && (idx2 != -1)) { return 1;}
+      if ((idx2 == -1) && (idx1 != -1)) { return -1;}
+      if (idx1 > idx2) {return 1;}
+      if (idx1 < idx2) {return -1;}
+      return 0;
+    }
+  }
+
   private updateAttributes(identity) {
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
-      this.attributes[identity.pubkey] = [];
-      this.requestedAttributes[identity.pubkey] = [];
-      this.requestedAttested = [];
-      if (attributes === null) {
-        this.getMissingAttributes(identity);
-        return;
-      }
-      let i;
-      for (i = 0; i < attributes.length; i++) {
-        this.attributes[identity.pubkey].push(attributes[i]);
-        if ((attributes[i].flag === '0') &&
-            this.oidcService.getScope().includes(attributes[i].name)) {
-          this.requestedAttributes[identity.pubkey].push(attributes[i]);
-        }
-        if ((attributes[i].flag === '1') &&
-            this.oidcService.getAttestedScope().includes(attributes[i].name)) {
-          this.requestedAttested[identity.pubkey].push(attributes[i]);
-        }
-      }
-      this.getMissingAttributes(identity);
-      this.getMissingAttested(identity);
+      this.requestedClaims[identity.pubkey] = [];
+      this.attributes[identity.pubkey] = attributes.sort(this.sortAttributeByStandardClaims(this.oidcService.getStandardClaimNames()));
+      this.updateMissingClaims(identity);
     },
     err => {
       this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -191,7 +180,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   loginIdentity(identity) {
-    this.oidcService.setAttestations(this.requestedAttested[identity.pubkey]);
+    this.oidcService.setAttestations(this.requestedClaims[identity.pubkey]);
     this.oidcService.login(identity).subscribe(() => {
       console.log('Successfully logged in');
       this.authorize();
@@ -217,45 +206,119 @@ export class IdentityListComponent implements OnInit {
     return this.oidcService.inOpenIdFlow();
   }
 
-  getScopes() { return this.oidcService.getScope(); }
+  getScopes() { return this.oidcService.getRequestedScope(); }
 
-  getMissing(identity) {
+  getMissingClaims(identity) {
     const arr = [];
     let i = 0;
-    for (i = 0; i < this.missingAttributes[identity.pubkey].length; i++) {
-      arr.push(this.missingAttributes[identity.pubkey][i].name);
+    for (i = 0; i < this.missingClaims[identity.pubkey].length; i++) {
+      arr.push(this.missingClaims[identity.pubkey][i].name);
     }
     return arr;
   }
 
-  canAuthorize(identity) {
-    return this.inOpenIdFlow();
-  }
-
-  isRequested(identity, attribute) {
-    if (undefined === this.requestedAttributes[identity.pubkey]) {
+  isClaimRequested(identity, attribute) {
+    if (this.isProfileRequested() &&
+        this.oidcService.isStandardProfileClaim(attribute)) {
+      return true;
+    }
+    if (this.isEmailRequested() &&
+        this.oidcService.isStandardEmailClaim(attribute)) {
+      return true;
+    }
+    if (this.isPhoneRequested() &&
+        this.oidcService.isStandardPhoneClaim(attribute)) {
+      return true;
+    }
+    if (this.isAddressRequested() &&
+        this.oidcService.isStandardAddressClaim(attribute)) {
+      return true;
+    }
+    if (undefined === this.requestedClaims[identity.pubkey]) {
       return false;
     } else {
       return -1 !==
-        this.requestedAttributes[identity.pubkey].indexOf(attribute);
+        this.requestedClaims[identity.pubkey].indexOf(attribute);
     }
   }
 
-  isAttributeMissing(identity) {
+  isProfileRequested() {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedAttributes[identity.pubkey]) {
+    return this.oidcService.isProfileRequested();
+  }
+
+  isEmailRequested() {
+    if (!this.inOpenIdFlow()) {
       return false;
     }
-    var scopes = this.getScopes();
-    for (var i = 0; i < this.requestedAttributes[identity.pubkey].length; i++) {
-      if (!scopes.includes(this.requestedAttributes[identity.pubkey][i].name))
-        {
-        return true;
-      }
+    return this.oidcService.isEmailRequested();
+  }
+
+  isPhoneRequested() {
+    if (!this.inOpenIdFlow()) {
+      return false;
     }
-    return false;
+    return this.oidcService.isPhoneRequested();
+  }
+
+  isAddressRequested() {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    return this.oidcService.isAddressRequested();
+  }
+
+  isProfileMissing(identity) {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    return this.oidcService.isProfileMissing(this.attributes[identity.pubkey]);
+  }
+
+  isEmailMissing(identity) {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    return this.oidcService.isEmailMissing(this.attributes[identity.pubkey]);
+  }
+
+  isPhoneMissing(identity) {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    return this.oidcService.isPhoneMissing(this.attributes[identity.pubkey]);
+  }
+
+  isRequestedScopeMissing(identity) {
+    return (this.isPhoneRequested() && this.isPhoneMissing(identity)) ||
+           (this.isEmailRequested() && this.isEmailMissing(identity)) ||
+           (this.isProfileRequested() && this.isProfileMissing(identity)) ||
+           (this.isAddressRequested() && this.isAddressMissing(identity));
+  }
+
+  isAddressMissing(identity) {
+    if (!this.inOpenIdFlow()) {
+      return false;
+    }
+    return this.oidcService.isAddressMissing(this.attributes[identity.pubkey]);
+  }
+
+  getProfileDescription() {
+    return this.oidcService.getScopeDescription("profile");
+  }
+
+  getEmailDescription() {
+    return this.oidcService.getScopeDescription("email");
+  }
+
+  getPhoneDescription() {
+    return this.oidcService.getScopeDescription("phone");
+  }
+
+  getAddressDescription() {
+    return this.oidcService.getScopeDescription("address");
   }
 
   hasAttributes(identity) {
@@ -297,23 +360,21 @@ export class IdentityListComponent implements OnInit {
     return this.isConnected() && 0 != this.identities.length;
   }
 
-  isAttestedMissing(identity) {
+  isClaimMissing(identity) {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedAttested) {
+    if (undefined === this.requestedClaims) {
       return false;
     }
-    for (var i = 0; i < this.oidcService.getAttestedScope().length; i++) {
-      if (this.oidcService.getAttestedScope()[i][1] === true) {
+    var claims = this.oidcService.getRequestedClaims();
+    for (var i = 0; i < claims.length; i++) {
+      if (claims[i][1] === true) {
         var j;
-        for (j = 0; j < this.requestedAttested.length; j++) {
-          if (this.oidcService.getAttestedScope()[i][0] === this.requestedAttested[j].name){
-            break;
+        for (j = 0; j < this.requestedClaims.length; j++) {
+          if (claims[i][0] === this.requestedClaims[j].name){
+            return true;
           }
-        }
-        if (j === this.requestedAttested.length){
-          return true;
         }
       }
     }
@@ -321,12 +382,12 @@ export class IdentityListComponent implements OnInit {
   }
 
   isAttestedRequested(identity: Identity, attribute: Attribute) {
-    if (undefined === this.requestedAttested[identity.pubkey]) {
+    if (undefined === this.requestedClaims[identity.pubkey]) {
       return false;
     } else {
-      for (var j = 0; j < this.requestedAttested[identity.pubkey].length; j++) {
+      for (var j = 0; j < this.requestedClaims[identity.pubkey].length; j++) {
         if ((attribute.flag === '1') &&
-            (attribute.name === this.requestedAttested[identity.pubkey][j].name)) {
+            (attribute.name === this.requestedClaims[identity.pubkey][j].name)) {
           return true;
         }
       }
@@ -345,17 +406,17 @@ export class IdentityListComponent implements OnInit {
     return false; //FIXME actually handle this https://gitlab.com/voggenre/ui/commit/dd9b6656dee7dbf59809dcc9bc2508ee70d8afe6
   }
 
-  getOptional(identity) {
+  getOptionalClaims(identity) {
     const arr = [];
     let i = 0;
     if (!this.inOpenIdFlow()) {
       return [];
     }
-    if (undefined === this.optionalAttested[identity.pubkey]) {
+    if (undefined === this.optionalClaims[identity.pubkey]) {
       return [];
     }
-    for (i = 0; i < this.optionalAttested[identity.pubkey].length; i++) {
-        arr.push(this.optionalAttested[identity.pubkey][i].name);
+    for (i = 0; i < this.optionalClaims[identity.pubkey].length; i++) {
+        arr.push(this.optionalClaims[identity.pubkey][i].name);
     }
     return arr;
   }
