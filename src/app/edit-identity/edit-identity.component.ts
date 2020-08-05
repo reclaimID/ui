@@ -45,6 +45,7 @@ export class EditIdentityComponent implements OnInit {
   missingAddressClaims: Attribute[];
   existingNonStandardClaims: Attribute[];
   missingNonStandardClaims: Attribute[];
+  actions: string;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -56,6 +57,7 @@ export class EditIdentityComponent implements OnInit {
               private router: Router,) {}
 
   ngOnInit() {
+    this.actions = '';
     this.attributes = [];
     this.attestations = [];
     this.optionalClaims = [];
@@ -257,6 +259,7 @@ export class EditIdentityComponent implements OnInit {
        */
       this.newAttribute.attestation = '';
     }
+    this.actions = "Saving...";
     this.storeAttributes()
       .pipe(
         finalize(() => {
@@ -268,6 +271,7 @@ export class EditIdentityComponent implements OnInit {
         }))
       .subscribe(res => {
         //FIXME success dialog/banner
+        this.actions = "";
         this.updateAttributes();
         this.router.navigate(['/']);
       },
@@ -342,6 +346,7 @@ export class EditIdentityComponent implements OnInit {
    * Adds a new attribute, stores all changes and STAYS on this page.
    */
   addAttribute() {
+    this.actions = "Saving..."
     this.storeAttributes()
       .pipe(
         finalize(() => {
@@ -352,6 +357,7 @@ export class EditIdentityComponent implements OnInit {
           this.updateAttributes();
         }))
       .subscribe(res => {
+        this.actions = '';
         console.log(res);
       },
       err => {
