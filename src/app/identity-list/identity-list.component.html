@@ -53,7 +53,6 @@
   <div class="card" *ngFor="let identity of identities | search: searchTerm">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
-        <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
         <i class="fa fa-user-circle"></i>
         <span class="m-1" style="display: inline-block"><i> {{identity.name}}</i></span>
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
@@ -64,6 +63,7 @@
         </button>
       </div>
     </div>
+    <!-- Identity deletion confirmation -->
     <div class="alert alert-danger fade show" *ngIf="showConfirmDelete == identity">
       Do you really want to delete this identity?<br/><br/>
       <button class="btn btn-primary" (click)="deleteIdentity(identity)">
@@ -73,41 +73,36 @@
         <span class="fa fa-close"></span> Cancel
       </button>
     </div>
+    <!-- Maybe add some info to identities? - dialog -->
     <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
-    <div *ngIf="isAttributeMissing(identity) || isAttestedMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <span class="fa fa-openid"></span> This identity cannot be used because it's missing requested information:
+    <div *ngIf="isClaimMissing(identity) || isRequestedScopeMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
-        <li *ngFor="let attr of getMissing(identity)">{{attr}}</li>
-        <li *ngFor="let ref of getOptional(identity)">{{ref}}(optional)</li>
+        <li *ngIf="isProfileRequested() && isProfileMissing(identity)">getProfileDescription()</li>
+        <li *ngIf="isEmailRequested() && isEmailMissing(identity)">getEmailDescription()</li>
+        <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)">getPhoneDescription()</li>
+        <li *ngIf="isAddressRequested() && isAddressMissing(identity)">getAddressDescription()</li>
+        <li *ngFor="let attr of getMissingClaims(identity)">{{attr}}</li>
+        <li *ngFor="let ref of getOptional(identity)">{{ref}} (optional)</li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
-        <span class="fa fa-plus"></span> Add
+        <span class="fa fa-plus"></span> Edit identity
       </button>
-    </div>
-    <div *ngIf="isReqReferenceInvalid(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <span class="fa fa-openid"></span> This identity cannot be used because one or more attested attributes are invalid.
-      <button class="btn btn-primary" (click)="editIdentity(identity)">
-        <span class="fa fa-pencil-square-o"></span> Edit
-      </button>
-    </div>
-    <div *ngIf="(0 < requestedAttested[identity.pubkey]?.length) && inOpenIdFlow()" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <span class="fa fa-openid"></span> Please note that sharing attested attributes might disclose additional information stored in the attestation.
     </div>
     <div class="card-body">
-      <!-- Attribute table --> 
+      <!-- Attribute table -->
       <div>
-        <h6 class="card-subtitle mb-2" *ngIf="hasAttributes(identity)">
-          <strong>Information:</strong>
-        </h6>
         <table class="table pb-1">
           <tbody>
-            <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isRequested(identity, attribute) || isAttestedRequested(identity, attribute)"
-               [class.text-secondary]="!isAttestedRequested(identity, attribute) && isAttestation(attribute)"
+            <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isClaimRequested(identity, attribute)"
+               [class.text-secondary]="!isClaimRequested(identity, attribute)"
                *ngFor="let attribute of attributes[identity.pubkey]">
               <td>
-                <div style="min-width: 15em"><span *ngIf="isRequested(identity, attribute) || isAttestedRequested(identity, attribute)" class="fa fa-openid"></span> {{attribute.name}}</div>
+                <div style="min-width: 15em">
+                  <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid"></span> <b>{{getAttributeDescription(attribute)}}</b>
+                </div>
               </td>
               <td>
                 <div *ngIf="attribute.value.length <= 20" style="min-width: 15em">{{attribute.value}}</div>
@@ -123,7 +118,7 @@
       <div>
 
         <div>
-          <button *ngIf="canAuthorize(identity)" [disabled]="!inOpenIdFlow() || isAttributeMissing(identity) || isAttestedMissing(identity) || !isClientVerified() || isReqReferenceInvalid(identity)" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+          <button *ngIf="inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
             <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
             <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
           </button>
