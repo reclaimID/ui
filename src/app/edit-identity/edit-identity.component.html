@@ -2,13 +2,18 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      <h2>Manage identity: <i>{{ identity.name }}</i></h2>
+      <h2 class="fa-2x"><i class="fa fa-user-circle pr-2"></i> {{ identity.name }}</h2>
     </div>
   </div>
   <!-- Attribute table -->
   <div class="card-body">
     <div>
-      <h3 class="card-subtitle mb-2" (click)="showGeneralInfo = !showGeneralInfo"><span *ngIf="showGeneralInfo" class="fa fa-chevron-down"></span><span class="fa fa-chevron-right" *ngIf="!showGeneralInfo"></span> General user information</h3>
+      <h3 class="card-subtitle mb-2">Basic user information <span (click)="showGeneralInfo = !showGeneralInfo" class="fa fa-question-circle"></span></h3>
+      <div class="alert alert-secondary fade show" *ngIf="showGeneralInfo">
+        The attributes below correspond to the standard scopes of the OpenID Connect
+        specification: profile, email, phone and address.
+      </div>
+
       <table class="table pb-1" *ngIf="showGeneralInfo">
         <tbody>
           <!-- Standard "profile" claims first -->
@@ -47,8 +52,6 @@
           </tr>
         </tbody>
       </table>
-      <h3 class="card-subtitle mb-2" (click)="showEmailInfo = !showEmailInfo"><span class="fa" [class.fa-eye-slash]="!showEmailInfo" [class.fa-eye]="showEmailInfo"></span> Email</h3>
-
       <table class="table pb-1">
         <tbody>
           <!-- Standard "email" claims first -->
@@ -89,7 +92,6 @@
       </table>
 
 
-      <h6 class="card-subtitle mb-2">Address:</h6>
       <table class="table pb-1">
         <tbody>
           <!-- Standard "address" claims first -->
@@ -129,7 +131,6 @@
         </tbody>
       </table>
 
-      <h6 class="card-subtitle mb-2">Phone:</h6>
       <table class="table pb-1">
         <tbody>
           <!-- Standard "phone" claims first -->
@@ -138,8 +139,6 @@
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingPhoneClaims">
             <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
-            <td>
-            </td>
             <td>
               <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
@@ -160,12 +159,11 @@
               *ngFor="let claim of missingPhoneClaims">
             <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
             <td>
-              <select class="custom-select" (change)="claim.flag=$event.target.value; ">
+              <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; ">
                 <option value="0">Plain</option>
                 <option value="1">Attested</option>
               </select>
-            </td>
-            <td>
+
               <input *ngIf="claim.flag == '0'" placeholder="Value" [(ngModel)]="claim.value">
               <select *ngIf="claim.flag == '1'" class="custom-select"
                 (change)="claim.attestation=$event.target.value; ">
@@ -183,7 +181,8 @@
                 </option>
               </select>
 
-            </td>
+                          </td>
+
             <td>
             </td>
           </tr>
@@ -191,7 +190,8 @@
       </table>
 
 
-      <h6 class="card-subtitle mb-2">Additional information:</h6>
+      <h3 class="card-subtitle mb-2">Additional information <span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
+      <div class="alert alert-secondary fade show" *ngIf="showExtraInfo">These are non-standard claims.</div>
 
       <!-- Missing "non-standard" claims that are requested -->
       <table class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
@@ -250,14 +250,11 @@
               <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
             </td>
             <td>
-              <select class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
+
+              <select *ngIf="isExperimental()" class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
                 <option value="0">Plain</option>
                 <option value="1">Attested</option>
               </select>
-            </td>
-            <td>
-
-
               <input *ngIf="newAttribute.flag == '0'" placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
               <select *ngIf="newAttribute.flag == '1'" class="custom-select"
                 (change)="newAttribute.attestation=$event.target.value; ">
@@ -274,7 +271,6 @@
                 {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
-
             </td>
             <td>
               <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="addAttribute()">
