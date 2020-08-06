@@ -25,7 +25,10 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingProfileClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b>
+              </div>
+            </td>
             <td>
               <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
@@ -44,7 +47,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingProfileClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <!-- FIXME Allow adding of attestation OR plain value -->
               <input placeholder="Value" [(ngModel)]="claim.value">
@@ -52,6 +56,9 @@
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </td>
             <td>
+              <button [disabled]="!canAddAttribute(claim)" class="btn btn-primary"  (click)="addAttribute()">
+                <span class="fa fa-save"></span>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -63,7 +70,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingEmailClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
@@ -82,7 +90,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingEmailClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <!-- FIXME Allow adding of attestation OR plain value -->
               <input placeholder="Value" [(ngModel)]="claim.value">
@@ -90,6 +99,9 @@
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </td>
             <td>
+              <button [disabled]="!canAddAttribute(claim)" class="btn btn-primary"  (click)="addAttribute()">
+                <span class="fa fa-save"></span>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -103,7 +115,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingAddressClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
@@ -122,7 +135,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingAddressClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <!-- FIXME Allow adding of attestation OR plain value -->
               <input placeholder="Value" [(ngModel)]="claim.value">
@@ -130,6 +144,9 @@
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </td>
             <td>
+              <button [disabled]="!canAddAttribute(claim)" class="btn btn-primary"  (click)="addAttribute()">
+                <span class="fa fa-save"></span>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -142,7 +159,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingPhoneClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttested(claim)" placeholder="Value" [(ngModel)]="claim.value">
               <span *ngIf="isClaimAttested(claim)" >{{ getAttestedValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
@@ -161,7 +179,8 @@
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingPhoneClaims">
-            <td><div style="min-width: 15em"><b>{{ getDescription(claim) }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></td>
             <td>
               <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; ">
                 <option value="0">Plain</option>
@@ -185,9 +204,11 @@
                 </option>
               </select>
 
-                          </td>
-
+            </td>
             <td>
+              <button [disabled]="!canAddAttribute(claim)" class="btn btn-primary"  (click)="addAttribute()">
+                <span class="fa fa-save"></span>
+              </button>
             </td>
           </tr>
         </tbody>
@@ -195,7 +216,9 @@
 
 
       <h3 class="card-subtitle mb-2">Additional information <span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
-      <div class="alert alert-secondary fade show" *ngIf="showExtraInfo">These are non-standard claims.</div>
+      <div class="alert alert-secondary fade show" *ngIf="showExtraInfo">
+        Non-standard claims which are not explicitly covered in the OpenID Connect core specification.
+      </div>
 
       <!-- Missing "non-standard" claims that are requested -->
       <table class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
@@ -204,7 +227,8 @@
             [class.alert-danger]="newAttribute.name === missing.name"
             class="text-primary"
             *ngFor="let missing of missingNonStandardClaims">
-            <td><div style="min-width: 15em"><b>{{missing.name}}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(attribute)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttestationRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
               <select *ngIf="isClaimAttestationRequested(missing)" class="custom-select" (change)="missing.attestation=$event.target.value; ">
@@ -234,7 +258,8 @@
             [class.alert-danger]="newAttribute.name === attribute.name"
             [class.text-secondary]="isClaimAttested(attribute)"
             *ngFor="let attribute of existingNonStandardClaims">
-            <td><div style="min-width: 15em"><b>{{ attribute.name }}</b></div></td>
+            <td><div style="min-width: 15em">
+                <i *ngIf="isClaimRequested(attribute)" class="fa fa-openid"></i><b> {{ attribute.name }}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttested(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
               <span *ngIf="isClaimAttested(attribute)" >{{ getAttestedValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
