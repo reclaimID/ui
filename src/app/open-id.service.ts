@@ -154,7 +154,12 @@ export class OpenIdService {
     var scopes = this.getRequestedScope();
     var res = [];
     for (var i = 0; i < scopes.length; i++) {
-      res.push(this.scopesDescriptions[scopes[i]])
+      if (undefined === this.scopesDescriptions[scopes[i]])
+      {
+        res.push(scopes[i]);
+      } else {
+        res.push(this.scopesDescriptions[scopes[i]])
+      }
     }
     return res;
   }
@@ -192,19 +197,19 @@ export class OpenIdService {
   }
 
   isProfileRequested(): boolean {
-    return this.getRequestedScope().include("profile");
+    return this.getRequestedScope().includes("profile");
   }
 
   isEmailRequested(): boolean {
-    return this.getRequestedScope().include("email");
+    return this.getRequestedScope().includes("email");
   }
 
   isPhoneRequested(): boolean {
-    return this.getRequestedScope().include("phone");
+    return this.getRequestedScope().includes("phone");
   }
 
   isAddressRequested(): boolean {
-    return this.getRequestedScope().include("address");
+    return this.getRequestedScope().includes("address");
   }
 
   getStandardProfileClaims(): Object {
