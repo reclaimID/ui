@@ -16,12 +16,12 @@ export class AuthorizationRequestComponent implements OnInit {
     this.retryVerify();
   }
 
-  getScopesDescription() {
-    return this.oidcService.getScopesDescriptionList();
+  getRequestedStandardScopesWithDescription() {
+    return this.oidcService.getRequestedStandardScopesWithDescription();
   }
 
-  getRequestedClaims() {
-    return this.oidcService.getRequestedClaims();
+  getRequestedNonStandardScopes() {
+    return this.oidcService.getRequestedNonStandardScopes();
   }
 
   isClientVerified() {
