@@ -17,7 +17,7 @@ export class OpenIdService {
   scopesDescriptions = {"profile": "User profile access such as email, (nick)name, gender and birthdate.",
                         "email": "Your email information.",
                         "address": "Your physical address information.",
-                        "phone": "Your phone number."};
+                        "phone_number": "Your phone number."};
 
   constructor(private http: HttpClient,
     private config: ConfigService,
@@ -74,9 +74,9 @@ export class OpenIdService {
     redirectUri += '&redirect_uri=' + this.params['redirect_uri'];
     redirectUri += '&response_type=' + this.params['response_type'];
     redirectUri += '&scope=' + this.params['scope'];
-    if (this.referenceString !== "")
+    if (this.params['claims'] !== undefined)
     {
-      redirectUri += " " + this.referenceString;
+      redirectUri += "&claims" + this.params['claims'];
     }
     if (this.params['state'] !== undefined)
     {
@@ -228,7 +228,7 @@ export class OpenIdService {
   }
 
   getStandardPhoneClaims(): Object {
-    return {"phone": "Phone number"};
+    return {"phone_number": "Phone number"};
   }
 
   getStandardAddressClaims(): Object {
@@ -255,7 +255,7 @@ export class OpenIdService {
     if (scopes.includes("address")) {
       result = result.concat(Object.keys(this.getStandardAddressClaims()));
     }
-    if (scopes.includes("phone")) {
+    if (scopes.includes("phone_number")) {
       result = result.concat(Object.keys(this.getStandardPhoneClaims()));
     }
     result = result.concat(this.getRequestedClaimNames());
