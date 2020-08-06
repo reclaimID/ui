@@ -82,6 +82,13 @@ export class IdentityListComponent implements OnInit {
     console.log('processed nginit');
   }
 
+  private getAttributesForIdentity(identity: Identity): Attribute[] {
+    if (undefined === this.attributes[identity.pubkey]) {
+      return [];
+    }
+    return this.attributes[identity.pubkey];
+  }
+
   cancelRequest() {
     this.oidcService.cancelAuthorization();
   }
@@ -98,26 +105,25 @@ export class IdentityListComponent implements OnInit {
    */
   updateMissingClaims(identity) {
     const refscopes = this.oidcService.getRequestedClaims();
-    let i;
-    for (i = 0; i < this.attributes[identity.pubkey].length; i++) {
+    for (let attr of this.getAttributesForIdentity(identity)) {
       for (var j = 0; j < refscopes.length; j++) {
-        if (this.attributes[identity.pubkey][i].name === refscopes[j][0] ) {
+        if (attr.name === refscopes[j][0] ) {
           refscopes.splice(j,1);
         }
       }
     }
     this.missingClaims[identity.pubkey] = [];
     this.optionalClaims[identity.pubkey] = [];
-    for (i = 0; i < refscopes.length; i++) {
+    for (let refscope of refscopes) {
       const attested = new Attribute('', '', '', '', 'STRING', '');
-      if (refscopes[i][1] === true)
+      if (refscope[1] === true)
       {
-        attested.name = refscopes[i][0];
+        attested.name = refscope[0];
         this.missingClaims[identity.pubkey].push(attested);
       }
-      if (refscopes[i][1] === false)
+      if (refscope[1] === false)
       {
-        attested.name = refscopes[i][0];
+        attested.name = refscope[0];
         this.optionalClaims[identity.pubkey].push(attested);
       }
     }
@@ -274,21 +280,21 @@ export class IdentityListComponent implements OnInit {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    return this.oidcService.isProfileMissing(this.attributes[identity.pubkey]);
+    return this.oidcService.isProfileMissing(this.getAttributesForIdentity(identity));
   }
 
   isEmailMissing(identity) {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    return this.oidcService.isEmailMissing(this.attributes[identity.pubkey]);
+    return this.oidcService.isEmailMissing(this.getAttributesForIdentity(identity));
   }
 
   isPhoneMissing(identity) {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    return this.oidcService.isPhoneMissing(this.attributes[identity.pubkey]);
+    return this.oidcService.isPhoneMissing(this.getAttributesForIdentity(identity));
   }
 
   isRequestedScopeMissing(identity) {
@@ -302,7 +308,7 @@ export class IdentityListComponent implements OnInit {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    return this.oidcService.isAddressMissing(this.attributes[identity.pubkey]);
+    return this.oidcService.isAddressMissing(this.getAttributesForIdentity(identity));
   }
 
   getProfileDescription() {
@@ -322,10 +328,10 @@ export class IdentityListComponent implements OnInit {
   }
 
   hasAttributes(identity) {
-    if (undefined === this.attributes[identity.pubkey]) {
+    if (undefined === this.getAttributesForIdentity(identity)) {
       return false;
     }
-    return 0 !== this.attributes[identity.pubkey].length;
+    return 0 !== this.getAttributesForIdentity(identity).length;
   }
 
   private updateIdentities() {
