@@ -101,7 +101,7 @@
                *ngFor="let attribute of attributes[identity.pubkey]">
               <td>
                 <div style="min-width: 15em">
-                  <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid"></span> <b>{{getAttributeDescription(attribute)}}</b>
+                  <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
                 </div>
               </td>
               <td>

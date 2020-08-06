@@ -12,18 +12,14 @@
   <div class="card-body">
     <strong>{{ oidcService.clientName }}</strong>
     asks you to share personal information.<br/>
-    Choose an identity to let it access the following self-asserted information:
+    Choose an identity to let it access the following information:
     <ul>
-      <li *ngFor="let attribute of getScopesDescription()"><strong>{{attribute}}</strong>
+      <li *ngFor="let attribute of getRequestedStandardScopesWithDescription()"><strong>{{attribute}}</strong></li>
     </ul>
-    <div *ngIf="getRequestedClaims().length > 0">
-      as well as the following third-party attested attributes:
+    <div *ngIf="getRequestedNonStandardScopes().length > 0">
+      as well as the following additional attributes:
       <ul>
-        <ng-container *ngFor="let reference of getRequestedClaims()">
-          <li *ngIf="reference[1] === true"><strong>{{reference[0]}}</strong>
-            <li *ngIf="reference[1] !== true"><strong>{{reference[0]}} (optional)</strong>
-        </ng-container>
-
+        <li *ngFor="let attribute of getRequestedNonStandardScopes()"><strong>{{attribute}}</strong></li>
       </ul>
     </div>
 

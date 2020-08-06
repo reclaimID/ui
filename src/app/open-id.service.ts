@@ -150,6 +150,29 @@ export class OpenIdService {
     return this.scopesDescriptions[scope];
   }
 
+  getRequestedStandardScopesWithDescription(): string[] {
+    var scopes = this.getRequestedScope();
+    var res = [];
+    for (var i = 0; i < scopes.length; i++) {
+      if (undefined !== this.scopesDescriptions[scopes[i]]) {
+        res.push(this.scopesDescriptions[scopes[i]])
+      }
+    }
+    return res;
+  }
+
+  getRequestedNonStandardScopes(): string[] {
+    var scopes = this.getRequestedScope();
+    var res = [];
+    for (var i = 0; i < scopes.length; i++) {
+      if (undefined === this.scopesDescriptions[scopes[i]]) {
+        res.push(scopes[i])
+      }
+    }
+    return res;
+
+  }
+
   getScopesDescriptionList(): any {
     var scopes = this.getRequestedScope();
     var res = [];
