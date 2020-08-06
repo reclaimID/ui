@@ -45,6 +45,8 @@ export class EditIdentityComponent implements OnInit {
   missingAddressClaims: Attribute[];
   existingNonStandardClaims: Attribute[];
   missingNonStandardClaims: Attribute[];
+  showExtraInfo: boolean;
+  showGeneralInfo: boolean;
   actions: string;
 
   constructor(private reclaimService: ReclaimService,
