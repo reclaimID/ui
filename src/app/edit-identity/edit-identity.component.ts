@@ -23,31 +23,31 @@ import { ConfigService } from '../config.service';
 export class EditIdentityComponent implements OnInit {
 
   identity: Identity;
-  attributes: Attribute[];
-  attestations: Attestation[];
+  attributes: Attribute[] = [];
+  attestations: Attestation[] = [];
   attestationValues: {};
   newAttribute: Attribute;
   newAttestedClaim: Attribute;
-  missingAttested: Attribute[];
-  requestedClaims: Attribute[];
-  optionalClaims: Attribute[];
+  missingAttested: Attribute[]  = [];
+  requestedClaims: Attribute[]  = [];
+  optionalClaims: Attribute[]  = [];
   webfingerEmail: string;
-  authorizations: Authorization[];
+  authorizations: Authorization[] = [];
   newIdProvider: IdProvider;
-  emailNotFoundAlertClosed: boolean;
-  existingProfileClaims: Attribute[];
-  missingProfileClaims: Attribute[];
-  existingPhoneClaims: Attribute[];
-  missingPhoneClaims: Attribute[];
-  existingEmailClaims: Attribute[];
-  missingEmailClaims: Attribute[];
-  existingAddressClaims: Attribute[];
-  missingAddressClaims: Attribute[];
-  existingNonStandardClaims: Attribute[];
-  missingNonStandardClaims: Attribute[];
-  showExtraInfo: boolean;
-  showGeneralInfo: boolean;
-  actions: string;
+  emailNotFoundAlertClosed: boolean = true;
+  existingProfileClaims: Attribute[] = [];
+  missingProfileClaims: Attribute[] = [];
+  existingPhoneClaims: Attribute[] = [];
+  missingPhoneClaims: Attribute[] = [];
+  existingEmailClaims: Attribute[] = [];
+  missingEmailClaims: Attribute[] = [];
+  existingAddressClaims: Attribute[] = [];
+  missingAddressClaims: Attribute[] = [];
+  existingNonStandardClaims: Attribute[] = [];
+  missingNonStandardClaims: Attribute[] = [];
+  showExtraInfo: boolean = false;
+  showGeneralInfo: boolean = true;
+  actions: string = '';
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -59,13 +59,8 @@ export class EditIdentityComponent implements OnInit {
               private router: Router,) {}
 
   ngOnInit() {
-    this.actions = '';
-    this.attributes = [];
-    this.attestations = [];
-    this.optionalClaims = [];
     this.attestationValues = {};
     this.webfingerEmail = '';
-    this.emailNotFoundAlertClosed = true;
     this.newIdProvider = new IdProvider ('', '', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
