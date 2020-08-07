@@ -429,10 +429,12 @@ export class IdentityListComponent implements OnInit {
   }
 
   isClaimAttested(attribute: Attribute): boolean {
+    if (undefined === attribute) { return false; }
     return attribute.flag === '1';
   }
 
   getAttributeValue(identity: Identity, attribute: Attribute): string {
+    if (undefined === attribute) { return '?' };
     if (!this.isClaimAttested(attribute)) { return attribute.value };
     if (undefined === this.attestations[identity.pubkey]) { return '?'};
     for (let attest of this.attestations[identity.pubkey]) {
