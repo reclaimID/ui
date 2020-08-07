@@ -292,8 +292,7 @@ export class OpenIdService {
     if (scopes.includes("phone_number")) {
       result = result.concat(Object.keys(this.getStandardPhoneClaims()));
     }
-    result = result.concat(this.getRequestedNonStandardScopes());
-    result = result.concat(this.getRequestedClaimNames());
+    result = result.concat(this.getRequestedNonStandardClaims());
 
     return result;
   }

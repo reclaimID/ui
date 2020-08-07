@@ -398,7 +398,7 @@ export class EditIdentityComponent implements OnInit {
       return false;
     }
     var requestedClaims = this.oidcService.getClaimNamesForRequest();
-    for (let claim in requestedClaims) {
+    for (let claim of requestedClaims) {
       if (this.isAttributeNameInList(claim, this.missingNonStandardClaims)) {
         return true;
       }
@@ -429,7 +429,7 @@ export class EditIdentityComponent implements OnInit {
     var claims = this.oidcService.getRequestedClaims();
     for (let claim of claims) {
       if (claim[0] == attr.name) {
-        return true;
+        return claim[2];
       }
     }
     return false;
