@@ -228,7 +228,7 @@
             class="text-primary"
             *ngFor="let missing of missingNonStandardClaims">
             <td><div style="min-width: 15em">
-                <i *ngIf="isClaimRequested(attribute)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></td>
+                <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></td>
             <td>
               <input *ngIf="!isClaimAttestationRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
               <select *ngIf="isClaimAttestationRequested(missing)" class="custom-select" (change)="missing.attestation=$event.target.value; ">
