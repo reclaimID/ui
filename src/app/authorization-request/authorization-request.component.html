@@ -16,10 +16,10 @@
     <ul>
       <li *ngFor="let attribute of getRequestedStandardScopesWithDescription()"><strong>{{attribute}}</strong></li>
     </ul>
-    <div *ngIf="getRequestedNonStandardScopes().length > 0">
+    <div *ngIf="getRequestedNonStandardClaims().length > 0">
       as well as the following additional attributes:
       <ul>
-        <li *ngFor="let attribute of getRequestedNonStandardScopes()"><strong>{{attribute}}</strong></li>
+        <li *ngFor="let attribute of getRequestedNonStandardClaims()"><strong>{{attribute}}</strong></li>
       </ul>
     </div>
 

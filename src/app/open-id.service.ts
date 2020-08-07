@@ -173,6 +173,12 @@ export class OpenIdService {
 
   }
 
+  getRequestedNonStandardClaims(): string [] {
+    var scopes = this.getRequestedNonStandardScopes();
+    var claims = this.getRequestedClaimNames();
+    return [...scopes, ...claims];
+  }
+
   getScopesDescriptionList(): any {
     var scopes = this.getRequestedScope();
     var res = [];
@@ -286,6 +292,7 @@ export class OpenIdService {
     if (scopes.includes("phone_number")) {
       result = result.concat(Object.keys(this.getStandardPhoneClaims()));
     }
+    result = result.concat(this.getRequestedNonStandardScopes());
     result = result.concat(this.getRequestedClaimNames());
 
     return result;

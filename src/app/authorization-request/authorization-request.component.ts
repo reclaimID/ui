@@ -20,8 +20,8 @@ export class AuthorizationRequestComponent implements OnInit {
     return this.oidcService.getRequestedStandardScopesWithDescription();
   }
 
-  getRequestedNonStandardScopes() {
-    return this.oidcService.getRequestedNonStandardScopes();
+  getRequestedNonStandardClaims() {
+    return this.oidcService.getRequestedNonStandardClaims();
   }
 
   isClientVerified() {
