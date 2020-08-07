@@ -111,14 +111,17 @@
           </tbody>
         </table>
       </div>
-      <div style="margin-bottom: 1em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()" class="text-primary">
-        Attributes marked with <span class="fa fa-openid" ></span> will be shared. <span (click)="toggleSharingInfo(identity)" class="fa fa-question-circle"></span><br/>
-      <div class="alert alert-secondary fade show" *ngIf="isSharingInfoOpened(identity)">
-        If you do not want to share information from this identity, you may
-        declide the request or choose a different identity.<br/>
-        If you do not want to share a specific piece of information, you have
-        to remove the respective attribute.
-      </div>
+      <div style="margin-bottom: 1em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()">
+        <span class="text-primary">Attributes marked with <span class="fa fa-openid" ></span> will be shared.</span>
+        <span (click)="toggleSharingInfo(identity)" class="fa fa-2x fa-question-circle"></span><br/>
+        <div class="alert alert-secondary fade show" *ngIf="isSharingInfoOpened(identity)">
+          Be careful when sharing personal data with third parties!<br>
+          If you do not want to share information from this identity, you may
+          decline the request or choose a different identity.<br/>
+          You may permanently remove information from the identity before
+          sharing. Note that not providing all the reuquestd information
+          may prevent you from using the requesting service.
+        </div>
 
       </div>
       <div>
