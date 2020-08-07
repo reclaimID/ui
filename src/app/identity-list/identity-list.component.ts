@@ -38,6 +38,7 @@ export class IdentityListComponent implements OnInit {
   searchTerm: any;
   showSharingInfo: any = '';
   sortAttributeByStandardClaim: any;
+  openIdentity: any = '';
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
     private identityService: IdentityService,

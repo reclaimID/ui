@@ -10,11 +10,14 @@
 <!-- Buttons -->
 <div *ngIf="canSearch()"  style="margin-top: 1em; text-align: center;">
   <!-- Identity search -->
-  <form class="form-inline" style="display: table; margin: auto;">
+  <div class="form-inline" style="display: table; margin: auto;">
     <div class="search-wrapper">
     <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
     </div>
-  </form>
+    <button class="btn btn-primary" [routerLink]="['/new-identity']">
+      <span class="fa fa-user-plus"></span> New identity
+    </button>
+  </div>
   <br/>
 </div>
 
@@ -49,22 +52,22 @@
   <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">No matching identities.</div>
 </div>
 <!-- Cards -->
-<div class="card-columns p-2">
-  <div class="card" *ngFor="let identity of identities | search: searchTerm">
+<div class="card-columns p-2 mr-5 ml-5" [ngStyle]="{'column-count': '1'}" style="display: flex; flex-direction:column; align-items:center">
+  <div class="card mb-5" *ngFor="let identity of identities | search: searchTerm" style="max-width: 50em; min-height: 20em;">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
-        <i class="fa fa-user-circle"></i>
-        <span class="m-1" style="display: inline-block"><i> {{identity.name}}</i></span>
+      <img src="assets/reclaim_icon.png" style="width: 4em;opacity: 0.3;">
+
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
-          <span class="fa fa-trash"></span>
+          <i class="fa fa-trash"></i>
         </button>
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" [routerLink]="['/edit-identity', identity.name]">
-          <span class="fa fa-edit"></span>
+          <i class="fa fa-edit"></i>
         </button>
       </div>
     </div>
     <!-- Identity deletion confirmation -->
-    <div class="alert alert-danger fade show" *ngIf="showConfirmDelete == identity">
+    <div class="alert alert-danger fade show" [hidden]="showConfirmDelete != identity">
       Do you really want to delete this identity?<br/><br/>
       <button class="btn btn-primary" (click)="deleteIdentity(identity)">
         <span class="fa fa-trash"></span> Delete
@@ -74,10 +77,10 @@
       </button>
     </div>
     <!-- Maybe add some info to identities? - dialog -->
-    <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
+    <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)">
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
-    <div *ngIf="isAnyRequestedClaimMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div [hidden]="!isAnyRequestedClaimMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
       <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)">getProfileDescription()</li>
@@ -90,7 +93,12 @@
         <span class="fa fa-plus"></span> Edit identity
       </button>
     </div>
-    <div class="card-body">
+
+    <div class="fa-3x mt-2" style="text-align:center">
+      <span class="fa fa-user-circle"></span><i> {{identity.name}}</i>
+    </div>
+
+    <div class="card-body" *ngIf="openIdentity == identity">
       <!-- Attribute table -->
       <div>
         <table class="table pb-1">
@@ -123,23 +131,25 @@
         </div>
 
       </div>
-      <div>
-
-        <div>
-          <button *ngIf="inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-            <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
-            <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
-          </button>
-        </div>
-      </div>
-      <div style="text-align:center">
-        <img src="assets/reclaim_icon.png" style="width: 5em;opacity: 0.3;">
-      </div>
+    </div>
+    <div style="text-align:center" class="mb-4" (click)="openIdentity = ''" *ngIf="openIdentity == identity">
+      <i class="fa fa-chevron-up"></i><br/>
+      <span>Click to hide attributes</span>
+    </div>
+    <div style="text-align:center" class="mb-4 mt-4" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasAttributes(identity)">
+      <span>Click to show attributes</span><br/>
+          <i class="fa fa-chevron-down"></i>
+    </div>
+    <div>
+      <button *ngIf="inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+        <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
+        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
+      </button>
     </div>
   </div>
 
   <!-- New identity card -->
-  <div class="card identity-new" [routerLink]="['/new-identity']" *ngIf="0 != identities.length">
+  <div class="card identity-new" [routerLink]="['/new-identity']" *ngIf="0 != identities.length" style="max-width: 50em; min-height: 20em;">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
         <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
