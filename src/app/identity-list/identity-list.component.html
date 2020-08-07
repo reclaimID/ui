@@ -130,8 +130,6 @@
           </tbody>
         </table>
       </div>
-
-      </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
       <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
@@ -146,7 +144,8 @@
           decline the request or choose a different identity.<br/>
           You may permanently remove information from the identity before
           sharing.
-       </div>
+        </div>
+      </div>
     </div>
   </div>
 
