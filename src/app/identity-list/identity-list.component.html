@@ -112,8 +112,8 @@
                 </div>
               </td>
               <td>
-                <div *ngIf="getAttributeValue(attribute).length <= 20" style="min-width: 15em">{{getAttributeValue(attribute)}}</div>
-                <div *ngIf="getAttributeValue(attribute).length > 20" style="min-width: 15em">{{getAttributeValue(attribute).substring(0, 15)}}<span style="color:#eee">[...]</span></div>
+                <div *ngIf="getAttributeValue(identity, attribute).length <= 20" style="min-width: 15em">{{getAttributeValue(identity, attribute)}}</div>
+                <div *ngIf="getAttributeValue(identity, attribute).length > 20" style="min-width: 15em">{{getAttributeValue(identity, attribute).substring(0, 20)}}<span style="color:#eee">[...]</span></div>
               </td>
             </tr>
             <tr *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
