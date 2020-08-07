@@ -23,6 +23,15 @@
       </ul>
     </div>
   </div>
+  <!-- Sharing disclaimer -->
+  <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
+    <i class="fa fa-exclamation-triangle mr-2"></i>
+    <strong>Be careful when sharing personal data with third parties!</strong>
+    If you do not want to share information from any of your identities with
+    <i>{{ oidcService.clientName }}</i>, you may decline the request.
+    You may also permanently remove or edit information from an identity before
+    sharing.
+  </div>
   <div style="margin: 1em;">
     <button class="btn btn-danger m-1 mt-4" *ngIf="isClientVerified()" (click)="cancelRequest()" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline
