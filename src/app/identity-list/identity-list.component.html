@@ -7,6 +7,19 @@
   </div>
 </oid-modal>
 
+<!-- Sharing disclaimer -->
+<div class="alert alert-warning alert-dismissible fade show mb-1" *ngIf="inOpenIdFlow()" role="alert">
+  <i class="fa fa-exclamation-triangle mr-2"></i>
+  <strong>Be careful when sharing personal data with third parties!</strong>
+  If you do not want to share information from this identity, you may
+  decline the request or choose a different identity.
+  You may also permanently remove information from the identity before
+  sharing.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
 <!-- Buttons -->
 <div *ngIf="canSearch()"  style="margin-top: 1em; text-align: center;">
   <!-- Identity search -->
@@ -22,14 +35,6 @@
 </div>
 
 <!-- Cancel authorization -->
-<div class="alert alert-warning alert-dismissible fade show mb-1" *ngIf="inOpenIdFlow()">
-  <i class="fa fa-exclamation-triangle ml-2"></i>
-  <strong>Be careful when sharing personal data with third parties!</strong>
-  If you do not want to share information from this identity, you may
-  decline the request or choose a different identity.<br/>
-  You may permanently remove information from the identity before
-  sharing.
-</div>
 <div style="margin-bottom: 1em; text-align: center;" *ngIf="inOpenIdFlow()">
     <button *ngIf="inOpenIdFlow()" class="btn btn-danger mt-2" (click)="cancelRequest()">
       <span class="fa fa-ban"></span> Decline authorization request
