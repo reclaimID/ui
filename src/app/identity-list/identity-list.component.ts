@@ -36,6 +36,7 @@ export class IdentityListComponent implements OnInit {
   modalOpened: any;
   errorInfos: any;
   searchTerm: any;
+  showSharingInfo: any = '';
   sortAttributeByStandardClaim: any;
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
@@ -417,5 +418,15 @@ export class IdentityListComponent implements OnInit {
     }
     return true;
   }
+  toggleSharingInfo(id: Identity) {
+    if (this.showSharingInfo === id) {
+      this.showSharingInfo = '';
+      return;
+    }
+    this.showSharingInfo = id;
+  }
 
+  isSharingInfoOpened(identity): boolean {
+    return this.showSharingInfo == identity;
+  }
 }

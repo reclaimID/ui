@@ -112,7 +112,14 @@
         </table>
       </div>
       <div style="margin-bottom: 1em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()" class="text-primary">
-        Only attributes marked with <span class="fa fa-openid" ></span> will be shared.
+        Attributes marked with <span class="fa fa-openid" ></span> will be shared. <span (click)="toggleSharingInfo(identity)" class="fa fa-question-circle"></span><br/>
+      <div class="alert alert-secondary fade show" *ngIf="isSharingInfoOpened(identity)">
+        If you do not want to share information from this identity, you may
+        declide the request or choose a different identity.<br/>
+        If you do not want to share a specific piece of information, you have
+        to remove the respective attribute.
+      </div>
+
       </div>
       <div>
 

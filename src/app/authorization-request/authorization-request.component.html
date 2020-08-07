@@ -1,6 +1,6 @@
 <div style="text-align: center;">
   <i class="fa fa-2x fa-openid"></i> 
-  <b class="fa-2x"> Authorization Request </b>
+  <b class="fa-2x"> Personal information request </b>
   <br/>
   <span *ngIf="isClientVerified() === undefined">
     <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
@@ -22,7 +22,6 @@
         <li *ngFor="let attribute of getRequestedNonStandardClaims()"><strong>{{attribute}}</strong></li>
       </ul>
     </div>
-
   </div>
   <div style="margin: 1em;">
     <button class="btn btn-danger m-1 mt-4" *ngIf="isClientVerified()" (click)="cancelRequest()" style="margin-bottom: -4%;">
