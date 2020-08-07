@@ -77,15 +77,14 @@
     <div class="alert alert-secondary fade show" *ngIf="!hasAttributes(identity)">
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
-    <div *ngIf="isClaimMissing(identity) || isRequestedScopeMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div *ngIf="isAnyRequestedClaimMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
       <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)">getProfileDescription()</li>
         <li *ngIf="isEmailRequested() && isEmailMissing(identity)">getEmailDescription()</li>
         <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)">getPhoneDescription()</li>
         <li *ngIf="isAddressRequested() && isAddressMissing(identity)">getAddressDescription()</li>
-        <li *ngFor="let attr of getMissingClaims(identity)">{{attr}}</li>
-        <li *ngFor="let ref of getOptional(identity)">{{ref}} (optional)</li>
+        <li *ngFor="let attr of getMissingClaims(identity)">{{attr}}<i *ngIf="isOptional(attribute)"> (optional)</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-plus"></span> Edit identity

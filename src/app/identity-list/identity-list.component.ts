@@ -26,7 +26,6 @@ export class IdentityListComponent implements OnInit {
   phoneAttribute: any;
   addressAttributes: any;
   requestedScopes: any;
-  requestedClaims: any;
   missingClaims: any;
   optionalClaims: any;
   attributes: any;
@@ -55,7 +54,6 @@ export class IdentityListComponent implements OnInit {
     this.showConfirmDelete = null;
     this.requestedScopes = {};
     this.missingClaims = {};
-    this.requestedClaims = {};
     this.optionalClaims = {};
     this.connected = false;
     this.modalOpened = false;
@@ -131,7 +129,6 @@ export class IdentityListComponent implements OnInit {
 
   private updateAttestations(identity) {
     this.attestations[identity.pubkey] = [];
-    this.requestedClaims[identity.pubkey] = [];
     this.optionalClaims[identity.pubkey] = [];
     this.reclaimService.getAttestations(identity).subscribe(attestations => {
       if (attestations !== null) {
@@ -163,7 +160,6 @@ export class IdentityListComponent implements OnInit {
 
   private updateAttributes(identity) {
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
-      this.requestedClaims[identity.pubkey] = [];
       this.attributes[identity.pubkey] = attributes.sort(this.sortAttributeByStandardClaims(this.oidcService.getStandardClaimNames()));
       this.updateMissingClaims(identity);
     },
@@ -186,7 +182,6 @@ export class IdentityListComponent implements OnInit {
   }
 
   loginIdentity(identity) {
-    this.oidcService.setAttestations(this.requestedClaims[identity.pubkey]);
     this.oidcService.login(identity).subscribe(() => {
       console.log('Successfully logged in');
       this.authorize();
@@ -240,12 +235,11 @@ export class IdentityListComponent implements OnInit {
         this.oidcService.isStandardAddressClaim(attribute)) {
       return true;
     }
-    if (undefined === this.requestedClaims[identity.pubkey]) {
-      return false;
-    } else {
-      return -1 !==
-        this.requestedClaims[identity.pubkey].indexOf(attribute);
+    if (this.oidcService.getRequestedNonStandardClaims().includes(attribute.name)) {
+      return true;
     }
+
+    return false;
   }
 
   isProfileRequested() {
@@ -366,39 +360,25 @@ export class IdentityListComponent implements OnInit {
     return this.isConnected() && 0 != this.identities.length;
   }
 
-  isClaimMissing(identity) {
+  isAnyRequestedClaimMissing(identity): boolean {
     if (!this.inOpenIdFlow()) {
       return false;
     }
-    if (undefined === this.requestedClaims) {
-      return false;
-    }
-    var claims = this.oidcService.getRequestedClaims();
-    for (var i = 0; i < claims.length; i++) {
-      if (claims[i][1] === true) {
-        var j;
-        for (j = 0; j < this.requestedClaims.length; j++) {
-          if (claims[i][0] === this.requestedClaims[j].name){
-            return true;
-          }
+    var claims = this.oidcService.getClaimNamesForRequest();
+    for (var claim of claims) {
+      let found = false;
+      for (let attr of this.getAttributesForIdentity(identity)) {
+        if (claim !== attr.name) {
+          found = true;
+          break;
         }
+      }
+      if (!found) {
+        console.log(claim + " is missing");
+        return false;
       }
     }
     return false;
-  }
-
-  isAttestedRequested(identity: Identity, attribute: Attribute) {
-    if (undefined === this.requestedClaims[identity.pubkey]) {
-      return false;
-    } else {
-      for (var j = 0; j < this.requestedClaims[identity.pubkey].length; j++) {
-        if ((attribute.flag === '1') &&
-            (attribute.name === this.requestedClaims[identity.pubkey][j].name)) {
-          return true;
-        }
-      }
-      return false;
-    }
   }
 
   isAttestation(attribute: Attribute) {
@@ -425,6 +405,17 @@ export class IdentityListComponent implements OnInit {
         arr.push(this.optionalClaims[identity.pubkey][i].name);
     }
     return arr;
+  }
+
+  isOptional(attr: Attribute): boolean {
+    var claims = this.oidcService.getRequestedClaims();
+    for (let claim of claims) {
+      if ((claim[0] === attr.name) &&
+          (claim[1] === true)) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }
