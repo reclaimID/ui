@@ -166,7 +166,14 @@ export class EditIdentityComponent implements OnInit {
   }
 
   updateMissingAttributes() {
-    var claims = this.oidcService.getClaimNamesForRequest();
+    /**
+     * The original set of claim names here consists of all possible
+     * standard claim names and all currently REQUESTED non-standard
+     * claims (if any)
+     */
+    var sClaims = this.oidcService.getStandardClaimNames();
+    var nsClaims = this.oidcService.getRequestedClaimNames();
+    var claims = [...sClaims, ...nsClaims];
     for (let attr of this.attributes) {
       const j =
         claims.indexOf(attr.name);

@@ -95,17 +95,17 @@
     </div>
 
     <div class="fa-3x mt-2" style="text-align:center">
-      <span class="fa fa-user-circle"></span><i> {{identity.name}}</i>
+      <img style="border-radius: 50%; width: 1em" [src]="getIdentityProfilePicture(identity)" *ngIf="identityHasProfilePicture(identity)"><i class="fa fa-user-circle" *ngIf="!identityHasProfilePicture(identity)"></i><i> {{identity.name}}</i>
     </div>
 
-    <div class="card-body" *ngIf="openIdentity == identity">
+    <div class="card-body">
       <!-- Attribute table -->
       <div>
         <table class="table pb-1">
           <tbody>
             <tr [class.openid]="inOpenIdFlow()" [class.text-primary]="isClaimRequested(identity, attribute)"
                [class.text-secondary]="!isClaimRequested(identity, attribute)"
-               *ngFor="let attribute of attributes[identity.pubkey]">
+               *ngFor="let attribute of getIdentityAttributes(identity)">
               <td>
                 <div style="min-width: 15em">
                   <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
@@ -114,6 +114,17 @@
               <td>
                 <div *ngIf="attribute.value.length <= 20" style="min-width: 15em">{{attribute.value}}</div>
                 <div *ngIf="attribute.value.length > 20" style="min-width: 15em">{{attribute.value.substring(0, 15)}}<span style="color:#eee">[...]</span></div>
+              </td>
+            </tr>
+            <tr *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
+              <td>
+              <i>... and {{ attributes[identity.pubkey].length - 5 }} more attributes</i><br/>
+              <button class="btn btn-primary mt-3" (click)="openIdentity = identity">
+                <i class="fa fa-expand"></i>
+                Show all attributes
+              </button>
+              </td>
+              <td>
               </td>
             </tr>
           </tbody>
@@ -131,14 +142,6 @@
         </div>
 
       </div>
-    </div>
-    <div style="text-align:center" class="mb-4" (click)="openIdentity = ''" *ngIf="openIdentity == identity">
-      <i class="fa fa-chevron-up"></i><br/>
-      <span>Click to hide attributes</span>
-    </div>
-    <div style="text-align:center" class="mb-4 mt-4" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasAttributes(identity)">
-      <span>Click to show attributes</span><br/>
-          <i class="fa fa-chevron-down"></i>
     </div>
     <div>
       <button *ngIf="inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
