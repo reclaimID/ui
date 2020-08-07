@@ -360,7 +360,7 @@ export class OpenIdService {
   getRequestedClaimNames(): string[] {
     var claimNames = [];
     var claims = this.getRequestedClaims();
-    for (let claim in claims) {
+    for (let claim of claims) {
       claimNames.push(claim[0]);
     }
     return claimNames;
