@@ -211,9 +211,54 @@ export class IdentityListComponent implements OnInit {
 
   getScopes() { return this.oidcService.getRequestedScope(); }
 
+  getIdentityAttributes(identity: Identity): Attribute[] {
+    var res = [];
+    var i = 0;
+    if (undefined === this.attributes[identity.pubkey]) {
+      return res;
+    }
+    for (let attr of this.attributes[identity.pubkey]) {
+      res.push(attr);
+      i++;
+      if ((i >= 5) && (this.openIdentity !== identity)) {
+        return res;
+      }
+    }
+    return res;
+  }
+
+  hasLotsOfAttributes(identity: Identity) {
+    if (undefined === this.attributes[identity.pubkey]) { return false };
+    if (!this.hasAttributes(identity)) { return false; }
+    return this.attributes[identity.pubkey].length > 5;
+  }
+
+  identityHasProfilePicture(identity: Identity): boolean {
+    if (undefined === this.attributes[identity.pubkey]) { return false };
+    for (let attr of this.attributes[identity.pubkey]) {
+      if (attr.name === 'picture') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getIdentityProfilePicture(identity: Identity): string {
+    if (undefined === this.attributes[identity.pubkey]) { return '' };
+    for (let attr of this.attributes[identity.pubkey]) {
+      if (attr.name === 'picture') {
+        return attr.value;
+      }
+    }
+    return '';
+  }
+
   getMissingClaims(identity) {
     const arr = [];
     let i = 0;
+    if (undefined === this.missingClaims[identity.pubkey]) {
+      return arr;
+    }
     for (i = 0; i < this.missingClaims[identity.pubkey].length; i++) {
       arr.push(this.missingClaims[identity.pubkey][i].name);
     }
