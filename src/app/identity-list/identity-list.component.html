@@ -130,24 +130,23 @@
           </tbody>
         </table>
       </div>
-      <div style="margin-bottom: 1em; font-size: 1.5em" *ngIf="(0 < attributes[identity.pubkey]?.length) && inOpenIdFlow()">
-        <span class="text-primary">Attributes marked with <span class="fa fa-openid" ></span> will be shared.</span>
-        <span (click)="toggleSharingInfo(identity)" class="fa fa-question-circle ml-1"></span><br/>
-        <div class="alert alert-secondary fade show" *ngIf="isSharingInfoOpened(identity)">
+
+      </div>
+    </div>
+    <div *ngIf="inOpenIdFlow()">
+      <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+        <span class="text-primary" *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
+        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
+      </button>
+      <div style="margin-bottom: 1em; font-size: 1.5em" *ngIf="(0 < attributes[identity.pubkey]?.length)">
+        <span (click)="toggleSharingInfo(identity)" class="fa fa-exclamation-triangle ml-2 text-danger"></span><br/>
+        <div class="alert alert-warning fade show" *ngIf="isSharingInfoOpened(identity)">
           Be careful when sharing personal data with third parties!<br>
           If you do not want to share information from this identity, you may
           decline the request or choose a different identity.<br/>
           You may permanently remove information from the identity before
           sharing.
-        </div>
-
-      </div>
-    </div>
-    <div>
-      <button *ngIf="inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-        <span *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
-        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
-      </button>
+       </div>
     </div>
   </div>
 
