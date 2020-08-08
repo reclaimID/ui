@@ -20,7 +20,7 @@
 
       <div class="table pb-1">
           <!-- Standard "profile" claims first -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingProfileClaims">
@@ -42,7 +42,7 @@
             </div>
           </div>
           <!-- Standard "profile" claims missing on the identity -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingProfileClaims">
@@ -63,7 +63,7 @@
       </div>
       <div class="table pb-1">
           <!-- Standard "email" claims first -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingEmailClaims">
@@ -83,7 +83,7 @@
             </div>
           </div>
           <!-- Standard "email" claims missing on the identity -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingEmailClaims">
@@ -106,7 +106,7 @@
 
       <div class="table pb-1">
           <!-- Standard "address" claims first -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingAddressClaims">
@@ -126,7 +126,7 @@
             </div>
           </div>
           <!-- Standard "profile" claims missing on the identity -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingAddressClaims">
@@ -148,7 +148,7 @@
 
       <div class="table pb-1">
           <!-- Standard "phone" claims first -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingPhoneClaims">
@@ -168,7 +168,7 @@
             </div>
           </div>
           <!-- Standard "phone" claims missing on the identity -->
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingPhoneClaims">
@@ -214,7 +214,7 @@
 
       <!-- Missing "non-standard" claims that are requested -->
       <div class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
-          <div class="row" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
             [class.alert-danger]="newAttribute.name === missing.name"
             class="text-primary"
             *ngFor="let missing of missingNonStandardClaims">
@@ -242,7 +242,7 @@
       </div>
       <!-- "non-standard" claims which do exist -->
       <div class="table pb-1">
-          <div class="row"
+          <div class="row mb-3"
             [class.openid]="inOpenIdFlow()"
             [class.text-primary]="isClaimRequested(attribute)"
             [class.alert-danger]="newAttribute.name === attribute.name"
@@ -265,7 +265,7 @@
             </div>
           </div>
           <!-- New Attribute -->
-          <div class="row" [class.alert-danger]="isInConflict(newAttribute)">
+          <div class="row mb-3" [class.alert-danger]="isInConflict(newAttribute)">
             <div class="col-sm">
               <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
             </div>
