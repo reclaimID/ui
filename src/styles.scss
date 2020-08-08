@@ -27,7 +27,7 @@ div.card {
   width: auto;
 }
 
-table tr button.btn {
+.table .row button.btn {
   margin: 0;
 }
 
@@ -99,7 +99,7 @@ div.card-avatar-id {
     //border-color: #343a40;
 }
 
-.card tr.openid.text-dimmed {
+.card .table .row.openid.text-dimmed {
    color: #eee;
 }
 
@@ -147,11 +147,7 @@ div.card-avatar-id {
   width: 125px;
 }
 
-.card table {
-  table-layout: fixed;
-}
-
-.card table input {
+.card .table input {
   width: 100%;
 }
 
