@@ -220,7 +220,7 @@ export class IdentityListComponent implements OnInit {
     for (let attr of this.attributes[identity.pubkey]) {
       res.push(attr);
       i++;
-      if ((i >= 5) && (this.openIdentity !== identity)) {
+      if ((i >= 6) && (this.openIdentity !== identity)) {
         return res;
       }
     }

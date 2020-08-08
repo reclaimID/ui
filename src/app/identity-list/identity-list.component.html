@@ -103,7 +103,8 @@
     <!-- Attribute table -->
       <div class="table pb-1">
         <div class="container">
-          <div [class.text-primary]="isClaimRequested(identity, attribute)" class="row mb-1"
+          <div class="row mb-1">
+          <div [class.text-primary]="isClaimRequested(identity, attribute)" class="col-sm-4 mb-4"
              [class.text-secondary]="!isClaimRequested(identity, attribute)"
              *ngFor="let attribute of getIdentityAttributes(identity)">
             <div class="col-sm">
@@ -116,23 +117,22 @@
               <div *ngIf="getAttributeValue(identity, attribute).length > 20" style="min-width: 15em">{{getAttributeValue(identity, attribute).substring(0, 20)}}<span style="color:#eee">[...]</span></div>
             </div>
           </div>
-          <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
+          <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" class="ml-4">
             <div>
-            <i>... and {{ attributes[identity.pubkey].length - 5 }} more attributes</i><br/>
-            <button class="btn btn-primary mt-3" (click)="openIdentity = identity">
-              <i class="fa fa-expand"></i>
-              Show all attributes
-            </button>
-            </div>
-            <div>
+              <i>... and {{ attributes[identity.pubkey].length - 5 }} more attributes</i><br/>
             </div>
           </div>
         </div>
+        </div>
+        <button class="btn btn-primary mt-3" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
+          <i class="fa fa-expand"></i>
+            Show all attributes
+        </button>
       </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
       <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
-        <span class="text-primary" *ngIf="isClientVerified()"><i class="fa fa-openid"></i> Share information from this identity</span>
+        <span *ngIf="isClientVerified()">Share information marked with <i class="fa fa-openid text-primary"></i> from this identity.</span>
         <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
       </button>
     </div>
