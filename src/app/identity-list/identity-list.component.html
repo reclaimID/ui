@@ -88,7 +88,7 @@
         <li *ngIf="isEmailRequested() && isEmailMissing(identity)">getEmailDescription()</li>
         <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)">getPhoneDescription()</li>
         <li *ngIf="isAddressRequested() && isAddressMissing(identity)">getAddressDescription()</li>
-        <li *ngFor="let attr of getMissingClaims(identity)">{{attr}}<i *ngIf="isOptional(attribute)"> (optional)</i></li>
+        <li *ngFor="let attr of getMissingClaims(identity)">{{attr}}<i *ngIf="isOptional(attr)"> (optional)</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-plus"></span> Edit identity
