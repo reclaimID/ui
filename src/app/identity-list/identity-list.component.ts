@@ -415,7 +415,7 @@ export class IdentityListComponent implements OnInit {
     for (var claim of claims) {
       let found = false;
       for (let attr of this.getAttributesForIdentity(identity)) {
-        if (claim !== attr.name) {
+        if (claim === attr.name) {
           found = true;
           break;
         }
