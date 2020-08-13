@@ -149,6 +149,8 @@ export class IdentityListComponent implements OnInit {
   }
 
   private updateAttributes(identity) {
+    this.attributes[identity.pubkey] = [];
+    this.missingClaims[identity.pubkey] = [];
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
       this.attributes[identity.pubkey] = attributes.sort(this.sortAttributeByStandardClaims(this.oidcService.getStandardClaimNames()));
       this.updateMissingClaims(identity);
@@ -241,7 +243,7 @@ export class IdentityListComponent implements OnInit {
     return '';
   }
 
-  getMissingClaims(identity) {
+  getMissingClaims(identity): Attribute[] {
     if (undefined === this.missingClaims[identity.pubkey]) {
       return [];
     }

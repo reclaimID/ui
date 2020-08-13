@@ -88,10 +88,10 @@
       role="alert">
       <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
-        <li *ngIf="isProfileRequested() && isProfileMissing(identity)">{{ getProfileDescription() }}</li>
-        <li *ngIf="isEmailRequested() && isEmailMissing(identity)">{{ getEmailDescription() }}</li>
-        <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)">{{ getPhoneDescription() }}</li>
-        <li *ngIf="isAddressRequested() && isAddressMissing(identity)">{{ getAddressDescription() }}</li>
+        <li *ngIf="isProfileRequested() && isProfileMissing(identity)"><b>{{ getProfileDescription() }}</b></li>
+        <li *ngIf="isEmailRequested() && isEmailMissing(identity)"><b>{{ getEmailDescription() }}</b></li>
+        <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)"><b>{{ getPhoneDescription() }}</b></li>
+        <li *ngIf="isAddressRequested() && isAddressMissing(identity)"><b>{{ getAddressDescription() }}</b></li>
         <li *ngFor="let attr of getMissingClaims(identity)"><b>{{attr.name}}</b><i *ngIf="!isOptional(attr)"> (required)</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
