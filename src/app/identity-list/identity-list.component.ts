@@ -27,7 +27,6 @@ export class IdentityListComponent implements OnInit {
   addressAttributes: any;
   requestedScopes: any;
   missingClaims: any;
-  optionalClaims: any;
   attributes: any;
   attestations: any;
   identities: Identity[];
@@ -56,7 +55,6 @@ export class IdentityListComponent implements OnInit {
     this.showConfirmDelete = null;
     this.requestedScopes = {};
     this.missingClaims = {};
-    this.optionalClaims = {};
     this.connected = false;
     this.modalOpened = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
@@ -113,25 +111,15 @@ export class IdentityListComponent implements OnInit {
       }
     }
     this.missingClaims[identity.pubkey] = [];
-    this.optionalClaims[identity.pubkey] = [];
     for (let refscope of refscopes) {
       const attested = new Attribute('', '', '', '', 'STRING', '');
-      if (refscope[1] === true)
-      {
-        attested.name = refscope[0];
-        this.missingClaims[identity.pubkey].push(attested);
-      }
-      if (refscope[1] === false)
-      {
-        attested.name = refscope[0];
-        this.optionalClaims[identity.pubkey].push(attested);
-      }
+      attested.name = refscope[0];
+      this.missingClaims[identity.pubkey].push(attested);
     }
   }
 
   private updateAttestations(identity) {
     this.attestations[identity.pubkey] = [];
-    this.optionalClaims[identity.pubkey] = [];
     this.reclaimService.getAttestations(identity).subscribe(attestations => {
       if (attestations !== null) {
         this.attestations[identity.pubkey] = attestations;
@@ -254,15 +242,10 @@ export class IdentityListComponent implements OnInit {
   }
 
   getMissingClaims(identity) {
-    const arr = [];
-    let i = 0;
     if (undefined === this.missingClaims[identity.pubkey]) {
-      return arr;
+      return [];
     }
-    for (i = 0; i < this.missingClaims[identity.pubkey].length; i++) {
-      arr.push(this.missingClaims[identity.pubkey][i].name);
-    }
-    return arr;
+    return this.missingClaims[identity.pubkey];
   }
 
   isClaimRequested(identity, attribute) {
@@ -422,7 +405,7 @@ export class IdentityListComponent implements OnInit {
       }
       if (!found) {
         console.log(claim + " is missing");
-        return false;
+        return true;
       }
     }
     return false;
@@ -460,21 +443,6 @@ export class IdentityListComponent implements OnInit {
     return false; //FIXME actually handle this https://gitlab.com/voggenre/ui/commit/dd9b6656dee7dbf59809dcc9bc2508ee70d8afe6
   }
 
-  getOptionalClaims(identity) {
-    const arr = [];
-    let i = 0;
-    if (!this.inOpenIdFlow()) {
-      return [];
-    }
-    if (undefined === this.optionalClaims[identity.pubkey]) {
-      return [];
-    }
-    for (i = 0; i < this.optionalClaims[identity.pubkey].length; i++) {
-        arr.push(this.optionalClaims[identity.pubkey][i].name);
-    }
-    return arr;
-  }
-
   isOptional(attr: Attribute): boolean {
     if (undefined === attr) { return true };
     var claims = this.oidcService.getRequestedClaims();
@@ -486,6 +454,7 @@ export class IdentityListComponent implements OnInit {
     }
     return true;
   }
+
   toggleSharingInfo(id: Identity) {
     if (this.showSharingInfo === id) {
       this.showSharingInfo = '';
