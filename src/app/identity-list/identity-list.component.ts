@@ -411,6 +411,17 @@ export class IdentityListComponent implements OnInit {
     return false;
   }
 
+  isAnyRequiredClaimMissing(identity: Identity) {
+    var claims = this.oidcService.getRequestedClaims();
+    for (var claim of claims) {
+      let found = false;
+      for (let attr of this.missingClaims[identity.pubkey]) {
+        if ((claim[0] === attr.name) && claim[1]) { return true; }
+      }
+    }
+    return false;
+  }
+
   isClaimAttested(attribute: Attribute): boolean {
     if (undefined === attribute) { return false; }
     return attribute.flag === '1';
