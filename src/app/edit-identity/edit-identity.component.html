@@ -214,9 +214,9 @@
 
       <!-- Missing "non-standard" claims that are requested -->
       <div class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
-          <div class="row mb-3" [class.openid]="inOpenIdFlow()"
+          <div class="row mb-3 text-primary" 
+            [class.openid]="inOpenIdFlow()"
             [class.alert-danger]="newAttribute.name === missing.name"
-            class="text-primary"
             *ngFor="let missing of missingNonStandardClaims">
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></div>
