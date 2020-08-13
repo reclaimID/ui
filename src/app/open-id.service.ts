@@ -202,7 +202,7 @@ export class OpenIdService {
         }
       }
     }
-    return false;
+    return true;
   }
 
   isProfileMissing(attributes: Attribute[]): boolean {

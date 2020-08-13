@@ -476,6 +476,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   isOptional(attr: Attribute): boolean {
+    if (undefined === attr) { return true };
     var claims = this.oidcService.getRequestedClaims();
     for (let claim of claims) {
       if ((claim[0] === attr.name) &&
