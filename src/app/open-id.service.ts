@@ -346,13 +346,30 @@ export class OpenIdService {
       return [];
     }
     var claims = [];
-    var json = JSON.parse(this.params['claims'])['userinfo'];
-    for(var key in json)
+    var json = [];
+    try {
+      json = JSON.parse(this.params['claims']);
+    } catch(e) {
+      console.log(e);
+      return claims;
+    }
+    if (undefined === json) { return claims };
+    var userinfo = json['userinfo']
+    if (undefined === userinfo) { return claims };
+    var claimkeys = [];
+    for(var key in userinfo)
     {
-      if (json[key]['attestation'] === true)
-        {
-          claims.push([key, json[key]['essential'], json[key]['attestation'], json[key]['format']]);
-        }
+      claims.push([key, userinfo[key]['essential'], userinfo[key]['attestation'], userinfo[key]['format']]);
+      claimkeys.push(key);
+    }
+    var idtoken = json['id_token'];
+    if (undefined === idtoken) { return claims };
+    for(var key in idtoken)
+    {
+      if (!claimkeys.includes(key))
+      {
+        claims.push([key, idtoken[key]['essential'], idtoken[key]['attestation'], idtoken[key]['format']]);
+      }
     }
     return claims;
   }
