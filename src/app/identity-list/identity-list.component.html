@@ -108,9 +108,7 @@
              [class.text-secondary]="!isClaimRequested(identity, attribute)"
              *ngFor="let attribute of getIdentityAttributes(identity)">
             <div class="col-sm">
-              <div style="min-width: 15em">
-                <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
-              </div>
+              <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
             </div>
             <div class="col-sm">
               <div *ngIf="getAttributeValue(identity, attribute).length <= 20" style="min-width: 15em">{{getAttributeValue(identity, attribute)}}</div>
