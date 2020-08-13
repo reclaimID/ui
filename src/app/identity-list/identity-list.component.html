@@ -81,17 +81,21 @@
     <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)">
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
-    <div [hidden]="!isAnyRequestedClaimMissing(identity)" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div [hidden]="!isAnyRequestedClaimMissing(identity)"
+      class="alert alert-warning alert-dismissible fade show"
+      [class.alert-warning]="!isAnyRequiredClaimMissing(identity)"
+      [class.alert-danger]="isAnyRequiredClaimMissing(identity)"
+      role="alert">
       <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)">getProfileDescription()</li>
         <li *ngIf="isEmailRequested() && isEmailMissing(identity)">getEmailDescription()</li>
         <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)">getPhoneDescription()</li>
         <li *ngIf="isAddressRequested() && isAddressMissing(identity)">getAddressDescription()</li>
-        <li *ngFor="let attr of getMissingClaims(identity)">{{attr.name}}<i *ngIf="isOptional(attr)"> (optional)</i></li>
+        <li *ngFor="let attr of getMissingClaims(identity)">{{attr.name}}<i *ngIf="!isOptional(attr)"> (required)</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
-        <span class="fa fa-plus"></span> Edit identity
+        <span class="fa fa-edit"></span> Edit identity
       </button>
     </div>
 
@@ -129,7 +133,9 @@
       </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
-      <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)" class="btn btn-primary mr-1 openid-login">
+      <button [disabled]="!isClientVerified() && !isAnyRequiredClaimMissing(identity)"
+        (click)="loginIdentity(identity)"
+        class="btn btn-primary mr-1 openid-login">
         <span *ngIf="isClientVerified()">Share information marked with <i class="fa fa-openid text-primary"></i> from this identity.</span>
         <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
       </button>
