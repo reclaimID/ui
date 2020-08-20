@@ -15,7 +15,7 @@ body {
 
 
 div.card {
-  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border-radius: 1em;
 }
 
@@ -32,7 +32,7 @@ div.card {
 }
 
 button.btn, a.btn {
-  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border-radius: 10rem;
   background-image: none;
   margin: 0.5em;
@@ -54,12 +54,12 @@ button.btn:hover, a.button:hover {
   border: 1px solid #555;
   color: #fff;
   background-image:none;
-  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
 }
 
 .btn.btn-primary:disabled {
   background-color: white;
-  box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
   border: 1px solid #ccc;
   color: #ccc;
 }
@@ -94,11 +94,6 @@ div.card-avatar-id {
     font-size: 1em;
 }
 
-.card.selected {
-    box-shadow: 0px 1px 2px -1px rgba(0, 0, 0, 0.5);
-    //border-color: #343a40;
-}
-
 .card .table .row.openid.text-dimmed {
    color: #eee;
 }
@@ -106,7 +101,6 @@ div.card-avatar-id {
 .card.identity-new {
   background: none;
   border: 1px dashed #555;
-  box-shadow: none;
 }
 
 .card-avatar-character {
@@ -117,7 +111,6 @@ div.card-avatar-id {
   border: none;
   background-image: none;
   background-color: rgba(0,0,0,0);
-  box-shadow: none;
   color: #555;
   font-size: 0.75em;
   float: right;
@@ -128,7 +121,6 @@ div.card-avatar-id {
   background-image: none;
   color: #444;
   border: none;
-  box-shadow: none;
   background-color: #eee; 
 }
 
@@ -149,6 +141,29 @@ div.card-avatar-id {
 
 .card .table input {
   width: 100%;
+}
+
+.card input {
+  border-radius: 2em;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+}
+
+.card input:focus {
+  outline: none;
+  border-color: #80bdff;
+}
+
+input.form-control:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 div.card-avatar {

@@ -216,12 +216,12 @@ export class EditIdentityComponent implements OnInit {
   }
 
   isInConflict(attribute: Attribute): boolean {
-    return this.checkConflict(this.missingProfileClaims, attribute) ||
+    /*return this.checkConflict(this.missingProfileClaims, attribute) ||
            this.checkConflict(this.missingEmailClaims, attribute) ||
            this.checkConflict(this.missingPhoneClaims, attribute) ||
            this.checkConflict(this.missingAddressClaims, attribute) ||
-           this.checkConflict(this.missingNonStandardClaims, attribute) ||
-           this.checkConflict(this.attributes, attribute);
+           this.checkConflict(this.missingNonStandardClaims, attribute) ||*/
+    return this.checkConflict(this.attributes, attribute);
   }
 
   canAddAttribute(attribute: Attribute): boolean {
