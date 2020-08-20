@@ -6,7 +6,7 @@ import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { Attribute } from '../attribute';
-import { Attestation } from '../attestation';
+import { Credential } from '../credential';
 import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
@@ -24,11 +24,11 @@ export class EditIdentityComponent implements OnInit {
 
   identity: Identity;
   attributes: Attribute[] = [];
-  attestations: Attestation[] = [];
-  attestationValues: {};
+  credentials: Credential[] = [];
+  credentialValues: {};
   newAttribute: Attribute;
-  newAttestedClaim: Attribute;
-  missingAttested: Attribute[]  = [];
+  newCredClaim: Attribute;
+  missingCred: Attribute[]  = [];
   requestedClaims: Attribute[]  = [];
   optionalClaims: Attribute[]  = [];
   webfingerEmail: string;
@@ -59,13 +59,13 @@ export class EditIdentityComponent implements OnInit {
               private router: Router,) {}
 
   ngOnInit() {
-    this.attestationValues = {};
+    this.credentialValues = {};
     this.webfingerEmail = '';
     this.newIdProvider = new IdProvider ('', '', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
-    this.newAttestedClaim = new Attribute('', '', '', '', 'STRING', '1');
+    this.newCredClaim = new Attribute('', '', '', '', 'STRING', '1');
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -76,7 +76,7 @@ export class EditIdentityComponent implements OnInit {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
               this.updateAttributes();
-              this.updateAttestations();
+              this.updateCredentials();
             }
           }
         });
@@ -252,16 +252,16 @@ export class EditIdentityComponent implements OnInit {
   }
 
   saveIdentity() {
-    localStorage.removeItem("userForAttestation");
+    localStorage.removeItem("userForCredential");
     this.saveIdentityAttributes();
   }
 
   saveIdentityAttributes() {
     if (this.newAttribute.flag === '0') {
       /**
-       * Make sure attestation is not still set
+       * Make sure credential is not still set
        */
-      this.newAttribute.attestation = '';
+      this.newAttribute.credential = '';
     }
     this.actions = "Saving...";
     this.storeAttributes()
@@ -307,7 +307,7 @@ export class EditIdentityComponent implements OnInit {
           continue;
         }
         if (attr.flag === '0') {
-          attr.attestation = '';
+          attr.credential = '';
         }
         promises.push(from(this.reclaimService.addAttribute(
           this.identity, attr)));
@@ -330,10 +330,10 @@ export class EditIdentityComponent implements OnInit {
     if (undefined !== this.attributes) {
       for (let attr of this.attributes) {
         /*if (attr.flag === '1') {
-          continue; //Is an attestation
+          continue; //Is an credential
         }*/
         if (attr.flag === '0') {
-          attr.attestation = '';
+          attr.credential = '';
         }
         promises.push(
           from(this.reclaimService.addAttribute(this.identity, attr)));
@@ -431,8 +431,8 @@ export class EditIdentityComponent implements OnInit {
     return false;
   }
 
-  isClaimAttestationRequested(attr: Attribute) {
-    //TODO check if this claim is in claims parameter and needs attestation
+  isClaimCredentialRequested(attr: Attribute) {
+    //TODO check if this claim is in claims parameter and needs credential
     var claims = this.oidcService.getRequestedClaims();
     for (let claim of claims) {
       if (claim[0] == attr.name) {
@@ -452,51 +452,51 @@ export class EditIdentityComponent implements OnInit {
   }
 
 
-  private updateAttestations() {
-    this.reclaimService.getAttestations(this.identity).subscribe(attestations => {
-      this.attestations = attestations;
+  private updateCredentials() {
+    this.reclaimService.getCredentials(this.identity).subscribe(credentials => {
+      this.credentials = credentials;
     },
     err => {
-      //this.errorInfos.push("Error retrieving attestation for ``" + identity.name + "''");
+      //this.errorInfos.push("Error retrieving credential for ``" + identity.name + "''");
       console.log(err);
     });
   }
 
-  isClaimAttested(attribute) {
+  isClaimCred(attribute) {
     return attribute.flag === '1';
   }
 
-  isClaimAttestationValid(attribute: Attribute) {
-    if (attribute.attestation === '') {
+  isClaimCredentialValid(attribute: Attribute) {
+    if (attribute.credential === '') {
       return attribute.name === '';
     }
     return true;
   }
 
 
-  attestationValuesForClaim(attribute: Attribute) {
-    for (let i = 0; i < this.attestations.length; i++) {
-      if (this.attestations[i].id == attribute.attestation) {
-        return this.attestations[i].attributes;
+  credentialValuesForClaim(attribute: Attribute) {
+    for (let i = 0; i < this.credentials.length; i++) {
+      if (this.credentials[i].id == attribute.credential) {
+        return this.credentials[i].attributes;
       }
     }
   }
 
-  //FIXME attestations need an issuer field
+  //FIXME credentials need an issuer field
   getIssuer(attribute: Attribute) {
-    for (let i = 0; i < this.attestations.length; i++) {
-      if (this.attestations[i].id == attribute.attestation) {
-        return this.attestations[i].issuer;
+    for (let i = 0; i < this.credentials.length; i++) {
+      if (this.credentials[i].id == attribute.credential) {
+        return this.credentials[i].issuer;
       }
     }
   }
 
-  getAttestedValue(attribute: Attribute) {
-    for (let i = 0; i < this.attestations.length; i++) {
-      if (this.attestations[i].id == attribute.attestation) {
-        for (let j = 0; j < this.attestations[i].attributes.length; j++) {
-          if (attribute.value == this.attestations[i].attributes[j].name) {
-            return this.attestations[i].attributes[j].value;
+  getCredValue(attribute: Attribute) {
+    for (let i = 0; i < this.credentials.length; i++) {
+      if (this.credentials[i].id == attribute.credential) {
+        for (let j = 0; j < this.credentials[i].attributes.length; j++) {
+          if (attribute.value == this.credentials[i].attributes[j].name) {
+            return this.credentials[i].attributes[j].value;
           }
         }
       }

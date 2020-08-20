@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Attribute } from './attribute';
 import { Reference } from './reference';
-import { Attestation } from './attestation';
+import { Credential } from './credential';
 import { ConfigService } from './config.service';
 import { GnuNetResponse } from './gnu-net-response';
 import { Identity } from './identity';
@@ -41,38 +41,24 @@ export class ReclaimService {
       ticket);
   }
 
-  deleteReference(identity: Identity, reference: Reference) {
-    const options = {headers: new HttpHeaders({'Content-Type': 'application/json',}),
-    body: reference,};
-    return this.http.delete(this.config.get().apiUrl + '/reclaim/attestation/reference/' +
-      identity.name + '/' + reference.ref_id, options);
+  getCredentials(identity: Identity): Observable<Credential[]> {
+    return this.http.get<Credential[]>(this.config.get().apiUrl +
+      '/reclaim/credential/' + identity.name);
   }
 
-  getAttestations(identity: Identity): Observable<Attestation[]> {
-    return this.http.get<Attestation[]>(this.config.get().apiUrl +
-      '/reclaim/attestation/' + identity.name);
-  }
-
-  addAttestation(identity: Identity, attestation: Attestation) {
+  addCredential(identity: Identity, credential: Credential) {
     var json = {
-      "name": attestation.name,
-      "value": attestation.value,
-      "type": attestation.type
+      "name": credential.name,
+      "value": credential.value,
+      "type": credential.type
     }
     return this.http.post(this.config.get().apiUrl +
-      '/reclaim/attestation/' + identity.name,
+      '/reclaim/credential/' + identity.name,
       json);
   }
 
-  deleteAttestation(identity: Identity, attestation: Attestation) {
-    return this.http.delete(this.config.get().apiUrl + '/reclaim/attestation/' +
-      identity.name + '/' + attestation.id);
+  deleteCredential(identity: Identity, credential: Credential) {
+    return this.http.delete(this.config.get().apiUrl + '/reclaim/credential/' +
+      identity.name + '/' + credential.id);
   }
-
-  /*Not needed
-  fixmeExchangeCode(code: String) {
-    let json = JSON.parse("{}");
-    return this.http.post("http://localhost:4567/token?grant_type=authorization_code&client_id=reclaimid&redirect_uri=http://localhost:4200/index.html&scope=openid&code="+code, json);
-  }
-  */
 }
