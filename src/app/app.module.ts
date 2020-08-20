@@ -16,12 +16,12 @@ import { ModalComponent } from './modal.component';
 import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
-import { AttestationService } from './attestation.service';
+import { CredentialService } from './credential.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 import { EditAuthorizationsComponent } from './edit-authorizations/edit-authorizations.component';
-import { EditAttestationsComponent } from './edit-attestations/edit-attestations.component';
+import { EditCredentialsComponent } from './edit-credentials/edit-credentials.component';
 import { OAuthStorage } from 'angular-oauth2-oidc';
 
 @NgModule({
@@ -34,7 +34,7 @@ import { OAuthStorage } from 'angular-oauth2-oidc';
     EditIdentityComponent,
     AuthorizationRequestComponent,
     EditAuthorizationsComponent,
-    EditAttestationsComponent
+    EditCredentialsComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +52,7 @@ import { OAuthStorage } from 'angular-oauth2-oidc';
     GnsService,
     OpenIdService,
     ConfigService,
-    AttestationService,
+    CredentialService,
     {
       provide: APP_INITIALIZER,
       useFactory: (config: ConfigService) => () => config.load(),

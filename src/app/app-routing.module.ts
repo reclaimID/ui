@@ -4,7 +4,7 @@ import { IdentityListComponent } from './identity-list/identity-list.component';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { EditAuthorizationsComponent } from './edit-authorizations/edit-authorizations.component';
-import { EditAttestationsComponent } from './edit-attestations/edit-attestations.component';
+import { EditCredentialsComponent } from './edit-credentials/edit-credentials.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
 
 const routes: Routes = [
@@ -14,7 +14,7 @@ const routes: Routes = [
     { path: 'new-identity', component: NewIdentityComponent },
     { path: 'edit-identity/:id', component: EditIdentityComponent },
     { path: 'edit-authorizations/:id', component: EditAuthorizationsComponent },
-    { path: 'edit-attestations/:id', component: EditAttestationsComponent },
+    { path: 'edit-credentials/:id', component: EditCredentialsComponent },
     { path: 'authorization-request', component: AuthorizationRequestComponent }
 ];
 

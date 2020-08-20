@@ -1,6 +1,6 @@
 import { Attribute } from './attribute';
 
-export class Attestation {
+export class Credential {
   constructor(public name: string,
               public id: string,
               public value: string,

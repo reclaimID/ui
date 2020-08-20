@@ -2,26 +2,26 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReclaimService } from '../reclaim.service';
 import { Identity } from '../identity';
-import { Attestation } from '../attestation';
+import { Credential } from '../credential';
 import { IdentityService } from '../identity.service';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { AttestationService } from '../attestation.service';
+import { CredentialService } from '../credential.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
 
 @Component({
-  selector: 'app-edit-attestations',
-  templateUrl: './edit-attestations.component.html',
-  styleUrls: ['./edit-attestations.component.css']
+  selector: 'app-edit-credentials',
+  templateUrl: './edit-credentials.component.html',
+  styleUrls: ['./edit-credentials.component.css']
 })
-export class EditAttestationsComponent implements OnInit {
+export class EditCredentialsComponent implements OnInit {
 
   identity: Identity;
-  attestations: Attestation[];
-  newAttestation: Attestation;
+  credentials: Credential[];
+  newCredential: Credential;
   newIdProvider: IdProvider;
   webfingerEmail: string;
   emailNotFoundAlertClosed: boolean;
@@ -32,11 +32,11 @@ export class EditAttestationsComponent implements OnInit {
               private identityService: IdentityService,
               private activatedRoute: ActivatedRoute,
               private router: Router,
-              private attestationService: AttestationService,
+              private credentialService: CredentialService,
               private oauthService: OAuthService) { }
 
   ngOnInit() {
-    this.newAttestation = new Attestation('', '', '', 'JWT', '', 0, []);
+    this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.identity = new Identity('','');
     this.newIdProvider = new IdProvider ('', '', '');
     this.webfingerEmail = '';
@@ -44,13 +44,13 @@ export class EditAttestationsComponent implements OnInit {
     this.errorMassage = '';
     this.loadScopesFromLocalStorage()
     this.loadIdProviderFromLocalStorage();
-    this.attestations = [];
+    this.credentials = [];
     if (this.newIdProvider.url !== ''){
       const loginOptions: LoginOptions = {
-        customHashFragment: "?code="+localStorage.getItem("attestationCode") + "&state=" + localStorage.getItem("attestationState") + "&session_state="+ localStorage.getItem("attestationSession_State"),
+        customHashFragment: "?code="+localStorage.getItem("credentialCode") + "&state=" + localStorage.getItem("credentialState") + "&session_state="+ localStorage.getItem("credentialSession_State"),
       }
       this.configureOauthService();
-      if (!localStorage.getItem("attestationCode")){
+      if (!localStorage.getItem("credentialCode")){
         this.oauthService.loadDiscoveryDocumentAndTryLogin();
       }
       else{
@@ -67,62 +67,62 @@ export class EditAttestationsComponent implements OnInit {
           for (let i = 0; i < ids.length; i++) {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
-              this.updateAttestations();
+              this.updateCredentials();
             }
           }
         });
     });
   }
 
-  private updateAttestations() {
-    this.reclaimService.getAttestations(this.identity).subscribe(attestation => {
-      this.attestations = attestation;
+  private updateCredentials() {
+    this.reclaimService.getCredentials(this.identity).subscribe(credential => {
+      this.credentials = credential;
     },
     err => {
-      //this.errorInfos.push("Error retrieving attestation for ``" + identity.name + "''");
+      //this.errorInfos.push("Error retrieving credential for ``" + identity.name + "''");
       console.log(err);
     });
   }
 
   saveIdProvider(){
     this.saveIdProviderinLocalStorage();
-    this.addAttestation();
+    this.addCredential();
   }
 
-  addAttestation() {
+  addCredential() {
     if (!this.oauthService.hasValidAccessToken()){
       console.log("No AccessToken");
       return;
     }
-    this.newAttestation.value = this.oauthService.getAccessToken();
-    this.reclaimService.addAttestation(this.identity, this.newAttestation).subscribe(res => {
-      console.log("Saved Attestation");
+    this.newCredential.value = this.oauthService.getAccessToken();
+    this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
+      console.log("Saved Credential");
       this.resetNewIdProvider();
       this.resetScopes();
-      this.updateAttestations();
-      this.newAttestation.name = '';
-      this.newAttestation.value = '';
+      this.updateCredentials();
+      this.newCredential.name = '';
+      this.newCredential.value = '';
       this.logOutFromOauthService();
     },
     err => {
-      console.log("Failed saving attestation");
+      console.log("Failed saving credential");
       console.log(err);
       //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
       EMPTY
-      this.newAttestation.name = '';
-      this.newAttestation.value = '';
+      this.newCredential.name = '';
+      this.newCredential.value = '';
       this.logOutFromOauthService();
     });
   }
 
   saveIdProviderinLocalStorage(){
-    localStorage.setItem('Authorization: ' + this.newAttestation.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
+    localStorage.setItem('Authorization: ' + this.newCredential.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
   }
 
-  private storeAttestation() {
+  private storeCredential() {
     const promises = [];
-    if ((this.newAttestation.value !== '') || (this.newAttestation.type !== '')) {
-      promises.push(from(this.reclaimService.addAttestation(this.identity, this.newAttestation)));
+    if ((this.newCredential.value !== '') || (this.newCredential.type !== '')) {
+      promises.push(from(this.reclaimService.addCredential(this.identity, this.newCredential)));
     }
     return forkJoin(promises);
   }
@@ -138,11 +138,11 @@ export class EditAttestationsComponent implements OnInit {
     this.router.navigate(['/edit-identity', this.identity.name]);
   }
 
-  isAttestInConflict(attestation: Attestation) {
+  isCredInConflict(credential: Credential) {
     let i;
-    if (undefined !== this.attestations) {
-      for (i = 0; i < this.attestations.length; i++) {
-        if (attestation.name === this.attestations[i].name) {
+    if (undefined !== this.credentials) {
+      for (i = 0; i < this.credentials.length; i++) {
+        if (credential.name === this.credentials[i].name) {
           return true;
         }
       }
@@ -150,64 +150,64 @@ export class EditAttestationsComponent implements OnInit {
     return false;
   }
 
-  deleteAttestation(attestation: Attestation) {
-    localStorage.removeItem("Authorization: " + attestation.name);
-    this.reclaimService.deleteAttestation(this.identity, attestation)
+  deleteCredential(credential: Credential) {
+    localStorage.removeItem("Authorization: " + credential.name);
+    this.reclaimService.deleteCredential(this.identity, credential)
       .subscribe(res => {
         //FIXME info dialog
-        this.updateAttestations();
+        this.updateCredentials();
       },
       err => {
-        //this.errorInfos.push("Failed to delete attestation ``" + attestation.name + "''");
+        //this.errorInfos.push("Failed to delete credential ``" + credential.name + "''");
         console.log(err);
       });
   }
 
-  canAddAttestation(attestation: Attestation) {
+  canAddCredential(credential: Credential) {
     if(!this.oauthService.hasValidAccessToken()){
       return false;
     }
-    if ((attestation.name === '')) {
+    if ((credential.name === '')) {
       return false;
     }
-    if (attestation.name.indexOf(' ') >= 0) {
+    if (credential.name.indexOf(' ') >= 0) {
       return false;
     }
-    return !this.isAttestInConflict(attestation);
+    return !this.isCredInConflict(credential);
   }
 
-  attestationNameValid(attestation: Attestation) {
-    if (attestation.name === '' && attestation.value === '' && attestation.type === '') {
+  credentialNameValid(credential: Credential) {
+    if (credential.name === '' && credential.value === '' && credential.type === '') {
       return true;
     }
-    if (attestation.name.indexOf(' ') >= 0) {
+    if (credential.name.indexOf(' ') >= 0) {
       return false;
     }
-    if (!/^[a-zA-Z0-9-]+$/.test(attestation.name)) {
+    if (!/^[a-zA-Z0-9-]+$/.test(credential.name)) {
       return false;
     }
-    return !this.isAttestInConflict(attestation);
+    return !this.isCredInConflict(credential);
   }
 
-  attestationTypeValid(attestation: Attestation) {
-    if (attestation.type === '') {
-      return attestation.name === '';
+  credentialTypeValid(credential: Credential) {
+    if (credential.type === '') {
+      return credential.name === '';
     }
     return true;
   }
 
-  attestationValueValid(attestation: Attestation) {
+  credentialValueValid(credential: Credential) {
     return true;
   }
 
-  getExpiration(attestation: Attestation) {
+  getExpiration(credential: Credential) {
     var exp = new Date(0);
-    exp.setMilliseconds(attestation.expiration / 1000);
+    exp.setMilliseconds(credential.expiration / 1000);
     return exp.toLocaleString();
   }
 
   //FIXME
-  isAttestationValid(attestation: Attestation) {
+  isCredentialValid(credential: Credential) {
     return true;
   }
 
@@ -221,7 +221,7 @@ export class EditAttestationsComponent implements OnInit {
     return url.split('//')[1];
   }
 
-  getNewAttestationExpiration(){
+  getNewCredentialExpiration(){
     var exp = new Date(0);
     exp.setMilliseconds(this.oauthService.getIdTokenExpiration());
     return exp.toLocaleString();
@@ -250,8 +250,8 @@ export class EditAttestationsComponent implements OnInit {
     this.logOutFromOauthService();
     this.resetNewIdProvider();
     this.resetScopes();
-    this.newAttestation.value = '';
-    this.newAttestation.name = '';
+    this.newCredential.value = '';
+    this.newCredential.name = '';
   }
 
 
@@ -261,9 +261,9 @@ export class EditAttestationsComponent implements OnInit {
     if (this.webfingerEmail == ''){
       return;
     }
-    localStorage.setItem('userForAttestation', this.identity.name);
+    localStorage.setItem('userForCredential', this.identity.name);
     this.isValidEmailforDiscovery();
-    this.attestationService.getLink(this.webfingerEmail).subscribe (idProvider => {
+    this.credentialService.getLink(this.webfingerEmail).subscribe (idProvider => {
       this.newIdProvider.url = (idProvider.links [0]).href; 
       localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
       this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
@@ -289,7 +289,7 @@ export class EditAttestationsComponent implements OnInit {
 
   getScopes(){
     this.configureOauthService();
-    this.attestationService.getDiscoveryDocument(this.oauthService.issuer).subscribe(openidConfig => {
+    this.credentialService.getDiscoveryDocument(this.oauthService.issuer).subscribe(openidConfig => {
       openidConfig["scopes_supported"].forEach(scope => {
         const scopeInterface: Scope = {
           scope: scope,
@@ -339,7 +339,7 @@ export class EditAttestationsComponent implements OnInit {
   }
 
   configureOauthService(){
-    var authCodeFlowConfig = this.attestationService.getOauthConfig(this.newIdProvider, this.scopes);
+    var authCodeFlowConfig = this.credentialService.getOauthConfig(this.newIdProvider, this.scopes);
     this.oauthService.configure(authCodeFlowConfig);
   }
 

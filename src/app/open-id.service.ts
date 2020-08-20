@@ -98,10 +98,10 @@ export class OpenIdService {
     window.location.href = this.buildAuthorizeRedirect();
   }
 
-  setAttestations(attestations: Attribute[]) {
+  setCredentials(credentials: Attribute[]) {
     this.referenceString = "";
-    for(var i = 0; i < attestations.length; i++) {
-      this.referenceString = this.referenceString + attestations[i].name + " ";
+    for(var i = 0; i < credentials.length; i++) {
+      this.referenceString = this.referenceString + credentials[i].name + " ";
     }
   }
 

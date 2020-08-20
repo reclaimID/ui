@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Attribute } from '../attribute';
-import { Attestation } from '../attestation';
+import { Credential } from '../credential';
 import { GnsService } from '../gns.service';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
@@ -28,7 +28,7 @@ export class IdentityListComponent implements OnInit {
   requestedScopes: any;
   missingClaims: any;
   attributes: any;
-  attestations: any;
+  credentials: any;
   identities: Identity[];
   showConfirmDelete: any;
   connected: any;
@@ -50,7 +50,7 @@ export class IdentityListComponent implements OnInit {
 
   ngOnInit() {
     this.attributes = {};
-    this.attestations = {};
+    this.credentials = {};
     this.identities = [];
     this.showConfirmDelete = null;
     this.requestedScopes = {};
@@ -58,15 +58,15 @@ export class IdentityListComponent implements OnInit {
     this.connected = false;
     this.modalOpened = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
-      localStorage.setItem('attestationCode', this.route.snapshot.queryParams["code"]);
-      localStorage.setItem('attestationState', this.route.snapshot.queryParams["state"]);
-      localStorage.setItem('attestationSession_State', this.route.snapshot.queryParams["session_state"]);
-      var user = localStorage.getItem('userForAttestation');
-      this.router.navigate(['/edit-attestations', user]);
+      localStorage.setItem('credentialCode', this.route.snapshot.queryParams["code"]);
+      localStorage.setItem('credentialState', this.route.snapshot.queryParams["state"]);
+      localStorage.setItem('credentialSession_State', this.route.snapshot.queryParams["session_state"]);
+      var user = localStorage.getItem('userForCredential');
+      this.router.navigate(['/edit-credentials', user]);
     }
     if (undefined !== this.route.snapshot.queryParams["logout"]){
-      var user = localStorage.getItem('userForAttestation');
-      this.router.navigate(['/edit-attestations', user]);
+      var user = localStorage.getItem('userForCredential');
+      this.router.navigate(['/edit-credentials', user]);
     }
     if (!this.oidcService.inOpenIdFlow()) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
@@ -112,17 +112,17 @@ export class IdentityListComponent implements OnInit {
     }
     this.missingClaims[identity.pubkey] = [];
     for (let refscope of refscopes) {
-      const attested = new Attribute('', '', '', '', 'STRING', '');
-      attested.name = refscope[0];
-      this.missingClaims[identity.pubkey].push(attested);
+      const cred = new Attribute('', '', '', '', 'STRING', '');
+      cred.name = refscope[0];
+      this.missingClaims[identity.pubkey].push(cred);
     }
   }
 
-  private updateAttestations(identity) {
-    this.attestations[identity.pubkey] = [];
-    this.reclaimService.getAttestations(identity).subscribe(attestations => {
-      if (attestations !== null) {
-        this.attestations[identity.pubkey] = attestations;
+  private updateCredentials(identity) {
+    this.credentials[identity.pubkey] = [];
+    this.reclaimService.getCredentials(identity).subscribe(credentials => {
+      if (credentials !== null) {
+        this.credentials[identity.pubkey] = credentials;
       }
     },
     err => {
@@ -370,7 +370,7 @@ export class IdentityListComponent implements OnInit {
 
       identities.forEach(identity => {
         this.updateAttributes(identity);
-        this.updateAttestations(identity);
+        this.updateCredentials(identity);
       });
       if (this.modalOpened) {
         this.closeModal('GnunetInfo');
@@ -424,18 +424,18 @@ export class IdentityListComponent implements OnInit {
     return false;
   }
 
-  isClaimAttested(attribute: Attribute): boolean {
+  isClaim(attribute: Attribute): boolean {
     if (undefined === attribute) { return false; }
     return attribute.flag === '1';
   }
 
   getAttributeValue(identity: Identity, attribute: Attribute): string {
     if (undefined === attribute) { return '?' };
-    if (!this.isClaimAttested(attribute)) { return attribute.value };
-    if (undefined === this.attestations[identity.pubkey]) { return '?'};
-    for (let attest of this.attestations[identity.pubkey]) {
-      if (attest.id == attribute.attestation) {
-        for (let attr of attest.attributes) {
+    if (!this.isClaim(attribute)) { return attribute.value };
+    if (undefined === this.credentials[identity.pubkey]) { return '?'};
+    for (let cred of this.credentials[identity.pubkey]) {
+      if (cred.id == attribute.credential) {
+        for (let attr of cred.attributes) {
           if (attribute.value == attr.name) {
             return attr.value;
           }
@@ -445,7 +445,7 @@ export class IdentityListComponent implements OnInit {
     return "?";
   }
 
-  isAttestation(attribute: Attribute) {
+  isCredential(attribute: Attribute) {
     if (attribute.flag === '1') {
       return true;
     }
