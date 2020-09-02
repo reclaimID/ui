@@ -350,7 +350,7 @@ export class EditCredentialsComponent implements OnInit {
   }
 
   necessaryScope(scope){
-    if(scope=="openid"||scope=="profile"){
+    if (scope=="openid" || scope=="profile") {
       return true;
     }
     return false;
