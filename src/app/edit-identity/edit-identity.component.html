@@ -273,7 +273,7 @@
 
               <select *ngIf="isExperimental()" class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
                 <option value="0">Plain</option>
-                <option value="1">Cred</option>
+                <option value="1">Credential</option>
               </select>
               <input *ngIf="newAttribute.flag == '0'" placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
               <select *ngIf="newAttribute.flag == '1'" class="custom-select"
@@ -285,7 +285,7 @@
               </select>
 
               <select class="custom-select"
-                *ngIf="newAttribute.credential !== '' && newAttribute.flag == '0'" (change)="newAttribute.value=$event.target.value">
+                *ngIf="newAttribute.credential !== '' && newAttribute.flag == '1'" (change)="newAttribute.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let claim of credentialValuesForClaim(newAttribute)" value={{claim.name}}>
                 {{claim.value}} <i>({{claim.name}})</i>
