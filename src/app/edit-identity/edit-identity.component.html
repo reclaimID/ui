@@ -177,7 +177,7 @@
             <div class="col-sm">
               <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; ">
                 <option value="0">Plain</option>
-                <option value="1">Cred</option>
+                <option value="1">Credential</option>
               </select>
 
               <input *ngIf="claim.flag == '0'" placeholder="Value" [(ngModel)]="claim.value">
@@ -190,7 +190,7 @@
               </select>
 
               <select class="custom-select"
-                *ngIf="claim.credential !== '' && claim.flag == '1'" (change)="claim.value=$event.target.value">
+                *ngIf="(claim.credential !== '') && (claim.flag == '1')" (change)="claim.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let att of credentialValuesForClaim(claim)" value={{att.name}}>
                 {{att.value}} <i>({{att.name}})</i>
