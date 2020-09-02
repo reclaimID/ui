@@ -221,15 +221,15 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></div>
             <div class="col-sm">
-              <input *ngIf="!isClaimcredentialRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
-              <select *ngIf="isClaimcredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; ">
+              <input *ngIf="!isClaimCredentialRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
+              <select *ngIf="isClaimCredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; ">
                 <option value="">Select credential source</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                   {{cred.name}}
                 </option>
               </select>
 
-              <select *ngIf="isClaimcredentialRequested(missing) && missing.credential !== ''" class="custom-select" (change)="missing.value=$event.target.value">
+              <select *ngIf="isClaimCredentialRequested(missing) && missing.credential !== ''" class="custom-select" (change)="missing.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let claim of credentialValuesForCred(missing)" value={{claim.name}}>
                   {{claim.value}} <i>({{claim.name}})</i>
