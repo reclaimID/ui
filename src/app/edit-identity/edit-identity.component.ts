@@ -61,7 +61,7 @@ export class EditIdentityComponent implements OnInit {
   ngOnInit() {
     this.credentialValues = {};
     this.webfingerEmail = '';
-    this.newIdProvider = new IdProvider ('', '', '');
+    this.newIdProvider = new IdProvider ('', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
