@@ -2,7 +2,7 @@
 <oid-modal id="GnunetInfo">
   <div class="logo"><img src="assets/reclaim_icon.png"/></div>
   <hr>
-  <div style="text-align: center; font-size: 18px;" i18n>
+  <div style="text-align: center; font-size: 18px;">
     <strong> Unable to connect to GNUnet. <br/> Maybe it is not running? </strong>
   </div>
 </oid-modal>
@@ -15,7 +15,7 @@
     <div class="search-wrapper">
     <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
     </div>
-    <button class="btn btn-primary" [routerLink]="['/new-identity']" i18n>
+    <button class="btn btn-primary" [routerLink]="['/new-identity']" >
       <span class="fa fa-user-plus"></span> New identity
     </button>
   </div>
@@ -24,13 +24,13 @@
 
 <!-- Cancel authorization -->
 <div style="margin-bottom: 1em; text-align: center;" *ngIf="inOpenIdFlow()">
-    <button *ngIf="inOpenIdFlow()" class="btn btn-danger mt-2" (click)="cancelRequest()" i18n>
+    <button *ngIf="inOpenIdFlow()" class="btn btn-danger mt-2" (click)="cancelRequest()">
       <span class="fa fa-ban"></span> Decline authorization request
     </button>
 </div>
 
 <!-- error infos -->
-<div *ngFor="let err of errorInfos" class="alert alert-danger show" role="alert" i18n>
+<div *ngFor="let err of errorInfos" class="alert alert-danger show" role="alert">
   <b>ERROR</b>
   <button class="btn btn-primary ml-4" (click)="errorInfos.splice(errorInfos.indexOf(err,0), 1)">
     <span>Dismiss</span>
@@ -40,7 +40,7 @@
 </div>
 
 <!-- No identities present -->
-<div *ngIf="isConnected() && 0 == identities.length" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert" i18n>
+<div *ngIf="isConnected() && 0 == identities.length" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
   You don't have any identities yet.<br/><br/>
   <button class="btn btn-primary" [routerLink]="['/new-identity']">
     <span class="fa fa-plus"></span> Add your first identity!
@@ -50,7 +50,7 @@
 <!-- Identity cards -->
 <!-- No match -->
 <div *ngIf="canSearch()">
-  <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert"  i18n>No matching identities.</div>
+  <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert"  >No matching identities.</div>
 </div>
 <!-- Cards -->
 <div class="card-columns p-2 mr-5 ml-5" [ngStyle]="{'column-count': '1'}" style="display: flex; flex-direction:column; align-items:center">
@@ -78,14 +78,14 @@
       </button>
     </div>
     <!-- Maybe add some info to identities? - dialog -->
-    <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)" i18n>
+    <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)" >
       This identity has no attributes. Maybe try <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">adding some?</a>
     </div>
     <div [hidden]="!isAnyRequestedClaimMissing(identity)"
       class="alert alert-warning alert-dismissible fade show"
       [class.alert-warning]="!isAnyRequiredClaimMissing(identity)"
       [class.alert-danger]="isAnyRequiredClaimMissing(identity)"
-      role="alert" i18n>
+      role="alert" >
       <span class="fa fa-openid"></span> This identity is missing some requested information:
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)"><b>{{ getProfileDescription() }}</b></li>
@@ -119,14 +119,14 @@
               <div *ngIf="getAttributeValue(identity, attribute).length > 20" style="min-width: 15em">{{getAttributeValue(identity, attribute).substring(0, 20)}}<span style="color:#eee">[...]</span></div>
             </div>
           </div>
-          <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" class="ml-4" i18n>
+          <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" class="ml-4">
             <div>
               <i>... and {{ attributes[identity.pubkey].length - 5 }} more attributes</i><br/>
             </div>
           </div>
         </div>
         </div>
-        <button class="btn btn-primary mt-3" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" i18n>
+        <button class="btn btn-primary mt-3" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
           <i class="fa fa-expand"></i>
             Show all attributes
         </button>
@@ -136,8 +136,8 @@
       <button [disabled]="!isClientVerified() || isAnyRequiredClaimMissing(identity)"
         (click)="loginIdentity(identity)"
         class="btn btn-primary mr-1 openid-login">
-        <span *ngIf="isClientVerified()" i18n>Share information marked with <i class="fa fa-openid text-primary"></i> from this identity.</span>
-        <span *ngIf="!isClientVerified()" i18n><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
+        <span *ngIf="isClientVerified()" >Share information marked with <i class="fa fa-openid text-primary"></i> from this identity.</span>
+        <span *ngIf="!isClientVerified()" ><i class="fa fa-exclamation-circle"></i> Sharing disabled</span>
       </button>
     </div>
   </div>
@@ -148,11 +148,11 @@
       <div class="card-avatar-character text-dark">
         <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
         <i class="fa fa-user-circle"></i>
-        <span class="m-1" style="display: inline-block" i18n><i> New Identity</i></span>
+        <span class="m-1" style="display: inline-block" ><i> New Identity</i></span>
       </div>
     </div>
     <div class="card-body">
-      <div style="text-align:center" class="mb-4" i18n>
+      <div style="text-align:center" class="mb-4">
         <i>Click to add a new identity.</i>
       </div>
       <div style="text-align:center">

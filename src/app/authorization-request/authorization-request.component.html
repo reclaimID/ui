@@ -1,15 +1,15 @@
 <div style="text-align: center;">
   <i class="fa fa-2x fa-openid"></i> 
-  <b class="fa-2x" i18n> Personal information request </b>
+  <b class="fa-2x" > {{browser.i18n.getMessage("authorization-request.html:3")}} </b>
   <br/>
   <span *ngIf="isClientVerified() === undefined">
     <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i> 
-    <b class="fa-2x" i18n> Verifying request, please stand by...</b>
+    <b class="fa-2x" > Verifying request, please stand by...</b>
   </span>
   <br/>
 </div>
 <div class="card" *ngIf="isClientVerified()" style="margin-left:30%; width:40%;">
-  <div class="card-body" i18n>
+  <div class="card-body" >
     <strong>{{ oidcService.clientName }}</strong>
     asks you to share personal information.<br/>
     Choose an identity to let it access the following information:
@@ -24,7 +24,7 @@
     </div>
   </div>
   <!-- Sharing disclaimer -->
-  <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert" i18n>
+  <div class="alert alert-warning alert-dismissible fade show mb-1" role="alert">
     <i class="fa fa-exclamation-triangle mr-2"></i>
     <strong>Be careful when sharing personal data with third parties!</strong>
     If you do not want to share information from any of your identities with
@@ -33,24 +33,24 @@
     sharing.
   </div>
   <div style="margin: 1em;">
-    <button class="btn btn-danger m-1 mt-4" *ngIf="isClientVerified()" (click)="cancelRequest()" style="margin-bottom: -4%;" i18n>
+    <button class="btn btn-danger m-1 mt-4" *ngIf="isClientVerified()" (click)="cancelRequest()" style="margin-bottom: -4%;">
       <span class="fa fa-ban"></span> Decline
     </button>
-    <button class="btn btn-primary m-1 mt-4" [routerLink]="['/']" *ngIf="isClientVerified()" i18n>
+    <button class="btn btn-primary m-1 mt-4" [routerLink]="['/']" *ngIf="isClientVerified()">
       <span class="fa fa-arrow-circle-right"></span> Select identity...
     </button>
   </div>
 </div>
 <div *ngIf="isClientVerified() !== undefined && !isClientVerified()" style="text-align: center;">
   <div class="alert alert-danger show" role="alert">
-    <b i18n>Authorization failed.</b><br/>
-    <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();" i18n>
+    <b >Authorization failed.</b><br/>
+    <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
       <span class="fa fa-openid"></span> Retry
     </button>
   </div>
 </div>
 <div *ngIf="isClientVerified() === undefined" style="text-align: center;">
-  <button class="btn btn-danger mt-4" *ngIf="isClientVerified() === undefined" (click)="cancelRequest()" i18n>
+  <button class="btn btn-danger mt-4" *ngIf="isClientVerified() === undefined" (click)="cancelRequest()">
     <span class="fa fa-ban"></span> Cancel verification request
   </button>
 </div>
