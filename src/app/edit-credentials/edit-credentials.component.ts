@@ -275,10 +275,10 @@ export class EditCredentialsComponent implements OnInit {
     },
     error => {
       if (error.status == 404){
-        this.errorMassage = this.getMessage("edit-credentials.ts:noAccount");
+        this.errorMassage = this.getMessage("edit_credentials_ts@noAccount");
       }
       else{
-        this.errorMassage = this.getMessage("edit-credentials.ts:errorWrongAddress");
+        this.errorMassage = this.getMessage("edit_credentials_ts@errorWrongAddress");
       }
       this.emailNotFoundAlertClosed = false;
         setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
@@ -363,7 +363,13 @@ export class EditCredentialsComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return browser.i18n.getMessage(key, sub);
+    var usrAgent = navigator.userAgent;
+    if (usrAgent.indexOf("Firefox") > -1){
+      return browser.i18n.getMessage(key, sub);
+    }
+    else if (usrAgent.indexOf("Chrome") > -1){
+      return chrome.i18n.getMessage(key, sub);
+    }
   }
 
 
