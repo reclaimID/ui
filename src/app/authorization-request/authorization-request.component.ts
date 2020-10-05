@@ -9,6 +9,8 @@ import { OpenIdService } from '../open-id.service';
 })
 export class AuthorizationRequestComponent implements OnInit {
 
+  browser: typeof browser;
+
   constructor(private oidcService: OpenIdService,
               private router: Router) { }
 

@@ -12,8 +12,8 @@
   <!-- Attribute table -->
   <div class="card-body">
     <div>
-      <h3 class="card-subtitle mb-2"  i18n>Basic user information <span (click)="showGeneralInfo = !showGeneralInfo" class="fa fa-question-circle"></span></h3>
-      <div class="alert alert-secondary fade show" *ngIf="showGeneralInfo" i18n>
+      <h3 class="card-subtitle mb-2"  >Basic user information <span (click)="showGeneralInfo = !showGeneralInfo" class="fa fa-question-circle"></span></h3>
+      <div class="alert alert-secondary fade show" *ngIf="showGeneralInfo" >
         The attributes below correspond to the standard scopes of the OpenID Connect
         specification: ``profile'', ``email'', ``phone'' and ``address''.
       </div>
@@ -30,7 +30,7 @@
             </div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)"  i18n>{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+              <span *ngIf="isClaimCred(claim)"  >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -71,7 +71,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" i18n>{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+              <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -114,7 +114,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" i18n>{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+              <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -156,7 +156,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" i18n>{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
+              <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -175,14 +175,14 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
-              <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; " i18n>
+              <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; ">
                 <option value="0">Plain</option>
                 <option value="1">Credential</option>
               </select>
 
               <input *ngIf="claim.flag == '0'" placeholder="Value" [(ngModel)]="claim.value">
               <select *ngIf="claim.flag == '1'" class="custom-select"
-                (change)="claim.credential=$event.target.value; " i18n>
+                (change)="claim.credential=$event.target.value; " >
                 <option value="">Select credential source</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                 {{cred.name}}
@@ -190,7 +190,7 @@
               </select>
 
               <select class="custom-select"
-                *ngIf="(claim.credential !== '') && (claim.flag == '1')" (change)="claim.value=$event.target.value" i18n>
+                *ngIf="(claim.credential !== '') && (claim.flag == '1')" (change)="claim.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let att of credentialValuesForClaim(claim)" value={{att.name}}>
                 {{att.value}} <i>({{att.name}})</i>
@@ -207,8 +207,8 @@
       </div>
 
 
-      <h3 class="card-subtitle mb-2" i18n>Additional information <span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
-      <div class="alert alert-secondary fade show" *ngIf="showExtraInfo" i18n>
+      <h3 class="card-subtitle mb-2" >Additional information <span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
+      <div class="alert alert-secondary fade show" *ngIf="showExtraInfo" >
         Non-standard claims which are not explicitly covered in the OpenID Connect core specification.
       </div>
 
@@ -222,14 +222,14 @@
                 <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCredentialRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
-              <select *ngIf="isClaimCredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; " i18n>
+              <select *ngIf="isClaimCredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; ">
                 <option value="">Select credential source</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                   {{cred.name}}
                 </option>
               </select>
 
-              <select *ngIf="isClaimCredentialRequested(missing) && missing.credential !== ''" class="custom-select" (change)="missing.value=$event.target.value" i18n>
+              <select *ngIf="isClaimCredentialRequested(missing) && missing.credential !== ''" class="custom-select" (change)="missing.value=$event.target.value">
                 <option value="">Select claim</option>
                 <option *ngFor="let claim of credentialValuesForCred(missing)" value={{claim.name}}>
                   {{claim.value}} <i>({{claim.name}})</i>
@@ -253,7 +253,7 @@
             </div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
-              <span *ngIf="isClaimCred(attribute)" i18n>{{ getCredValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
+              <span *ngIf="isClaimCred(attribute)" >{{ getCredValue(attribute) }} issued by <i>{{ getIssuer(attribute) }}</i> as attribute for ``{{ attribute.value }}''</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isClaimCred(attribute)">
@@ -271,13 +271,13 @@
             </div>
             <div class="col-sm">
 
-              <select *ngIf="isExperimental()" class="custom-select" (change)="newAttribute.flag=$event.target.value; " i18n>
+              <select *ngIf="isExperimental()" class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
                 <option value="0">Plain</option>
                 <option value="1">Credential</option>
               </select>
               <input *ngIf="newAttribute.flag == '0'" placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
               <select *ngIf="newAttribute.flag == '1'" class="custom-select"
-                (change)="newAttribute.credential=$event.target.value; " i18n>
+                (change)="newAttribute.credential=$event.target.value; " >
                 <option value="">Select credential source</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                 {{cred.name}}
@@ -286,7 +286,7 @@
 
               <select class="custom-select"
                 *ngIf="newAttribute.credential !== '' && newAttribute.flag == '1'" (change)="newAttribute.value=$event.target.value">
-                <option value="" i18n>Select claim</option>
+                <option value="" >Select claim</option>
                 <option *ngFor="let claim of credentialValuesForClaim(newAttribute)" value={{claim.name}}>
                 {{claim.value}} <i>({{claim.name}})</i>
                 </option>
@@ -301,7 +301,7 @@
       </div>
     </div>
     <!-- Attribute creation warning -->
-    <div *ngIf="!attributeNameValid(newAttribute) || !attributeValueValid(newAttribute)" class="alert alert-primary alert-dismissible fade show" role="alert" i18n>
+    <div *ngIf="!attributeNameValid(newAttribute) || !attributeValueValid(newAttribute)" class="alert alert-primary alert-dismissible fade show" role="alert">
       <span class="fa fa-warning"></span> Note:
       <ul>
         <li>Only use alphanumeric attribute names.</li>
@@ -314,14 +314,14 @@
 
     <!-- Edit card buttons -->
     <div>
-      <button class="btn btn-primary" (click)="saveIdentity()" [disabled]="!canSaveIdentity()" i18n>
+      <button class="btn btn-primary" (click)="saveIdentity()" [disabled]="!canSaveIdentity()">
         <span class="fa fa-save"></span> Save and Back
       </button>
-      <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'" i18n>
+      <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'">
         <span class="fa fa-openid"></span>
         Manage authorizations
       </button>
-      <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/edit-credentials', identity.name]" [style.float]="'right'" i18n>
+      <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/edit-credentials', identity.name]" [style.float]="'right'">
         <span class="fa fa-openid"></span>
         Manage credentials
       </button>

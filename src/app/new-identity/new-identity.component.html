@@ -2,30 +2,30 @@
 <div style="display: flex; flex-direction:column; align-items:center">
   <div class="m-2 card" style="text-align:center; width:100%; max-width: 50em;">
     <div class="card-avatar card-img-top">
-      <div class="card-avatar-character text-dark" i18n>
+      <div class="card-avatar-character text-dark">
         New identity        
       </div>
     </div>
     <!-- Invalid input -->
-    <div *ngIf="'' !== newIdentity.name && !canSave() && !isDuplicate()" class="alert alert-danger alert-dismissible fade show" role="alert" i18n>
+    <div *ngIf="'' !== newIdentity.name && !canSave() && !isDuplicate()" class="alert alert-danger alert-dismissible fade show" role="alert">
       Only Alphanumeric input. No spaces or special characters allowed.
     </div>
     <!--Identity already exists -->  
-    <div *ngIf="isDuplicate()" class="alert alert-warning alert-dismissible fade show" role="alert" i18n> 
+    <div *ngIf="isDuplicate()" class="alert alert-warning alert-dismissible fade show" role="alert"> 
       An identity with this username already exists.
     </div>
     <!-- Input text -->
-    <div *ngIf="'' === newIdentity.name || canSave()" class="alert alert-secondary alert-dismissible fade show" role="alert" i18n>
+    <div *ngIf="'' === newIdentity.name || canSave()" class="alert alert-secondary alert-dismissible fade show" role="alert">
       Enter a username for your new identity
     </div>
     <div class="card-body">
       <input [class.text-danger]="'' !== newIdentity.name && !canSave()" style="text-align: center; border: 1px solid #111;" (keyup.enter)="saveIdentity()" pattern="^[a-zA-Z0-9-]+" placeholder="Username" title="Only Alphanumeric input. No spaces or special characters allowed." class="mr-2" [(ngModel)]="newIdentity.name" autofocus>
       <br/>
       <br/>
-      <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="-1 btn btn-primary" (click)="saveIdentity()" i18n>
+      <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="-1 btn btn-primary" (click)="saveIdentity()">
         <span class="fa fa-save"></span> Save
       </button>
-      <button class="m-1 btn btn-danger" (click)="cancelAddIdentity()" i18n>
+      <button class="m-1 btn btn-danger" (click)="cancelAddIdentity()">
         <span class="fa fa-close"></span> Cancel
       </button>
     </div>

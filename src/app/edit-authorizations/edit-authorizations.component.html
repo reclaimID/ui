@@ -1,7 +1,7 @@
 <!-- Identity edit screen -->
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
-    <div class="card-avatar-character text-dark" i18n>
+    <div class="card-avatar-character text-dark" >
       Manage authorizations for <i>{{ identity.name }}</i>
     </div>
   </div>
@@ -12,12 +12,12 @@
         <thead style="border-top-style: hidden">
           <tr>
             <th scope="col">
-              <h6 class="card-subtitle mb-2" i18n>
+              <h6 class="card-subtitle mb-2">
                 Authorized Entity:
               </h6>
             </th>
             <th scope="col">
-              <h6 class="card-subtitle mb-2" i18n>
+              <h6 class="card-subtitle mb-2">
                 Shared attributes:
               </h6>
             </th>
@@ -37,15 +37,15 @@
               </div>
             </td>
             <td>
-              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)" i18n>
+              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
                 <span class="fa fa-unlink"></span> Revoke
               </button>
-              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket" i18n>
+              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
                 Do you really want to revoke this authorization?<br/><br/>
                 <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
                   <span class="fa fa-check"></span> Yes
                 </button>
-                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()" >
+                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
                   <span class="fa fa-close"></span> No
                 </button>
               </div>
@@ -56,7 +56,7 @@
     </div>
     <!-- Edit card buttons -->
     <div>
-      <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]" i18n>
+      <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-back"></span> Back to {{identity.name}}
       </button>
     </div>
