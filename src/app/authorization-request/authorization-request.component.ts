@@ -9,6 +9,8 @@ import { OpenIdService } from '../open-id.service';
 })
 export class AuthorizationRequestComponent implements OnInit {
 
+  browser: typeof browser;
+
   constructor(private oidcService: OpenIdService,
               private router: Router) { }
 
@@ -30,7 +32,7 @@ export class AuthorizationRequestComponent implements OnInit {
 
   cancelRequest() {
     this.oidcService.cancelAuthorization().subscribe(() => {
-      console.log('Request cancelled');
+      console.log(this.getMessage("authorization_request_ts@requestCancelled"));
       this.router.navigate(['/']);
       //Manually reset this component
     });
@@ -38,6 +40,17 @@ export class AuthorizationRequestComponent implements OnInit {
 
   retryVerify() {
     this.oidcService.getClientName();
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    var usrAgent = navigator.userAgent;
+    if (usrAgent.indexOf("Firefox") > -1){
+      return browser.i18n.getMessage(key, sub);
+    }
+    else if (usrAgent.indexOf("Chrome") > -1){
+      return chrome.i18n.getMessage(key, sub);
+    }
   }
 
 
