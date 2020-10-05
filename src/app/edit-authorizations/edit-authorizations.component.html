@@ -2,7 +2,7 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark" >
-      Manage authorizations for <i>{{ identity.name }}</i>
+      {{getMessage("edit-authorizations.html:manageAuths")}} <i>{{ identity.name }}</i>
     </div>
   </div>
   <div class="card-body">
@@ -13,12 +13,12 @@
           <tr>
             <th scope="col">
               <h6 class="card-subtitle mb-2">
-                Authorized Entity:
+                {{getMessage("edit-authorizations.html:authEntity")}}
               </h6>
             </th>
             <th scope="col">
               <h6 class="card-subtitle mb-2">
-                Shared attributes:
+                {{getMessage("edit-authorizations.html:sharedAttributes")}}
               </h6>
             </th>
             <th scope="col"></th>
@@ -38,15 +38,15 @@
             </td>
             <td>
               <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
-                <span class="fa fa-unlink"></span> Revoke
+                <span class="fa fa-unlink"></span> {{getMessage("Revoke")}}
               </button>
               <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
-                Do you really want to revoke this authorization?<br/><br/>
+                {{getMessage("edit-authorizations.html:revokeVerifikation")}}<br/><br/>
                 <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
-                  <span class="fa fa-check"></span> Yes
+                  <span class="fa fa-check"></span> {{getMessage("Yes")}}
                 </button>
                 <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
-                  <span class="fa fa-close"></span> No
+                  <span class="fa fa-close"></span> {{getMessage("No")}}
                 </button>
               </div>
             </td>
@@ -57,7 +57,7 @@
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
-        <span class="fa fa-back"></span> Back to {{identity.name}}
+        <span class="fa fa-back"></span> {{getMessage("edit-authorizations.html:BackTo", identity.name)}}
       </button>
     </div>
   </div>
