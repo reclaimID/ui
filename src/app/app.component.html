@@ -2,5 +2,5 @@
 <router-outlet></router-outlet>
 <div style="margin: 1em" (click)="toggleExperimental()">
   <i [className]="isExperimental() ? 'fa fa-toggle-on' : 'fa fa-toggle-off'"></i>
-  Exerimental features <b *ngIf="isExperimental()">enabled</b><span *ngIf="!isExperimental()">disabled</span>
+  <b *ngIf="isExperimental()">{{getMessage("app.html:experimentalEnabled")}}</b><span *ngIf="!isExperimental()">{{getMessage("app.html:experimentalDisabled")}}</span>
 </div>

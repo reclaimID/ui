@@ -32,7 +32,7 @@ export class AuthorizationRequestComponent implements OnInit {
 
   cancelRequest() {
     this.oidcService.cancelAuthorization().subscribe(() => {
-      console.log('Request cancelled');
+      console.log(this.getMessage("authorization-request.ts:requestCancelled"));
       this.router.navigate(['/']);
       //Manually reset this component
     });
@@ -40,6 +40,11 @@ export class AuthorizationRequestComponent implements OnInit {
 
   retryVerify() {
     this.oidcService.getClientName();
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
   }
 
 

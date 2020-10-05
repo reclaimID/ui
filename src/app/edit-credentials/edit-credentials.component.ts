@@ -275,10 +275,10 @@ export class EditCredentialsComponent implements OnInit {
     },
     error => {
       if (error.status == 404){
-        this.errorMassage = 'No account found with this email'
+        this.errorMassage = this.getMessage("edit-credentials.ts:noAccount");
       }
       else{
-        this.errorMassage = 'An Error has occured - This may have been caused by a wrong e-mail address'
+        this.errorMassage = this.getMessage("edit-credentials.ts:errorWrongAddress");
       }
       this.emailNotFoundAlertClosed = false;
         setTimeout(() => this.emailNotFoundAlertClosed = true, 20000);
@@ -359,6 +359,11 @@ export class EditCredentialsComponent implements OnInit {
   resetScopes(){
     localStorage.removeItem("scopes");
     this.scopes = [];
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
   }
 
 

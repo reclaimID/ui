@@ -80,4 +80,9 @@ export class NewIdentityComponent implements OnInit {
     });
   }
 
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
+  }
+
 }

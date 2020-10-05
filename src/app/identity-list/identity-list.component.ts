@@ -126,7 +126,7 @@ export class IdentityListComponent implements OnInit {
       }
     },
     err => {
-      this.errorInfos.push("Error retrieving references for ``" + identity.name + "''");
+      this.errorInfos.push(this.getMessage("identity-list.ts:errorReferences", identity.name));
       console.log(err);
     });
   }
@@ -156,7 +156,7 @@ export class IdentityListComponent implements OnInit {
       this.updateMissingClaims(identity);
     },
     err => {
-      this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
+      this.errorInfos.push(this.getMessage("identity-list.ts:errorAttributes", identity.name));
       console.log(err);
     });
   }
@@ -168,7 +168,7 @@ export class IdentityListComponent implements OnInit {
         this.updateIdentities();
       },
       err => {
-        this.errorInfos.push("Failed deleting identity ``" + identity.name + "''");
+        this.errorInfos.push(this.getMessage("identity-list.ts:errorDeletingId", identity.name));
         console.log(err);
       });
   }
@@ -478,5 +478,10 @@ export class IdentityListComponent implements OnInit {
 
   isSharingInfoOpened(identity): boolean {
     return this.showSharingInfo == identity;
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
   }
 }

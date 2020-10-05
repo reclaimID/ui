@@ -535,4 +535,9 @@ export class EditIdentityComponent implements OnInit {
     return this.configService.get().experiments;
   }
 
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
+  }
+
 }

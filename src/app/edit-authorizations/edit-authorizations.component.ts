@@ -54,7 +54,7 @@ export class EditAuthorizationsComponent implements OnInit {
 
   getAudienceName(ticket) {
     if (undefined === this.audienceNames[ticket.audience]) {
-      return 'Unknown';
+      return this.getMessage("unknown");
     }
     return this.audienceNames[ticket.audience];
   }
@@ -138,6 +138,11 @@ export class EditAuthorizationsComponent implements OnInit {
         break;
       }
     });
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    return browser.i18n.getMessage(key, sub);
   }
 
 
