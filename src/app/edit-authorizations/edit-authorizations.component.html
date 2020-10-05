@@ -2,7 +2,7 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark" >
-      {{getMessage("edit-authorizations.html:manageAuths")}} <i>{{ identity.name }}</i>
+      {{getMessage("edit_authorizations_html@manageAuths")}} <i>{{ identity.name }}</i>
     </div>
   </div>
   <div class="card-body">
@@ -13,12 +13,12 @@
           <tr>
             <th scope="col">
               <h6 class="card-subtitle mb-2">
-                {{getMessage("edit-authorizations.html:authEntity")}}
+                {{getMessage("edit_authorizations_html@authEntity")}}
               </h6>
             </th>
             <th scope="col">
               <h6 class="card-subtitle mb-2">
-                {{getMessage("edit-authorizations.html:sharedAttributes")}}
+                {{getMessage("edit_authorizations_html@sharedAttributes")}}
               </h6>
             </th>
             <th scope="col"></th>
@@ -41,7 +41,7 @@
                 <span class="fa fa-unlink"></span> {{getMessage("Revoke")}}
               </button>
               <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
-                {{getMessage("edit-authorizations.html:revokeVerifikation")}}<br/><br/>
+                {{getMessage("edit_authorizations_html@revokeVerifikation")}}<br/><br/>
                 <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
                   <span class="fa fa-check"></span> {{getMessage("Yes")}}
                 </button>
@@ -57,7 +57,7 @@
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
-        <span class="fa fa-back"></span> {{getMessage("edit-authorizations.html:BackTo", identity.name)}}
+        <span class="fa fa-back"></span> {{getMessage("edit_authorizations_html@BackTo", identity.name)}}
       </button>
     </div>
   </div>

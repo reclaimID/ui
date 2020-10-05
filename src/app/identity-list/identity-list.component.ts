@@ -126,7 +126,7 @@ export class IdentityListComponent implements OnInit {
       }
     },
     err => {
-      this.errorInfos.push(this.getMessage("identity-list.ts:errorReferences", identity.name));
+      this.errorInfos.push(this.getMessage("identity_list_ts@errorReferences", identity.name));
       console.log(err);
     });
   }
@@ -156,7 +156,7 @@ export class IdentityListComponent implements OnInit {
       this.updateMissingClaims(identity);
     },
     err => {
-      this.errorInfos.push(this.getMessage("identity-list.ts:errorAttributes", identity.name));
+      this.errorInfos.push(this.getMessage("identity_list_ts@errorAttributes", identity.name));
       console.log(err);
     });
   }
@@ -168,7 +168,7 @@ export class IdentityListComponent implements OnInit {
         this.updateIdentities();
       },
       err => {
-        this.errorInfos.push(this.getMessage("identity-list.ts:errorDeletingId", identity.name));
+        this.errorInfos.push(this.getMessage("identity_list_ts@errorDeletingId", identity.name));
         console.log(err);
       });
   }
@@ -482,6 +482,12 @@ export class IdentityListComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return browser.i18n.getMessage(key, sub);
+    var usrAgent = navigator.userAgent;
+    if (usrAgent.indexOf("Firefox") > -1){
+      return browser.i18n.getMessage(key, sub);
+    }
+    else if (usrAgent.indexOf("Chrome") > -1){
+      return chrome.i18n.getMessage(key, sub);
+    }
   }
 }
