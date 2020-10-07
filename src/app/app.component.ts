@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ConfigService } from './config.service';
+import { LanguageService } from './language.service';
 
 declare var chrome: any;
 
@@ -10,10 +11,19 @@ declare var chrome: any;
 })
 export class AppComponent {
   title = 'app';
+  defaultLanguage = 'en';
   configService: any;
+  public myTranslation: any;
 
-  constructor(private _configService: ConfigService) {
+  translateTest(locale:string) {
+    return require(`../locales/${locale}/messages.json`);
+  }
+
+  constructor(private _configService: ConfigService,
+              private languageService: LanguageService) {
     this.configService = _configService;
+    const lang = navigator.language || "en";
+    this.myTranslation = this.translateTest(lang.substr(0,2));
   }
 
   isExperimental() {
@@ -26,13 +36,7 @@ export class AppComponent {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.languageService.getMessage(key, sub);
   }
 
 }
