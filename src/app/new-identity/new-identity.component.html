@@ -19,7 +19,7 @@
       {{getMessage("new_identity_html@enterUsername")}}
     </div>
     <div class="card-body">
-      <input [class.text-danger]="'' !== newIdentity.name && !canSave()" style="text-align: center; border: 1px solid #111;" (keyup.enter)="saveIdentity()" pattern="^[a-zA-Z0-9-]+" placeholder="Username" title="Only Alphanumeric input. No spaces or special characters allowed." class="mr-2" [(ngModel)]="newIdentity.name" autofocus>
+      <input [class.text-danger]="'' !== newIdentity.name && !canSave()" style="text-align: center; border: 1px solid #111;" (keyup.enter)="saveIdentity()" pattern="^[a-zA-Z0-9-]+" placeholder="{{getMessage('new_identity_html@username')}}" title="Only Alphanumeric input. No spaces or special characters allowed." class="mr-2" [(ngModel)]="newIdentity.name" autofocus>
       <br/>
       <br/>
       <button [disabled]="!canSave()" [style.inactive]="!canSave()"  class="-1 btn btn-primary" (click)="saveIdentity()">
