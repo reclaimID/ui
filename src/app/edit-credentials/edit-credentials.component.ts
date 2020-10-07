@@ -38,7 +38,7 @@ export class EditCredentialsComponent implements OnInit {
   ngOnInit() {
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.identity = new Identity('','');
-    this.newIdProvider = new IdProvider ('', '', '');
+    this.newIdProvider = new IdProvider ('', '');
     this.webfingerEmail = '';
     this.emailNotFoundAlertClosed = true;
     this.errorMassage = '';
@@ -116,7 +116,7 @@ export class EditCredentialsComponent implements OnInit {
   }
 
   saveIdProviderinLocalStorage(){
-    localStorage.setItem('Authorization: ' + this.newCredential.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken() + ';logoutURL: ' + this.newIdProvider.logoutURL);
+    localStorage.setItem('Authorization: ' + this.newCredential.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken());
   }
 
   private storeCredential() {
@@ -214,7 +214,6 @@ export class EditCredentialsComponent implements OnInit {
   loadIdProviderFromLocalStorage(){
     this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
     this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
-    this.newIdProvider.logoutURL = localStorage.getItem("newIdProviderLogoutURL") || '';
   }
 
   getNewIdProviderName(url: string){
@@ -229,17 +228,15 @@ export class EditCredentialsComponent implements OnInit {
 
   resetNewIdProvider(){
     this.newIdProvider.url = '';
-    this.newIdProvider.logoutURL = '';
     this.newIdProvider.name = '';
     localStorage.removeItem('newIdProviderURL');
-    localStorage.removeItem('newIdProviderLogoutURL')
   }
 
   logOutFromOauthService(){
     if (!this.oauthService.hasValidAccessToken()){
       return;
     }
-    this.oauthService.logOut(false);
+    this.oauthService.logOut();
   }
 
   loggedIn(){
@@ -258,17 +255,14 @@ export class EditCredentialsComponent implements OnInit {
   //Webfinger
 
   discoverIdProvider() {
-    if (this.webfingerEmail == ''){
+    if (!this.isValidEmailforDiscovery()){
       return;
     }
     localStorage.setItem('userForCredential', this.identity.name);
-    this.isValidEmailforDiscovery();
     this.credentialService.getLink(this.webfingerEmail).subscribe (idProvider => {
       this.newIdProvider.url = (idProvider.links [0]).href; 
       localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
       this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
-      (idProvider.links.length > 1)? this.newIdProvider.logoutURL = (idProvider.links [1]).href : this.newIdProvider.logoutURL = this.newIdProvider.url;
-       localStorage.setItem('newIdProviderLogoutURL', this.newIdProvider.logoutURL);
       console.log(this.newIdProvider.url);
       this.webfingerEmail == '';
       this.getScopes();

@@ -48,9 +48,6 @@ export class CredentialService {
           // URL of the SPA to redirect the user to after login
           redirectUri: redirectUri,
 
-          postLogoutRedirectUri: redirectUri + "?logout=true",
-
-          logoutUrl: idProvider.logoutURL + '/logout',
           // The SPA's id. The SPA is registerd with this id at the auth-server
           // clientId: 'server.code',
           clientId: 'reclaimid',
