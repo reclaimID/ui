@@ -56,7 +56,7 @@
     "edit_identity_html@credential": "Attestierung",
     "edit_identity_html@selectSource": "Quelle der Attestierung",
     "edit_identity_html@selectClaim": "Attestierung auswählen",
-    "edit_identity_html@additionalInfo": "Mehr informationen",
+    "edit_identity_html@additionalInfo": "Mehr Informationen",
     "edit_identity_html@non_standardClaims": "Nicht-standartisierte attribute welche nicht explizit in OpenID Connect definiert sind.",
     "edit_identity_html@note1": "Bitte verwende nur alphanumerische Namen.",
     "edit_identity_html@note2": "Du kannst den selben Namen nicht doppelt vergeben.",
