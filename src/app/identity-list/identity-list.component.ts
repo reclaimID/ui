@@ -10,10 +10,10 @@ import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { ReclaimService } from '../reclaim.service';
 import { ModalService } from '../modal.service';
+import { LocalesService } from '../locales.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 
-declare var chrome: any;
 
 @Component({
   selector: 'app-identity-list',
@@ -47,6 +47,7 @@ export class IdentityListComponent implements OnInit {
     private namestoreService: NamestoreService,
     private gnsService: GnsService,
     private modalService: ModalService,
+    private localesService: LocalesService,
     private router: Router,) {
   }
 
@@ -484,12 +485,6 @@ export class IdentityListComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.localesService.getMessage(key, sub);
   }
 }

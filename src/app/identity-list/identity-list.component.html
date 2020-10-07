@@ -13,7 +13,7 @@
   <!-- Identity search -->
   <div class="form-inline" style="display: table; margin: auto;">
     <div class="search-wrapper">
-    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="Search identities" style="border-radius: 2em;">
+    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="{{ getMessage('identity_list_html@searchbarPlaceholder') }}" style="border-radius: 2em;">
     </div>
     <button class="btn btn-primary" [routerLink]="['/new-identity']" >
       <span class="fa fa-user-plus"></span> {{ getMessage("identity_list_html@newId") }}
