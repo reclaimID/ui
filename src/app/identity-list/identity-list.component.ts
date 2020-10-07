@@ -13,6 +13,8 @@ import { ModalService } from '../modal.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 
+declare var chrome: any;
+
 @Component({
   selector: 'app-identity-list',
   templateUrl: './identity-list.component.html',
