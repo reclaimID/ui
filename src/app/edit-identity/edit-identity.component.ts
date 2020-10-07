@@ -13,7 +13,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
 import { ConfigService } from '../config.service';
-import { LocalesService } from '../locales.service';
+import { LanguageService } from '../language.service';
 
 @Component({
   selector: 'app-edit-identity',
@@ -56,7 +56,7 @@ export class EditIdentityComponent implements OnInit {
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
               private configService: ConfigService,
-              private localesService: LocalesService,
+              private languageService: LanguageService,
               private router: Router,) {}
 
   ngOnInit() {
@@ -538,7 +538,7 @@ export class EditIdentityComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return this.localesService.getMessage(key, sub);
+    return this.languageService.getMessage(key, sub);
   }
 
 }

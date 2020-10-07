@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IdentityService } from '../identity.service';
 import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
-import { LocalesService } from '../locales.service';
+import { LanguageService } from '../language.service';
 
 @Component({
   selector: 'app-edit-authorizations',
@@ -28,7 +28,7 @@ export class EditAuthorizationsComponent implements OnInit {
               private identityService: IdentityService,
               private gnsService: GnsService,
               private namestoreService: NamestoreService,
-              private localesService: LocalesService,) { }
+              private languageService: LanguageService,) { }
 
   ngOnInit() {
     this.tickets = [];
@@ -144,7 +144,7 @@ export class EditAuthorizationsComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return this.localesService.getMessage(key, sub);
+    return this.languageService.getMessage(key, sub);
   }
 
 
