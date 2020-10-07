@@ -11,7 +11,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
-import { LocalesService } from '../locales.service';
+import { LanguageService } from '../language.service';
 
 @Component({
   selector: 'app-edit-credentials',
@@ -35,7 +35,7 @@ export class EditCredentialsComponent implements OnInit {
               private router: Router,
               private credentialService: CredentialService,
               private oauthService: OAuthService,
-              private localesService: LocalesService,) { }
+              private languageService: LanguageService,) { }
 
   ngOnInit() {
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
@@ -359,7 +359,7 @@ export class EditCredentialsComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return this.localesService.getMessage(key, sub);
+    return this.languageService.getMessage(key, sub);
   }
 
 

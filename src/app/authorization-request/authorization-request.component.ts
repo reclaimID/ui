@@ -16,7 +16,7 @@ export class AuthorizationRequestComponent implements OnInit {
   browser: typeof browser;
 
   constructor(private oidcService: OpenIdService,
-              private langaugeService: LanguageService,
+              private languageService: LanguageService,
               private router: Router) { }
 
   ngOnInit() {

@@ -57,7 +57,7 @@
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
-        <span class="fa fa-back"></span> {{getMessage("edit_authorizations_html@BackTo", identity.name)}}
+        <span class="fa fa-back"></span> {{getMessage("edit_authorizations_html@BackTo", {IDENTITYNAME: identity.name})}}
       </button>
     </div>
   </div>

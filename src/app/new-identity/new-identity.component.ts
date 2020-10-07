@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
-import { LocalesService } from '../locales.service';
+import { LanguageService } from '../language.service';
 
 @Component({
   selector: 'app-new-identity',
@@ -15,7 +15,7 @@ export class NewIdentityComponent implements OnInit {
   identities: Identity[];
 
   constructor(private identityService: IdentityService,
-              private localesService: LocalesService,
+              private languageService: LanguageService,
               private router: Router) { }
 
   ngOnInit() {
@@ -84,7 +84,7 @@ export class NewIdentityComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    return this.localesService.getMessage(key, sub);
+    return this.languageService.getMessage(key, sub);
   }
 
 }
