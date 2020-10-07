@@ -47,7 +47,7 @@
     "edit_credentials_html@expired": "Expired",
     "edit_credentials_html@credential": "Credential",
     "edit_credentials_ts@noAccount": "No account found with this email",
-    "edit_credentials_ts@errorWrongAddress": "An Error has occured - This may have been caused by a wrong e-mail address",
+    "edit_credentials_ts@errorWrongAddress": "An Error has occured - This may have been caused by a wrong e-mail address.",
     "edit_identity_html@basicInfo": "Basic user information",
     "edit_identity_html@standardScopes": "The attributes below correspond to the standard scopes of the\nOpenID Connect specification: ``profile'', ``email'', ``phone'' and ``address''.",
     "edit_identity_html@claimAsAttribute": "{{CREDVALUE}} issued by {{ISSUER}} as attribute for ``{{CLAIMVALUE}}''",
