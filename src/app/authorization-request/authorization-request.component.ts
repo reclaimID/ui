@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OpenIdService } from '../open-id.service';
 
+/* For Chrome browsers */
+declare var chrome: any;
+
 @Component({
   selector: 'app-authorization-request',
   templateUrl: './authorization-request.component.html',
@@ -48,8 +51,8 @@ export class AuthorizationRequestComponent implements OnInit {
     if (usrAgent.indexOf("Firefox") > -1){
       return browser.i18n.getMessage(key, sub);
     }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
+    else if (usrAgent.indexOf("Chrome") > -1) {
+      return (chrome as any).i18n.getMessage(key, sub);
     }
   }
 

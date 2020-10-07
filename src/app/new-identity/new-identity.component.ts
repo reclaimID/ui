@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
 
+declare var chrome: any;
+
 @Component({
   selector: 'app-new-identity',
   templateUrl: './new-identity.component.html',

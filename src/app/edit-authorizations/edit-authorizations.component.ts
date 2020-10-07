@@ -8,6 +8,8 @@ import { IdentityService } from '../identity.service';
 import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
 
+declare var chrome: any;
+
 @Component({
   selector: 'app-edit-authorizations',
   templateUrl: './edit-authorizations.component.html',

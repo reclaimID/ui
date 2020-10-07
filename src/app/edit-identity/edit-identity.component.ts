@@ -14,6 +14,7 @@ import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
 import { ConfigService } from '../config.service';
 
+declare var chrome: any;
 
 @Component({
   selector: 'app-edit-identity',

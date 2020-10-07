@@ -12,6 +12,8 @@ import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
 
+declare var chrome: any;
+
 @Component({
   selector: 'app-edit-credentials',
   templateUrl: './edit-credentials.component.html',

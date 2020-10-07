@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ConfigService } from './config.service';
 
+declare var chrome: any;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
