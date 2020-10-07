@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OpenIdService } from '../open-id.service';
+import { LanguageService } from '../language.service';
 
 /* For Chrome browsers */
 declare var chrome: any;
@@ -15,6 +16,7 @@ export class AuthorizationRequestComponent implements OnInit {
   browser: typeof browser;
 
   constructor(private oidcService: OpenIdService,
+              private langaugeService: LanguageService,
               private router: Router) { }
 
   ngOnInit() {
@@ -47,13 +49,7 @@ export class AuthorizationRequestComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1) {
-      return (chrome as any).i18n.getMessage(key, sub);
-    }
+    this.languageService.getMessage(key, sub);
   }
 
 
