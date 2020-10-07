@@ -28,7 +28,7 @@
               </div>
             </div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)"  >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
             </div>
             <div class="col-sm">
@@ -49,8 +49,8 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <!-- FIXME Allow adding of credential OR plain value -->
-              <input placeholder="Value" [(ngModel)]="claim.value">
-              <!--<input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </div>
             <div class="col-sm">
@@ -69,7 +69,7 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
             </div>
             <div class="col-sm">
@@ -90,8 +90,8 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <!-- FIXME Allow adding of credential OR plain value -->
-              <input placeholder="Value" [(ngModel)]="claim.value">
-              <!--<input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </div>
             <div class="col-sm">
@@ -112,7 +112,7 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
             </div>
             <div class="col-sm">
@@ -133,8 +133,8 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <!-- FIXME Allow adding of credential OR plain value -->
-              <input placeholder="Value" [(ngModel)]="claim.value">
-              <!--<input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
+              <!--<input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{ getCredValue(claim) }} issued by <i>{{ getIssuer(claim) }}</i> as attribute for ``{{ claim.value }}''</span>-->
             </div>
             <div class="col-sm">
@@ -154,7 +154,7 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCred(claim)" placeholder="Value" [(ngModel)]="claim.value">
+              <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
             </div>
             <div class="col-sm">
@@ -179,7 +179,7 @@
                 <option value="1">{{ getMessage("edit_identity_html@credential") }}</option>
               </select>
 
-              <input *ngIf="claim.flag == '0'" placeholder="Value" [(ngModel)]="claim.value">
+              <input *ngIf="claim.flag == '0'" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <select *ngIf="claim.flag == '1'" class="custom-select"
                 (change)="claim.credential=$event.target.value; " >
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>
@@ -220,7 +220,7 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCredentialRequested(missing)" placeholder="Value" [(ngModel)]="missing.value">
+              <input *ngIf="!isClaimCredentialRequested(missing)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="missing.value">
               <select *ngIf="isClaimCredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; ">
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
@@ -251,7 +251,7 @@
               <i *ngIf="isClaimRequested(attribute)" class="fa fa-openid"></i><b> {{ attribute.name }}</b>
             </div>
             <div class="col-sm">
-              <input *ngIf="!isClaimCred(attribute)" placeholder="Value" [(ngModel)]="attribute.value">
+              <input *ngIf="!isClaimCred(attribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="attribute.value">
               <span *ngIf="isClaimCred(attribute)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
             </div>
             <div class="col-sm">
@@ -266,7 +266,7 @@
           <!-- New Attribute -->
           <div class="row mb-3" [class.alert-danger]="isInConflict(newAttribute)">
             <div class="col-sm">
-              <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="Attribute" [(ngModel)]="newAttribute.name">
+              <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="{{ getMessage('edit_identity_html@attribute') }}" [(ngModel)]="newAttribute.name">
             </div>
             <div class="col-sm">
 
@@ -274,7 +274,7 @@
                 <option value="0">{{ getMessage("edit_identity_html@plain") }}</option>
                 <option value="1">{{ getMessage("edit_identity_html@credential") }}</option>
               </select>
-              <input *ngIf="newAttribute.flag == '0'" placeholder="Value" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
+              <input *ngIf="newAttribute.flag == '0'" placeholder="{{ getMessage('Value') }}" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
               <select *ngIf="newAttribute.flag == '1'" class="custom-select"
                 (change)="newAttribute.credential=$event.target.value; " >
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>

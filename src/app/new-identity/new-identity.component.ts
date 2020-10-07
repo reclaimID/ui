@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Identity } from '../identity';
 import { IdentityService } from '../identity.service';
-
-declare var chrome: any;
+import { LocalesService } from '../locales.service';
 
 @Component({
   selector: 'app-new-identity',
@@ -16,6 +15,7 @@ export class NewIdentityComponent implements OnInit {
   identities: Identity[];
 
   constructor(private identityService: IdentityService,
+              private localesService: LocalesService,
               private router: Router) { }
 
   ngOnInit() {
@@ -84,13 +84,7 @@ export class NewIdentityComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.localesService.getMessage(key, sub);
   }
 
 }
