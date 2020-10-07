@@ -15,15 +15,9 @@ export class AppComponent {
   configService: any;
   public myTranslation: any;
 
-  translateTest(locale:string) {
-    return require(`../locales/${locale}/messages.json`);
-  }
-
   constructor(private _configService: ConfigService,
               private languageService: LanguageService) {
     this.configService = _configService;
-    const lang = navigator.language || "en";
-    this.myTranslation = this.translateTest(lang.substr(0,2));
   }
 
   isExperimental() {

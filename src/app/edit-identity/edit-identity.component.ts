@@ -13,8 +13,7 @@ import { from, forkJoin, EMPTY } from 'rxjs';
 import { Authorization } from '../authorization';
 import { IdProvider } from '../idProvider';
 import { ConfigService } from '../config.service';
-
-declare var chrome: any;
+import { LocalesService } from '../locales.service';
 
 @Component({
   selector: 'app-edit-identity',
@@ -57,6 +56,7 @@ export class EditIdentityComponent implements OnInit {
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
               private configService: ConfigService,
+              private localesService: LocalesService,
               private router: Router,) {}
 
   ngOnInit() {
@@ -538,13 +538,7 @@ export class EditIdentityComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.localesService.getMessage(key, sub);
   }
 
 }

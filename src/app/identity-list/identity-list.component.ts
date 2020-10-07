@@ -10,11 +10,11 @@ import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { ReclaimService } from '../reclaim.service';
 import { ModalService } from '../modal.service';
+import { LocalesService } from '../locales.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { LanguageService } from '../language.service';
 
-declare var chrome: any;
 
 @Component({
   selector: 'app-identity-list',

@@ -7,8 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IdentityService } from '../identity.service';
 import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
-
-declare var chrome: any;
+import { LocalesService } from '../locales.service';
 
 @Component({
   selector: 'app-edit-authorizations',
@@ -28,7 +27,8 @@ export class EditAuthorizationsComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private identityService: IdentityService,
               private gnsService: GnsService,
-              private namestoreService: NamestoreService) { }
+              private namestoreService: NamestoreService,
+              private localesService: LocalesService,) { }
 
   ngOnInit() {
     this.tickets = [];
@@ -144,13 +144,7 @@ export class EditAuthorizationsComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.localesService.getMessage(key, sub);
   }
 
 

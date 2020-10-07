@@ -11,8 +11,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
-
-declare var chrome: any;
+import { LocalesService } from '../locales.service';
 
 @Component({
   selector: 'app-edit-credentials',
@@ -35,7 +34,8 @@ export class EditCredentialsComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private router: Router,
               private credentialService: CredentialService,
-              private oauthService: OAuthService) { }
+              private oauthService: OAuthService,
+              private localesService: LocalesService,) { }
 
   ngOnInit() {
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
@@ -359,13 +359,7 @@ export class EditCredentialsComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    var usrAgent = navigator.userAgent;
-    if (usrAgent.indexOf("Firefox") > -1){
-      return browser.i18n.getMessage(key, sub);
-    }
-    else if (usrAgent.indexOf("Chrome") > -1){
-      return chrome.i18n.getMessage(key, sub);
-    }
+    return this.localesService.getMessage(key, sub);
   }
 
 
