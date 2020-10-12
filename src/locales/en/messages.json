@@ -31,7 +31,7 @@
     "edit_credentials_html@linkAccount": "Link account:",
     "edit_credentials_html@notCompatible": "This account is not compatible with re:claimID.",
     "edit_credentials_html@info": "INFO",
-    "edit_credentials_html@linkAccountInfo": "It is possible to link your external\naccounts with a re:claimID identity. To do so, enter you email address\nbelow and click \"Check compatibility\".",
+    "edit_credentials_html@linkAccountInfo1": "It is possible to link your external\naccounts with a re:claimID identity. To do so, enter you email address\nbelow and click \"Check compatibility\".",
     "edit_credentials_html@linkAccountInfo2": "Not all external accounts support linking to re:claimID identities.",
     "edit_credentials_html@checkCompatability": "Check compatibility",
     "edit_credentials_html@availableClaims": "Available claims to request:",
