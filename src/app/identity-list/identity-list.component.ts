@@ -223,7 +223,7 @@ export class IdentityListComponent implements OnInit {
   hasLotsOfAttributes(identity: Identity) {
     if (undefined === this.attributes[identity.pubkey]) { return false };
     if (!this.hasAttributes(identity)) { return false; }
-    return this.attributes[identity.pubkey].length > 5;
+    return this.attributes[identity.pubkey].length > 6;
   }
 
   identityHasProfilePicture(identity: Identity): boolean {
