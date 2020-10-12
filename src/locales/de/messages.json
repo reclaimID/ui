@@ -31,7 +31,7 @@
     "edit_credentials_html@linkAccount": "Konto verbinden:",
     "edit_credentials_html@notCompatible": "Dieses Konto ist nicht mit re:claimID kompatibel.",
     "edit_credentials_html@info": "INFO",
-    "edit_credentials_html@linkAccountInfo": "Es ist möglich eines deiner externen Konten\n mit einer re:claimID Identität zu verbinden. Trage dafür deine\nE-Mail Adresse unten ein und klicke auf \"Kompatibilität prüfen\".",
+    "edit_credentials_html@linkAccountInfo1": "Es ist möglich eines deiner externen Konten\n mit einer re:claimID Identität zu verbinden. Trage dafür deine\nE-Mail Adresse unten ein und klicke auf \"Kompatibilität prüfen\".",
     "edit_credentials_html@linkAccountInfo2": "Nicht alle Konten unterstützen das Verbinden mit re:claimID.",
     "edit_credentials_html@checkCompatability": "Kompatibilität prüfen",
     "edit_credentials_html@availableClaims": "Verfügbare attestierungen:",
