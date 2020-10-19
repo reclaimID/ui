@@ -49,7 +49,7 @@ export class AuthorizationRequestComponent implements OnInit {
 
   //Internationalization
   getMessage(key, sub?){
-    this.languageService.getMessage(key, sub);
+    return this.languageService.getMessage(key, sub);
   }
 
 
