@@ -6,6 +6,7 @@ import { ConfigService } from './config.service';
 import { Router } from '@angular/router';
 import { GnsService } from './gns.service';
 import { Attribute } from './attribute';
+import { LanguageService } from './language.service';
 
 @Injectable()
 export class OpenIdService {
@@ -14,14 +15,15 @@ export class OpenIdService {
   clientNameVerified: Boolean;
   clientName: String;
   referenceString: String;
-  scopesDescriptions = {"profile": "User profile access such as email, (nick)name, gender and birthdate.",
-                        "email": "Your email information.",
-                        "address": "Your physical address information.",
-                        "phone_number": "Your phone number."};
+  scopesDescriptions = {"profile": this.getMessage("scope_description@profile"),
+                        "email": this.getMessage("scope_description@email"),
+                        "address": this.getMessage("scope_description@address"),
+                        "phone_number": this.getMessage("scope_description@phone_number")};
 
   constructor(private http: HttpClient,
     private config: ConfigService,
     private gnsService: GnsService,
+    private languageService: LanguageService,
     private router: Router) {
     this.params = {};
     this.inOidcFlow = false;
@@ -242,15 +244,15 @@ export class OpenIdService {
   }
 
   getStandardProfileClaims(): Object {
-    return {"family_name": "Family name",
-            "given_name": "Given name",
-            "middle_name": "Middle name",
-            "nickname": "Nickname",
-            "preferred_username": "Preferred username",
+    return {"family_name": this.getMessage('claim@family_name'),
+            "given_name": this.getMessage('claim@given_name'),
+            "middle_name": this.getMessage('claim@middle_name'),
+            "nickname": this.getMessage('claim@nickname'),
+            "preferred_username": this.getMessage('claim@preferred_username'),
             //"profile": "Profile URL",
-            "picture": "Picture URL",
-            "website": "Website URL",
-            "gender": "Gender",
+            "picture": this.getMessage('claim@picture'),
+            "website": this.getMessage('claim@website'),
+            "gender": this.getMessage('claim@gender'),
             //"birthdate": "Birthdate YYYY-MM-DD", FIXME make pretty calendar
             //"zoneinfo": "Timezone, e.g. Europe/Paris", Make pretty dropdown
             //"locale": "Locale, e.g. en-US" Make pretty dropdown
@@ -258,19 +260,19 @@ export class OpenIdService {
   }
 
   getStandardEmailClaims(): Object {
-    return {"email": "Email address"};
+    return {"email": this.getMessage('claim@email')};
   }
 
   getStandardPhoneClaims(): Object {
-    return {"phone_number": "Phone number"};
+    return {"phone_number": this.getMessage('claim@phone_number')};
   }
 
   getStandardAddressClaims(): Object {
-    return {"street_address": "Street",
-            "locality": "City",
-            "region": "State, province or prefecture",
-            "postal_code": "Zip code",
-            "country": "Country"};
+    return {"street_address": this.getMessage('claim@street_address'),
+            "locality": this.getMessage('claim@locality'),
+            "region": this.getMessage('claim@region'),
+            "postal_code": this.getMessage('claim@postal_code'),
+            "country": this.getMessage('claim@country')};
   }
 
   /**
@@ -381,6 +383,11 @@ export class OpenIdService {
       claimNames.push(claim[0]);
     }
     return claimNames;
+  }
+
+  //Internationalization
+  getMessage(key, sub?){
+    return this.languageService.getMessage(key, sub);
   }
 
 }
