@@ -252,7 +252,7 @@
             </div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(attribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="attribute.value">
-              <span *ngIf="isClaimCred(attribute)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(claim), getIssuer(claim), claim.value])}}</span>
+              <span *ngIf="isClaimCred(attribute)" >{{getMessage("edit_identity_html@claimAsAttribute", [getCredValue(attribute), getIssuer(attribute), attribute.value])}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isClaimCred(attribute)">
