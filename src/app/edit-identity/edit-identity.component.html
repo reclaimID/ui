@@ -29,7 +29,7 @@
             </div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)"  >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value})}}</span>
+              <span *ngIf="isClaimCred(claim)"  >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value, interpolation: { escapeValue: false }})}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -70,7 +70,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value})}}</span>
+              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value, interpolation: { escapeValue: false }})}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -113,7 +113,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", { CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value})}}</span>
+              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", { CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value, interpolation: { escapeValue: false }})}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -155,7 +155,7 @@
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
-              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", { CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value})}}</span>
+              <span *ngIf="isClaimCred(claim)" >{{getMessage("edit_identity_html@claimAsAttribute", { CREDVALUE: getCredValue(claim), ISSUER: getIssuer(claim), CLAIMVALUE: claim.value, interpolation: { escapeValue: false }})}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(claim)" *ngIf="!isClaimCred(claim)">
@@ -252,7 +252,7 @@
             </div>
             <div class="col-sm">
               <input *ngIf="!isClaimCred(attribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="attribute.value">
-              <span *ngIf="isClaimCred(attribute)" >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(attribute), ISSUER: getIssuer(attribute), CLAIMVALUE: attribute.value})}}</span>
+              <span *ngIf="isClaimCred(attribute)" >{{getMessage("edit_identity_html@claimAsAttribute", {CREDVALUE: getCredValue(attribute), ISSUER: getIssuer(attribute), CLAIMVALUE: attribute.value, interpolation: { escapeValue: false }})}}</span>
             </div>
             <div class="col-sm">
               <button class="btn btn-primary" (click)="deleteAttribute(attribute)" *ngIf="!isClaimCred(attribute)">
