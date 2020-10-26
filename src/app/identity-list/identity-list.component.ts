@@ -395,7 +395,7 @@ export class IdentityListComponent implements OnInit {
         console.log(error);
         this.openModal('GnunetInfo');
         this.connected = false;
-        setTimeout(() => this.updateIdentities(), 20000);
+        setTimeout(() => this.updateIdentities(), 5000);
       });
   }
 
