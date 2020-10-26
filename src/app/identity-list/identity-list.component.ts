@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, UrlHandlingStrategy } from '@angular/router';
 
 import { Attribute } from '../attribute';
 import { Credential } from '../credential';
@@ -71,7 +71,7 @@ export class IdentityListComponent implements OnInit {
       var user = localStorage.getItem('userForCredential');
       this.router.navigate(['/edit-credentials', user]);
     }
-    if (!this.oidcService.inOpenIdFlow()) {
+    if (!this.oidcService.inOpenIdFlow() && undefined == this.route.snapshot.queryParams["authz_request"]) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
       if (this.oidcService.inOpenIdFlow()) {
         this.router.navigate(['/authorization-request']);
@@ -381,7 +381,14 @@ export class IdentityListComponent implements OnInit {
       this.connected = true;
 
       if(undefined !== this.route.snapshot.queryParams["authz_request"]){
-        return {"redirectUrl": "http://localhost:7776" + this.route.snapshot.queryParams["pathname"] + this.route.snapshot.queryParams["search"]};
+        var url = "http://localhost:7776" + this.route.snapshot.queryParams["pathname"] + "?";
+        var params = this.route.snapshot.queryParams;
+        Object.keys(params).forEach(param =>{
+          if (param != "authz_request" && param != "pathname"){
+            url = url + param + "=" + params[param] + "&";
+          }
+        })
+        window.location.href = url;
       }
     },
       error => {
