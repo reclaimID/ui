@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, UrlHandlingStrategy } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Attribute } from '../attribute';
 import { Credential } from '../credential';
