@@ -379,11 +379,16 @@ export class IdentityListComponent implements OnInit {
         this.closeModal('GnunetInfo');
       }
       this.connected = true;
+
+      if(undefined !== this.route.snapshot.queryParams["authz_request"]){
+        return {"redirectUrl": "http://localhost:7776" + this.route.snapshot.queryParams["pathname"] + this.route.snapshot.queryParams["search"]};
+      }
     },
       error => {
         console.log(error);
         this.openModal('GnunetInfo');
         this.connected = false;
+        setTimeout(() => this.updateIdentities(), 20000);
       });
   }
 
