@@ -96,7 +96,7 @@ export class EditCredentialsComponent implements OnInit {
       console.log("No AccessToken");
       return;
     }
-    this.newCredential.value = this.oauthService.getAccessToken();
+    this.newCredential.value = this.oauthService.getIdToken();
     this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
       console.log("Saved Credential");
       this.resetNewIdProvider();
@@ -118,7 +118,7 @@ export class EditCredentialsComponent implements OnInit {
   }
 
   saveIdProviderinLocalStorage(){
-    localStorage.setItem('Authorization: ' + this.newCredential.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getAccessToken() + ';idToken: ' + this.oauthService.getIdToken());
+    localStorage.setItem('Authorization: ' + this.newCredential.name, 'idProvider: ' + this.newIdProvider.url + ';redirectUri: ' +  this.oauthService.redirectUri + ';clientId: ' + this.oauthService.clientId + ';accessToken: ' + this.oauthService.getIdToken() + ';idToken: ' + this.oauthService.getIdToken());
   }
 
   private storeCredential() {
