@@ -56,6 +56,7 @@
     "edit_identity_html@plain": "Plain",
     "edit_identity_html@credential": "Credential",
     "edit_identity_html@selectSource": "Select credential source",
+    "edit_identity_html@noCredentialSource": "You haven't added any credential sources yet.",
     "edit_identity_html@selectClaim": "Select claim",
     "edit_identity_html@additionalInfo": "Additional information",
     "edit_identity_html@non_standardClaims": "Non-standard claims which are not explicitly covered in the OpenID Connect core specification.",
