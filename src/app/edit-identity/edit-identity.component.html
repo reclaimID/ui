@@ -174,10 +174,20 @@
             <div class="col-sm"><div style="min-width: 15em">
                 <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b></div></div>
             <div class="col-sm">
-              <select *ngIf="isExperimental()" class="custom-select" (change)="claim.flag=$event.target.value; ">
-                <option value="0">{{ getMessage("edit_identity_html@plain") }}</option>
-                <option value="1">{{ getMessage("edit_identity_html@credential") }}</option>
-              </select>
+              <div *ngIf="isExperimental()" name="newAttribute">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="claim" [(ngModel)]="claim.flag" id="plainClaim" [value]="0" checked>
+                  <label class="form-check-label" for="plainClaim">
+                    {{ getMessage("edit_identity_html@plain") }}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="claim" [(ngModel)]="claim.flag" id="credentialClaim" [value]="1">
+                  <label class="form-check-label" for="credentialClaim">
+                    {{ getMessage("edit_identity_html@credential") }}
+                  </label>
+                </div>
+              </div>
 
               <input *ngIf="claim.flag == '0'" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
               <select *ngIf="claim.flag == '1'" class="custom-select"
@@ -264,16 +274,27 @@
             </div>
           </div>
           <!-- New Attribute -->
+
           <div class="row mb-3" [class.alert-danger]="isInConflict(newAttribute)">
             <div class="col-sm">
               <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="{{ getMessage('edit_identity_html@attribute') }}" [(ngModel)]="newAttribute.name">
             </div>
-            <div class="col-sm">
+            <div class="form-group col-sm" name="newAttribute">
 
-              <select *ngIf="isExperimental()" class="custom-select" (change)="newAttribute.flag=$event.target.value; ">
-                <option value="0">{{ getMessage("edit_identity_html@plain") }}</option>
-                <option value="1">{{ getMessage("edit_identity_html@credential") }}</option>
-              </select>
+              <div *ngIf="isExperimental()" name="newAttribute">
+                <div class="form-check form-check-inline active">
+                  <input class="form-check-input active" type="radio" name="newAttribute" [(ngModel)]="newAttribute.flag" id="plain" [value]="0" checked>
+                  <label class="form-check-label active" for="plain" checked>
+                    {{ getMessage("edit_identity_html@plain") }}
+                  </label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="credential" [(ngModel)]="newAttribute.flag" id="credential" [value]="1">
+                  <label class="form-check-label" for="credential">
+                    {{ getMessage("edit_identity_html@credential") }}
+                  </label>
+                </div>
+              </div>
               <input *ngIf="newAttribute.flag == '0'" placeholder="{{ getMessage('Value') }}" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
               <select *ngIf="newAttribute.flag == '1'" class="custom-select"
                 (change)="newAttribute.credential=$event.target.value; " >
