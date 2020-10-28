@@ -190,13 +190,16 @@
               </div>
 
               <input *ngIf="claim.flag == '0'" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
-              <select *ngIf="claim.flag == '1'" class="custom-select"
+              <select *ngIf="claim.flag == '1' && hasCredentialSources()" class="custom-select"
                 (change)="claim.credential=$event.target.value; " >
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                 {{cred.name}}
                 </option>
               </select>
+              <div *ngIf="claim.flag == '1' && !hasCredentialSources()" class="alert alert-primary" role="alert">
+                {{ getMessage("edit_identity_html@noCredentialSource") }}
+              </div>
 
               <select class="custom-select"
                 *ngIf="(claim.credential !== '') && (claim.flag == '1')" (change)="claim.value=$event.target.value">
@@ -231,16 +234,19 @@
                 <i *ngIf="isClaimRequested(missing)" class="fa fa-openid"></i><b> {{missing.name}}</b></div></div>
             <div class="col-sm">
               <input *ngIf="!isClaimCredentialRequested(missing)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="missing.value">
-              <select *ngIf="isClaimCredentialRequested(missing)" class="custom-select" (change)="missing.credential=$event.target.value; ">
+              <select *ngIf="isClaimCredentialRequested(missing) && hasCredentialSources()" class="custom-select" (change)="missing.credential=$event.target.value; ">
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                   {{cred.name}}
                 </option>
               </select>
+              <div *ngIf="isClaimCredentialRequested(missing) && !hasCredentialSources()" class="alert alert-primary" role="alert">
+                {{ getMessage("edit_identity_html@noCredentialSource") }}
+              </div>
 
               <select *ngIf="isClaimCredentialRequested(missing) && missing.credential !== ''" class="custom-select" (change)="missing.value=$event.target.value">
                 <option value="">{{ getMessage("edit_identity_html@selectClaim") }}</option>
-                <option *ngFor="let claim of credentialValuesForCred(missing)" value={{claim.name}}>
+                <option *ngFor="let claim of credentialValuesForClaim(missing)" value={{claim.name}}>
                   {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
@@ -296,13 +302,16 @@
                 </div>
               </div>
               <input *ngIf="newAttribute.flag == '0'" placeholder="{{ getMessage('Value') }}" [class.text-danger]="!attributeValueValid(newAttribute)" [(ngModel)]="newAttribute.value">
-              <select *ngIf="newAttribute.flag == '1'" class="custom-select"
+              <select *ngIf="newAttribute.flag == '1' && hasCredentialSources()" class="custom-select"
                 (change)="newAttribute.credential=$event.target.value; " >
                 <option value="">{{ getMessage("edit_identity_html@selectSource") }}</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                 {{cred.name}}
                 </option>
               </select>
+              <div *ngIf="newAttribute.flag == '1' && !hasCredentialSources()" class="alert alert-primary" role="alert">
+                {{ getMessage("edit_identity_html@noCredentialSource") }}
+              </div>
 
               <select class="custom-select"
                 *ngIf="newAttribute.credential !== '' && newAttribute.flag == '1'" (change)="newAttribute.value=$event.target.value">

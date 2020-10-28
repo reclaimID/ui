@@ -483,6 +483,10 @@ export class EditIdentityComponent implements OnInit {
     }
   }
 
+  hasCredentialSources(){
+    return this.credentials.length > 0
+  }
+
   //FIXME credentials need an issuer field
   getIssuer(attribute: Attribute) {
     for (let i = 0; i < this.credentials.length; i++) {
