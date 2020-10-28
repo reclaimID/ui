@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { OpenIdService } from '../open-id.service';
+import { GnsService } from '../gns.service';
 import { LanguageService } from '../language.service';
 
 /* For Chrome browsers */
@@ -16,6 +17,7 @@ export class AuthorizationRequestComponent implements OnInit {
   browser: typeof browser;
 
   constructor(private oidcService: OpenIdService,
+              private gnsService: GnsService,
               private languageService: LanguageService,
               private router: Router) { }
 
@@ -44,13 +46,25 @@ export class AuthorizationRequestComponent implements OnInit {
   }
 
   retryVerify() {
-    this.oidcService.getClientName();
+    this.gnsService.getClientName(this.oidcService.getClientId())
+    .subscribe(record => {
+      const records = record.data;
+      console.log(records);
+      for (let i = 0; i < records.length; i++) {
+        if (records[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
+          continue;
+        }
+        this.oidcService.setClientName(records[i].value);
+        this.router.navigate(['/']);
+        return;
+      }
+    }, err => {
+      console.log(err);
+    });
   }
 
   //Internationalization
   getMessage(key, sub?){
     return this.languageService.getMessage(key, sub);
   }
-
-
 }
