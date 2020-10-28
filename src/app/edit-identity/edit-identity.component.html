@@ -282,14 +282,14 @@
             <div class="form-group col-sm" name="newAttribute">
 
               <div *ngIf="isExperimental()" name="newAttribute">
-                <div class="form-check form-check-inline active">
-                  <input class="form-check-input active" type="radio" name="newAttribute" [(ngModel)]="newAttribute.flag" id="plain" [value]="0" checked>
-                  <label class="form-check-label active" for="plain" checked>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="newAttribute" [(ngModel)]="newAttribute.flag" id="plain" [value]="0" checked>
+                  <label class="form-check-label" for="plain">
                     {{ getMessage("edit_identity_html@plain") }}
                   </label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="credential" [(ngModel)]="newAttribute.flag" id="credential" [value]="1">
+                  <input class="form-check-input" type="radio" name="newAttribute" [(ngModel)]="newAttribute.flag" id="credential" [value]="1">
                   <label class="form-check-label" for="credential">
                     {{ getMessage("edit_identity_html@credential") }}
                   </label>
