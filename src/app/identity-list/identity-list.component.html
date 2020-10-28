@@ -1,6 +1,6 @@
 <!-- GNUnet not running -->
 <oid-modal id="GnunetInfo">
-  <div class="logo"><img src="assets/reclaim_icon.png"/></div>
+  <div class="logo"><img src="assets/reclaim_icon.png" /></div>
   <hr>
   <div style="text-align: center; font-size: 18px;">
     <strong> {{ getMessage("identity_list_html@unableToConnect") }} </strong>
@@ -8,25 +8,60 @@
 </oid-modal>
 
 
+
 <!-- Buttons -->
-<div *ngIf="canSearch()"  style="margin-top: 1em; text-align: center;">
+<div *ngIf="canSearch()" style="margin-top: 1em; text-align: center;">
   <!-- Identity search -->
   <div class="form-inline" style="display: table; margin: auto;">
     <div class="search-wrapper">
-    <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm" placeholder="{{ getMessage('identity_list_html@searchbarPlaceholder') }}" style="border-radius: 2em;">
+      <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm"
+        placeholder="{{ getMessage('identity_list_html@searchbarPlaceholder') }}" style="border-radius: 2em;">
     </div>
-    <button class="btn btn-primary" [routerLink]="['/new-identity']" >
+    <button class="btn btn-primary" [routerLink]="['/new-identity']">
       <span class="fa fa-user-plus"></span> {{ getMessage("identity_list_html@newId") }}
     </button>
   </div>
-  <br/>
+  <br />
+</div>
+
+<!--Authorization Request-->
+<div class="alert alert-warning alert-dismissible fade show mb-1" role="alert" *ngIf="authorizationRequest">
+  <div  style="text-align: center;">
+    <i class="fa fa-2x fa-openid"></i>
+    <b class="fa-2x"> {{getMessage("authorization_request_html@personalInfo")}} </b>
+    <br />
+    <span *ngIf="isClientVerified() === undefined">
+      <i class="fa fa-2x fa-circle-o-notch fa-spin fa-fw"></i>
+      <b class="fa-2x"> {{getMessage("authorization_request_html@verifyRequest")}}</b>
+    </span>
+    <br />
+  </div>
+  <div *ngIf="isClientVerified()" style="text-align: center;">
+      <strong>{{ oidcService.clientName }}</strong>
+      {{getMessage("authorization_request_html@chooseId1")}}
+      <br/>
+      {{getMessage("authorization_request_html@chooseId2")}}
+  </div>
+  <div *ngIf="isClientVerified() !== undefined && !isClientVerified()" style="text-align: center;">
+    <div class="alert alert-danger show" role="alert">
+      <b>{{getMessage("authorization_request_html@authFailed")}}</b><br />
+      <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
+        <span class="fa fa-openid"></span> {{getMessage("authorization_request_html@retry")}}
+      </button>
+    </div>
+  </div>
+  <div *ngIf="isClientVerified() === undefined" style="text-align: center;">
+    <button class="btn btn-danger mt-4" *ngIf="isClientVerified() === undefined" (click)="cancelRequest()">
+      <span class="fa fa-ban"></span> {{getMessage("authorization_request_html@cancelRequest")}}
+    </button>
+  </div>
 </div>
 
 <!-- Cancel authorization -->
 <div style="margin-bottom: 1em; text-align: center;" *ngIf="inOpenIdFlow()">
-    <button *ngIf="inOpenIdFlow()" class="btn btn-danger mt-2" (click)="cancelRequest()">
-      <span class="fa fa-ban"></span> {{ getMessage("identity_list_html@declineRequest") }}
-    </button>
+  <button *ngIf="inOpenIdFlow() && isClientVerified() !== undefined && isClientVerified()" class="btn btn-danger mt-2" (click)="cancelRequest()">
+    <span class="fa fa-ban"></span> {{ getMessage("identity_list_html@declineRequest") }}
+  </button>
 </div>
 
 <!-- error infos -->
@@ -35,13 +70,14 @@
   <button class="btn btn-primary ml-4" (click)="errorInfos.splice(errorInfos.indexOf(err,0), 1)">
     <span>{{ getMessage("identity_list_html@dismiss") }}</span>
   </button>
-  <br/>
+  <br />
   {{err}}
 </div>
 
 <!-- No identities present -->
-<div *ngIf="isConnected() && 0 == identities.length" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">
-  {{ getMessage("identity_list_html@noId") }}<br/><br/>
+<div *ngIf="isConnected() && 0 == identities.length" style="text-align: center;"
+  class="alert alert-secondary alert-dismissible fade show" role="alert">
+  {{ getMessage("identity_list_html@noId") }}<br /><br />
   <button class="btn btn-primary" [routerLink]="['/new-identity']">
     <span class="fa fa-plus"></span> {{ getMessage("identity_list_html@addFirstId") }}
   </button>
@@ -50,26 +86,31 @@
 <!-- Identity cards -->
 <!-- No match -->
 <div *ngIf="canSearch()">
-  <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;" class="alert alert-secondary alert-dismissible fade show" role="alert">{{ getMessage("identity_list_html@noMatchingIds") }}</div>
+  <div *ngIf="(identities | search: searchTerm).length == 0" style="text-align: center;"
+    class="alert alert-secondary alert-dismissible fade show" role="alert">
+    {{ getMessage("identity_list_html@noMatchingIds") }}</div>
 </div>
 <!-- Cards -->
-<div class="card-columns p-2 mr-5 ml-5" [ngStyle]="{'column-count': '1'}" style="display: flex; flex-direction:column; align-items:center">
-  <div class="card mb-5" *ngFor="let identity of identities | search: searchTerm" style="max-width: 50em; min-height: 20em;">
+<div class="card-columns p-2 mr-5 ml-5" [ngStyle]="{'column-count': '1'}"
+  style="display: flex; flex-direction:column; align-items:center">
+  <div class="card mb-5" *ngFor="let identity of identities | search: searchTerm"
+    style="max-width: 50em; min-height: 20em;">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
-      <img src="assets/reclaim_icon.png" style="width: 4em;opacity: 0.3;">
+        <img src="assets/reclaim_icon.png" style="width: 4em;opacity: 0.3;">
 
         <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" (click)="confirmDelete(identity)">
           <i class="fa fa-trash"></i>
         </button>
-        <button class="btn btn-primary" *ngIf="showConfirmDelete != identity" [routerLink]="['/edit-identity', identity.name]">
+        <button class="btn btn-primary" *ngIf="showConfirmDelete != identity"
+          [routerLink]="['/edit-identity', identity.name]">
           <i class="fa fa-edit"></i>
         </button>
       </div>
     </div>
     <!-- Identity deletion confirmation -->
     <div class="alert alert-danger fade show" [hidden]="showConfirmDelete != identity">
-      {{ getMessage("identity_list_html@verifyDelete") }}<br/><br/>
+      {{ getMessage("identity_list_html@verifyDelete") }}<br /><br />
       <button class="btn btn-primary" (click)="deleteIdentity(identity)">
         <span class="fa fa-trash"></span> {{ getMessage("Delete") }}
       </button>
@@ -78,21 +119,21 @@
       </button>
     </div>
     <!-- Maybe add some info to identities? - dialog -->
-    <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)" >
-      {{ getMessage("identity_list_html@noAttributes1") }} <a class="buttonlink" [routerLink]="['/edit-identity', identity.name]">{{ getMessage("identity_list_html@noAttributes2") }}</a>
+    <div class="alert alert-secondary fade show" [hidden]="hasAttributes(identity)">
+      {{ getMessage("identity_list_html@noAttributes1") }} <a class="buttonlink"
+        [routerLink]="['/edit-identity', identity.name]">{{ getMessage("identity_list_html@noAttributes2") }}</a>
     </div>
-    <div [hidden]="!isAnyRequestedClaimMissing(identity)"
-      class="alert alert-warning alert-dismissible fade show"
+    <div [hidden]="!isAnyRequestedClaimMissing(identity)" class="alert alert-warning alert-dismissible fade show"
       [class.alert-warning]="!isAnyRequiredClaimMissing(identity)"
-      [class.alert-danger]="isAnyRequiredClaimMissing(identity)"
-      role="alert" >
+      [class.alert-danger]="isAnyRequiredClaimMissing(identity)" role="alert">
       <span class="fa fa-openid"></span> {{ getMessage("identity_list_html@missingInformation") }}
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)"><b>{{ getProfileDescription() }}</b></li>
         <li *ngIf="isEmailRequested() && isEmailMissing(identity)"><b>{{ getEmailDescription() }}</b></li>
         <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)"><b>{{ getPhoneDescription() }}</b></li>
         <li *ngIf="isAddressRequested() && isAddressMissing(identity)"><b>{{ getAddressDescription() }}</b></li>
-        <li *ngFor="let attr of getMissingClaims(identity)"><b>{{attr.name}}</b><i *ngIf="!isOptional(attr)"> ({{ getMessage("identity_list_html@required") }})</i></li>
+        <li *ngFor="let attr of getMissingClaims(identity)"><b>{{attr.name}}</b><i *ngIf="!isOptional(attr)">
+            ({{ getMessage("identity_list_html@required") }})</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-edit"></span> {{ getMessage("identity_list_html@editId") }}
@@ -100,55 +141,63 @@
     </div>
 
     <div class="fa-3x mt-2" style="text-align:center">
-      <img style="border-radius: 50%; width: 1em" [src]="getIdentityProfilePicture(identity)" *ngIf="identityHasProfilePicture(identity)"><i class="fa fa-user-circle" *ngIf="!identityHasProfilePicture(identity)"></i><i> {{identity.name}}</i>
+      <img style="border-radius: 50%; width: 1em" [src]="getIdentityProfilePicture(identity)"
+        *ngIf="identityHasProfilePicture(identity)"><i class="fa fa-user-circle"
+        *ngIf="!identityHasProfilePicture(identity)"></i><i> {{identity.name}}</i>
     </div>
 
     <div class="card-body">
-    <!-- Attribute table -->
+      <!-- Attribute table -->
       <div class="table pb-1">
         <div class="container">
           <div class="row mb-1">
-          <div [class.text-primary]="isClaimRequested(identity, attribute)" class="col-sm-4 mb-4"
-             [class.text-secondary]="!isClaimRequested(identity, attribute)"
-             *ngFor="let attribute of getIdentityAttributes(identity)">
-            <div class="col-sm">
-              <span *ngIf="isClaimRequested(identity, attribute)" class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
+            <div [class.text-primary]="isClaimRequested(identity, attribute)" class="col-sm-4 mb-4"
+              [class.text-secondary]="!isClaimRequested(identity, attribute)"
+              *ngFor="let attribute of getIdentityAttributes(identity)">
+              <div class="col-sm">
+                <span *ngIf="isClaimRequested(identity, attribute)"
+                  class="fa fa-openid mr-1"></span><b>{{getAttributeDescription(attribute)}}</b>
+              </div>
+              <div class="col-sm">
+                <div *ngIf="getAttributeValue(identity, attribute).length <= 20" style="min-width: 15em">
+                  {{getAttributeValue(identity, attribute)}}</div>
+                <div *ngIf="getAttributeValue(identity, attribute).length > 20" style="min-width: 15em">
+                  {{getAttributeValue(identity, attribute).substring(0, 20)}}<span style="color:#eee">[...]</span></div>
+              </div>
             </div>
-            <div class="col-sm">
-              <div *ngIf="getAttributeValue(identity, attribute).length <= 20" style="min-width: 15em">{{getAttributeValue(identity, attribute)}}</div>
-              <div *ngIf="getAttributeValue(identity, attribute).length > 20" style="min-width: 15em">{{getAttributeValue(identity, attribute).substring(0, 20)}}<span style="color:#eee">[...]</span></div>
-            </div>
-          </div>
-          <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" class="ml-4">
-            <div>
-              <i>{{ getMessage("identity_list_html@moreAttributes", {ATTRIBUTENUMBER: attributes[identity.pubkey].length - 6}) }}</i><br/>
+            <div *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)" class="ml-4">
+              <div>
+                <i>{{ getMessage("identity_list_html@moreAttributes", {ATTRIBUTENUMBER: attributes[identity.pubkey].length - 6}) }}</i><br />
+              </div>
             </div>
           </div>
         </div>
-        </div>
-        <button class="btn btn-primary mt-3" (click)="openIdentity = identity" *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
+        <button class="btn btn-primary mt-3" (click)="openIdentity = identity"
+          *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
           <i class="fa fa-expand"></i>
           {{ getMessage("identity_list_html@showAll") }}
         </button>
       </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
-      <button [disabled]="!isClientVerified() || isAnyRequiredClaimMissing(identity)"
-        (click)="loginIdentity(identity)"
+      <button [disabled]="!isClientVerified() || isAnyRequiredClaimMissing(identity)" (click)="loginIdentity(identity)"
         class="btn btn-primary mr-1 openid-login">
-        <span *ngIf="isClientVerified()" >{{ getMessage("identity_list_html@shareInfo1") }} <i class="fa fa-openid text-primary"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
-        <span *ngIf="!isClientVerified()" ><i class="fa fa-exclamation-circle"></i> {{ getMessage("identity_list_html@sharingDisabled") }}</span>
+        <span *ngIf="isClientVerified()">{{ getMessage("identity_list_html@shareInfo1") }} <i
+            class="fa fa-openid text-primary"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
+        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i>
+          {{ getMessage("identity_list_html@sharingDisabled") }}</span>
       </button>
     </div>
   </div>
 
   <!-- New identity card -->
-  <div class="card identity-new" [routerLink]="['/new-identity']" *ngIf="0 != identities.length" style="max-width: 50em; min-height: 20em;">
+  <div class="card identity-new" [routerLink]="['/new-identity']" *ngIf="0 != identities.length"
+    style="max-width: 50em; min-height: 20em;">
     <div class="card-avatar card-img-top">
       <div class="card-avatar-character text-dark">
         <!--<div class="icon m-1 text-uppercase" [style.background-color]="intToRGB(identity.pubkey)">{{ identity.name[0]}}</div>-->
         <i class="fa fa-user-circle"></i>
-        <span class="m-1" style="display: inline-block" ><i>{{ getMessage("identity_list_html@newId") }}</i></span>
+        <span class="m-1" style="display: inline-block"><i>{{ getMessage("identity_list_html@newId") }}</i></span>
       </div>
     </div>
     <div class="card-body">
@@ -161,5 +210,3 @@
     </div>
   </div>
 </div>
-
-

@@ -40,6 +40,7 @@ export class IdentityListComponent implements OnInit {
   showSharingInfo: any = '';
   sortAttributeByStandardClaim: any;
   openIdentity: any = '';
+  authorizationRequest: any;
 
   constructor(private route: ActivatedRoute, private oidcService: OpenIdService,
     private identityService: IdentityService,
@@ -60,6 +61,7 @@ export class IdentityListComponent implements OnInit {
     this.missingClaims = {};
     this.connected = false;
     this.modalOpened = false;
+    this.authorizationRequest = false;
     if (undefined !== this.route.snapshot.queryParams["code"]) {
       localStorage.setItem('credentialCode', this.route.snapshot.queryParams["code"]);
       localStorage.setItem('credentialState', this.route.snapshot.queryParams["state"]);
@@ -74,8 +76,10 @@ export class IdentityListComponent implements OnInit {
     if (!this.oidcService.inOpenIdFlow() && undefined == this.route.snapshot.queryParams["authz_request"]) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
       if (this.oidcService.inOpenIdFlow()) {
-        this.router.navigate(['/authorization-request']);
-        return;
+        /**this.router.navigate(['/authorization-request']);
+        return;*/
+        this.retryVerify();
+        this.authorizationRequest = true;
       }
     }
     this.updateIdentities();
@@ -91,6 +95,7 @@ export class IdentityListComponent implements OnInit {
   }
 
   cancelRequest() {
+    this.authorizationRequest = false;
     this.oidcService.cancelAuthorization();
   }
 
@@ -498,5 +503,10 @@ export class IdentityListComponent implements OnInit {
   //Internationalization
   getMessage(key, sub?){
     return this.languageService.getMessage(key, sub);
+  }
+
+  //Authorization Request
+  retryVerify() {
+    this.oidcService.getClientName();
   }
 }
