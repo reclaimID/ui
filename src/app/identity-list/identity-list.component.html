@@ -7,25 +7,8 @@
   </div>
 </oid-modal>
 
-
-
-<!-- Buttons -->
-<div *ngIf="canSearch()" style="margin-top: 1em; text-align: center;">
-  <!-- Identity search -->
-  <div class="form-inline" style="display: table; margin: auto;">
-    <div class="search-wrapper">
-      <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm"
-        placeholder="{{ getMessage('identity_list_html@searchbarPlaceholder') }}" style="border-radius: 2em;">
-    </div>
-    <button class="btn btn-primary" [routerLink]="['/new-identity']">
-      <span class="fa fa-user-plus"></span> {{ getMessage("identity_list_html@newId") }}
-    </button>
-  </div>
-  <br />
-</div>
-
 <!--Authorization Request-->
-<div class="alert alert-warning alert-dismissible fade show mb-1" role="alert" *ngIf="authorizationRequest">
+<div class="alert alert-info alert-dismissible fade show mb-1" role="alert" *ngIf="inOpenIdFlow()">
   <div  style="text-align: center;">
     <i class="fa fa-2x fa-openid"></i>
     <b class="fa-2x"> {{getMessage("authorization_request_html@personalInfo")}} </b>
@@ -55,6 +38,23 @@
       <span class="fa fa-ban"></span> {{getMessage("authorization_request_html@cancelRequest")}}
     </button>
   </div>
+</div>
+
+
+
+<!-- Buttons -->
+<div *ngIf="canSearch()" style="margin-top: 1em; text-align: center;">
+  <!-- Identity search -->
+  <div class="form-inline" style="display: table; margin: auto;">
+    <div class="search-wrapper">
+      <input class="form-control mr-sm-2" type="search" [(ngModel)]="searchTerm" name="searchTerm"
+        placeholder="{{ getMessage('identity_list_html@searchbarPlaceholder') }}" style="border-radius: 2em;">
+    </div>
+    <button class="btn btn-primary" [routerLink]="['/new-identity']">
+      <span class="fa fa-user-plus"></span> {{ getMessage("identity_list_html@newId") }}
+    </button>
+  </div>
+  <br />
 </div>
 
 <!-- Cancel authorization -->

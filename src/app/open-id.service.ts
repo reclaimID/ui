@@ -28,30 +28,12 @@ export class OpenIdService {
     this.params = {};
     this.inOidcFlow = false;
     this.referenceString = "";
+    this.clientNameVerified = undefined;
   }
 
-  getClientName() {
-    this.clientNameVerified = undefined;
-    if (!this.inOpenIdFlow()) {
-      return;
-    }
-    this.gnsService.getClientName(this.getClientId())
-      .subscribe(record => {
-        const records = record.data;
-        console.log(records);
-        for (let i = 0; i < records.length; i++) {
-          if (records[i].record_type !== 'RECLAIM_OIDC_CLIENT') {
-            continue;
-          }
-          this.clientName = records[i].value;
-          this.clientNameVerified = true;
-          return;
-        }
-        this.clientNameVerified = false;
-      }, err => {
-        console.log(err);
-        this.clientNameVerified = false;
-      });
+  setClientName(name: string) {
+    this.clientName = name;
+    this.clientNameVerified = true;
   }
 
   isClientVerified() { return this.clientNameVerified; }
