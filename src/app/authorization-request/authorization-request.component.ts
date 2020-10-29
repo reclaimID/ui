@@ -55,7 +55,7 @@ export class AuthorizationRequestComponent implements OnInit {
           continue;
         }
         this.oidcService.setClientName(records[i].value);
-        this.router.navigate(['/']);
+        this.router.navigate(['/'], { replaceUrl: true });
         return;
       }
     }, err => {
