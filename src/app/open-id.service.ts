@@ -60,7 +60,7 @@ export class OpenIdService {
     redirectUri += '&scope=' + this.params['scope'];
     if (this.params['claims'] !== undefined)
     {
-      redirectUri += "&claims" + this.params['claims'];
+      redirectUri += "&claims=" + this.params['claims'];
     }
     if (this.params['state'] !== undefined)
     {
