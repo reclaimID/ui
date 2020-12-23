@@ -1,0 +1,47 @@
+<!-- Identity edit screen -->
+<div class="m-2 card">
+  <div class="card-avatar card-img-top">
+    <div class="card-avatar-character text-dark" >
+      <h2 class="fa-2x">
+      <span class="fa fa-download"></span>
+      {{getMessage("import_attributes_html@importFor")}} <i>{{ identity.name }}</i>
+      </h2>
+    </div>
+  </div>
+  <!-- Credential management -->
+  <div class="card-body">
+    <!--IdProvider-Discovery-->
+    <div>
+      <!--Email not found Warning-->
+      <div *ngIf="errorMessage != ''"
+        class="alert alert-danger alert-dismissible fade show my-2" role="alert">
+        <span class="fa fa-warning"></span> {{errorMessage}}
+      </div>
+      <!-- Instructions -->
+      <div
+        class="alert alert-primary alert-dismissible fade show my-2" role="alert" >
+        <span class="fa fa-info"> </span>  <b class="ml-2">{{getMessage("edit_credentials_html@info")}}</b><br/>
+        {{getMessage("edit_credentials_html@linkAccountInfo1")}}<br/>
+        <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
+      </div>
+      <div class="my-2 col-lg-4">
+        <div class="email-status-wrapper" [class.valid]="validEmail" [class.text-primary]="validEmail"
+                                          [class.invalid]="errorMessage != ''" [class.text-danger]="errorMessage != ''">
+          <input placeholder="user@example.com" [(ngModel)]="webfingerEmail" (keyup)="validateEmail()">
+        </div>
+        <button class="btn btn-primary fhg-link" (click)="import()" [disabled]="!validEmail">
+          <span class="fa fa-download"></span> {{getMessage("import_attributes_html@import")}}
+        </button>
+        <i *ngIf="discoveringIdProvider" class="ml-1 fa fa-spinner fa-spin"></i>
+      </div>
+    </div>
+    <hr />
+
+    <!-- Edit card buttons -->
+    <div>
+      <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name ]">
+        <span class="fa fa-save"></span> {{ getMessage("Back") }}
+      </button>
+    </div>
+  </div>
+</div>
