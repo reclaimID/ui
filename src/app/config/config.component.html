@@ -10,6 +10,12 @@
       <i [className]="isExperimental() ? 'fa fa-toggle-on mr-2' : 'fa fa-toggle-off mr-2'"></i>
       <b *ngIf="isExperimental()">{{getMessage("app_html@experimentalEnabled")}}</b><span *ngIf="!isExperimental()">{{getMessage("app_html@experimentalDisabled")}}</span>
     </div>
+    <span class="mr-2">re:claimID REST API base URL</span> <input [(ngModel)]="config.apiUrl">
+    <div>
+      <button class="btn btn-primary" (click)="saveAndBack()">
+        <span class="fa fa-save"></span> {{ getMessage("SaveAndBack") }}
+      </button>
+
   </div>
 </div>
 

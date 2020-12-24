@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ConfigService } from '../config.service';
+import { Config } from '../config';
 import { LanguageService } from '../language.service';
-
+import { ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-config',
@@ -11,14 +12,17 @@ import { LanguageService } from '../language.service';
 export class ConfigComponent implements OnInit {
 
   configService: ConfigService;
+  config: Config;
 
   constructor(private _configService: ConfigService,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private router: Router) {
     this.configService = _configService;
   }
 
 
   ngOnInit(): void {
+    this.config = this.configService.get();
   }
 
   isExperimental() {
@@ -26,10 +30,12 @@ export class ConfigComponent implements OnInit {
   }
 
   toggleExperimental() {
-    var config = this.configService.get();
-    console.log("Config is: "+config);
-    config.experiments = !config.experiments;
-    this.configService.save(config);
+    this.config.experiments = !this.config.experiments;
+  }
+
+  saveAndBack() {
+    this.configService.save(this.config);
+    this.router.navigate(['/']);
   }
 
   //Internationalization

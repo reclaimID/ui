@@ -9,6 +9,15 @@
       <h2 class="fa-2x"><i class="fa fa-user-circle pr-2"></i> {{ identity.name }}</h2>
     </div>
   </div>
+  <!--IdProvider-Discovery-->
+  <div *ngIf="!hasAttributes()" class="alert alert-primary alert-dismissible fade show my-2" role="alert" >
+    <span class="fa fa-info"> </span>  <b class="ml-2">{{getMessage("edit_identity_html@noAttributes")}}</b><br/>
+    {{getMessage("edit_identity_html@importInfo")}}<br/>
+    <button class="btn btn-primary" [routerLink]="['/import-attributes', identity.name ]">
+      <span class="fa fa-download"></span> {{getMessage("edit_identity_html@linkAccount")}}
+    </button>
+  </div>
+
   <!-- Attribute table -->
   <div class="card-body">
     <div>

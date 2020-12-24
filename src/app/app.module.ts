@@ -23,6 +23,8 @@ import { AuthorizationRequestComponent } from './authorization-request/authoriza
 import { EditAuthorizationsComponent } from './edit-authorizations/edit-authorizations.component';
 import { EditCredentialsComponent } from './edit-credentials/edit-credentials.component';
 import { OAuthStorage } from 'angular-oauth2-oidc';
+import { ImportAttributesComponent } from './import-attributes/import-attributes.component';
+import { ConfigComponent } from './config/config.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +36,9 @@ import { OAuthStorage } from 'angular-oauth2-oidc';
     EditIdentityComponent,
     AuthorizationRequestComponent,
     EditAuthorizationsComponent,
-    EditCredentialsComponent
+    EditCredentialsComponent,
+    ImportAttributesComponent,
+    ConfigComponent
   ],
   imports: [
     BrowserModule,

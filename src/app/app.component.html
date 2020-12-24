@@ -1,6 +1,2 @@
-<div class="logo"><img src="assets/reclaim_icon.png"/></div>
+<div class="logo"><img src="assets/reclaim_icon.png"/><button class="btn btn-primary" [routerLink]="['/config']" style="float:right;"><i class="fa fa-cog"></i></button></div>
 <router-outlet></router-outlet>
-<div style="margin: 1em" (click)="toggleExperimental()">
-  <i [className]="isExperimental() ? 'fa fa-toggle-on' : 'fa fa-toggle-off'"></i>
-  <b *ngIf="isExperimental()">{{getMessage("app_html@experimentalEnabled")}}</b><span *ngIf="!isExperimental()">{{getMessage("app_html@experimentalDisabled")}}</span>
-</div>
