@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ReclaimService } from '../reclaim.service';
 import { Identity } from '../identity';
 import { Credential } from '../credential';
+import { Attribute } from '../attribute';
 import { IdentityService } from '../identity.service';
 import { CredentialService } from '../credential.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -11,6 +12,9 @@ import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
 import { LanguageService } from '../language.service';
 import { ConfigService } from '../config.service';
+import { finalize } from 'rxjs/operators';
+import { from, forkJoin, EMPTY } from 'rxjs';
+
 
 @Component({
   selector: 'app-import-attributes',
@@ -60,7 +64,12 @@ export class ImportAttributesComponent implements OnInit {
         this.oauthService.loadDiscoveryDocumentAndTryLogin();
       }
       else{
-        this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions);
+        this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
+          console.log("Login successful: "+this.oauthService.getIdToken());
+          this.newCredential.name = this.newIdProvider.name + "OidcJwt";
+          this.newCredential.value = this.oauthService.getIdToken();
+          this.importAttributesFromCredential();
+        });
       }
     }
     this.activatedRoute.params.subscribe(p => {
@@ -81,6 +90,47 @@ export class ImportAttributesComponent implements OnInit {
   loadIdProviderFromLocalStorage(){
     this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
     this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+  }
+
+  storeAttribute(attr: Attribute) {
+    this.reclaimService.addAttribute(this.identity, attr)
+  }
+
+  importAttributesFromCredential() {
+    this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
+      console.log("Stored credential");
+      this.reclaimService.getCredentials(this.identity).subscribe(creds => {
+        var promises = [];
+        var cred = null;
+        for (var c of creds) {
+          if (c.name == this.newCredential.name) {
+            cred = c;
+          }
+        }
+        if (null == cred) {
+          console.log("ERROR: credential was not added!");
+          return;
+        }
+        console.log("Trying to import " + cred.attributes.length + " attributes");
+
+        for (var attr of cred.attributes) {
+          //New attribute with name == claim name
+          var attestation = new Attribute(attr.name, '', cred.id, attr.id, 'STRING', '1');
+          promises = promises.concat (this.storeAttribute(attestation));
+        }
+        forkJoin(promises).pipe(
+          finalize(() => {
+            //FIXME cleanup
+          }))
+          .subscribe(res => {
+            this.router.navigate(['/edit-identity', this.identity.name]);
+          },
+          err => {
+            console.log(err);
+            EMPTY
+          });;
+      });
+    });
   }
 
   getNewIdProviderName(url: string){
@@ -135,7 +185,7 @@ export class ImportAttributesComponent implements OnInit {
 
     this.credentialService.getLink(account).subscribe (idProvider => {
       this.discoveringIdProvider = false;
-      this.newIdProvider.url = (idProvider.links [0]).href; 
+      this.newIdProvider.url = (idProvider.links [0]).href;
       localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
       this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
       console.log(this.newIdProvider.url);
