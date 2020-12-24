@@ -20,13 +20,6 @@ export class AppComponent {
     this.configService = _configService;
   }
 
-  isExperimental() {
-    return this.configService.get().experiments;
-  }
-
-  toggleExperimental() {
-    this.configService.get().experiments = !this.configService.get().experiments;
-  }
 
   //Internationalization
   getMessage(key, sub?){

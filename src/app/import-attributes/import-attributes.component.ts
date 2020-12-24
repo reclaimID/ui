@@ -10,7 +10,7 @@ import { IdProvider } from '../idProvider';
 import { LoginOptions } from 'angular-oauth2-oidc';
 import { Scope } from '../scope';
 import { LanguageService } from '../language.service';
-
+import { ConfigService } from '../config.service';
 
 @Component({
   selector: 'app-import-attributes',
@@ -37,7 +37,8 @@ export class ImportAttributesComponent implements OnInit {
               private router: Router,
               private credentialService: CredentialService,
               private oauthService: OAuthService,
-              private languageService: LanguageService) { }
+              private languageService: LanguageService,
+              private configService: ConfigService) { }
 
 
   ngOnInit(): void {
@@ -124,8 +125,12 @@ export class ImportAttributesComponent implements OnInit {
     this.discoveringIdProvider = true;
     localStorage.setItem('userForCredential', this.identity.name);
     let account = this.webfingerEmail;
-    if (this.webfingerEmail.substr(this.webfingerEmail.indexOf('@')+1) === 'aisec.fraunhofer.de') {
-      account = this.webfingerEmail.substr(0, this.webfingerEmail.indexOf('@')+1) + 'as.aisec.fraunhofer.de';
+    if (this.configService.get().experiments) {
+      if (this.webfingerEmail.substr(this.webfingerEmail.indexOf('@')+1) === 'aisec.fraunhofer.de') {
+        account = this.webfingerEmail.substr(0, this.webfingerEmail.indexOf('@')+1) + 'as.aisec.fraunhofer.de';
+      } else if (this.webfingerEmail.substr(this.webfingerEmail.indexOf('@')+1) === 'bfh.ch') {
+        account = this.webfingerEmail.substr(0, this.webfingerEmail.indexOf('@')+1) + 'omejdn.nslab.ch';
+      }
     }
 
     this.credentialService.getLink(account).subscribe (idProvider => {

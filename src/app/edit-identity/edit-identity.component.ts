@@ -545,4 +545,8 @@ export class EditIdentityComponent implements OnInit {
     return this.languageService.getMessage(key, sub);
   }
 
+  hasAttributes(): boolean {
+    return this.attributes.length > 0;
+  }
+
 }
