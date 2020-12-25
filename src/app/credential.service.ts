@@ -22,8 +22,8 @@ export class CredentialService {
     getOauthConfig(idProvider: IdProvider, scopes: Scope[]){
         var redirectUri;
         if (window.location.href.includes('localhost')){
-            const user = localStorage.getItem('userForAttestation');
-            redirectUri = 'http://localhost:4200/edit-credentials/' + user;
+            const user = localStorage.getItem('userForCredential');
+            redirectUri = 'http://localhost:4200/import-attributes/' + user;
         }
         else {
             redirectUri = "https://ui.reclaim";

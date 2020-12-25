@@ -61,7 +61,13 @@ export class ImportAttributesComponent implements OnInit {
       }
       this.configureOauthService();
       if (!localStorage.getItem("credentialCode")){
-        this.oauthService.loadDiscoveryDocumentAndTryLogin();
+        this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
+          console.log("Login successful: "+this.oauthService.getIdToken());
+          this.newCredential.name = this.newIdProvider.name + "oidcjwt";
+          this.newCredential.value = this.oauthService.getIdToken();
+          this.importAttributesFromCredential();
+        });
+
       }
       else{
         this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
@@ -114,21 +120,34 @@ export class ImportAttributesComponent implements OnInit {
         console.log("Trying to import " + cred.attributes.length + " attributes");
 
         for (var attr of cred.attributes) {
+          if ((attr.name == "sub") ||
+              (attr.name == "nonce") ||
+              (attr.name == "email_verified") ||
+              (attr.name == "phone_number_verified")) {
+            continue;
+          }
           //New attribute with name == claim name
-          var attestation = new Attribute(attr.name, '', cred.id, attr.id, 'STRING', '1');
-          promises = promises.concat (this.storeAttribute(attestation));
+          var attestation = new Attribute(attr.name, '', cred.id, attr.name, 'STRING', '1');
+          promises.push(
+            from(this.reclaimService.addAttribute(this.identity, attestation)));
+          //promises = promises.concat (this.storeAttribute(attestation));
         }
-        forkJoin(promises).pipe(
-          finalize(() => {
-            //FIXME cleanup
-          }))
+        forkJoin(promises)
+          .pipe(
+            finalize(() => {
+              this.newIdProvider.url = '';
+              this.newIdProvider.name = '';
+              localStorage.removeItem('newIdProviderURL');
+              localStorage.removeItem("credentialCode");
+              this.oauthService.logOut();
+            })
+          )
           .subscribe(res => {
             this.router.navigate(['/edit-identity', this.identity.name]);
           },
           err => {
             console.log(err);
-            EMPTY
-          });;
+          });
       });
     });
   }

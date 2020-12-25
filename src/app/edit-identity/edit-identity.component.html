@@ -363,6 +363,9 @@
         <span class="fa fa-openid"></span>
         {{ getMessage("edit_identity_html@manageCreds") }}
       </button>
+      <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/import-attributes', identity.name ]" [style.float]="'right'">
+        <span class="fa fa-download"></span> {{getMessage("edit_identity_html@linkAccount")}}
+      </button>
     </div>
   </div>
 </div>
