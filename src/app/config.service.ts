@@ -12,14 +12,22 @@ export class ConfigService {
     var confString = localStorage.getItem('reclaimSettings');
     try {
       this.config = JSON.parse(confString);
-      console.log("Loaded settings: " + confString);
+      if (this.config == null) {
+        this.loadDefaults();
+      } else {
+        console.log("Loaded settings: " + confString);
+      }
     } catch(e) {
-      this.http.get<Config>('assets/config.json').subscribe(cnf => {
-        this.config = cnf;
-        console.log("Got default settings: " + cnf);
-      });
+      this.loadDefaults();
       console.log("Error loading settings: " + e);
     }
+  }
+
+  loadDefaults() {
+    this.http.get<Config>('assets/config.json').subscribe(cnf => {
+      this.config = cnf;
+      console.log("Got default settings: " + cnf);
+    });
   }
 
   get(): Config {
