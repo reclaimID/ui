@@ -179,19 +179,34 @@ export class OpenIdService {
 
   isClaimsMissing(attributes: Attribute[], claims: Object): boolean {
     for (let attr of attributes) {
+      var found = false;
       for (let claim in claims) {
-        /* if any attribute for profile exists, we are good */
         if (attr.name === claim) {
-          return false;
+          found = true;
         }
       }
+      if (!found) {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
   isProfileMissing(attributes: Attribute[]): boolean {
     let profileClaims = this.getStandardProfileClaims();
-    return this.isClaimsMissing(attributes, profileClaims);
+    let claims = {};
+    for (let k in profileClaims) {
+      //Ignore clearly optional claims
+      if ((k === "nickname") ||
+          (k === "preferred_username") ||
+          (k === "picture") ||
+          (k === "website") ||
+          (k === "gender")) {
+        continue;
+      }
+      claims[k] = profileClaims[k];
+    }
+    return this.isClaimsMissing(attributes, claims);
   }
 
   isEmailMissing(attributes: Attribute[]): boolean {
