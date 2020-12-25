@@ -72,7 +72,7 @@ export class ImportAttributesComponent implements OnInit {
       else{
         this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
           console.log("Login successful: "+this.oauthService.getIdToken());
-          this.newCredential.name = this.newIdProvider.name + "OidcJwt";
+          this.newCredential.name = this.newIdProvider.name + "oidcjwt";
           this.newCredential.value = this.oauthService.getIdToken();
           this.importAttributesFromCredential();
         });
