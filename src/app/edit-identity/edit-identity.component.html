@@ -228,7 +228,7 @@
       </div>
 
 
-      <h3 class="card-subtitle mb-2" >{{ getMessage("edit_identity_html@additionalInfo") }}<span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
+      <h3 class="card-subtitle mb-2" >{{ getMessage("edit_identity_html@additionalInfo") }} <span (click)="showExtraInfo = !showExtraInfo" class="fa fa-question-circle"></span></h3>
       <div class="alert alert-secondary fade show" *ngIf="showExtraInfo" >
         {{ getMessage("edit_identity_html@non_standardClaims") }}
       </div>
