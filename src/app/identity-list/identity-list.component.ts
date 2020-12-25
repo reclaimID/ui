@@ -410,14 +410,6 @@ export class IdentityListComponent implements OnInit {
     var claims = this.oidcService.getClaimNamesForRequest();
     for (var claim of claims) {
       let found = false;
-      if ((claim == "preferred_username") ||
-          (claim == "middle_name") ||
-          (claim == "nickname") ||
-          (claim == "picture") ||
-          (claim == "website")) {
-        //We ignore those claims in notifications
-        continue;
-      }
       for (let attr of this.getAttributesForIdentity(identity)) {
         if (claim === attr.name) {
           found = true;
