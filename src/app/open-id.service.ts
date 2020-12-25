@@ -178,9 +178,9 @@ export class OpenIdService {
   }
 
   isClaimsMissing(attributes: Attribute[], claims: Object): boolean {
-    for (let attr of attributes) {
+    for (let claim in claims) {
       var found = false;
-      for (let claim in claims) {
+      for (let attr of attributes) {
         if (attr.name === claim) {
           found = true;
         }
