@@ -292,6 +292,7 @@ export class ImportAttributesComponent implements OnInit {
 
   import(){
     this.configureOauthService();
+    this.oauthService.logOut(); //Make sure we logout before login
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 
