@@ -34,6 +34,7 @@ export class ImportAttributesComponent implements OnInit {
   timer: any;
   validEmail: boolean;
   discoveringIdProvider: boolean;
+  inProgress: boolean;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -50,6 +51,7 @@ export class ImportAttributesComponent implements OnInit {
     this.identity = new Identity('','');
     this.newIdProvider = new IdProvider ('', '');
     this.webfingerEmail = '';
+    this.inProgress = false;
     this.emailNotFoundAlertClosed = true;
     this.errorMessage = '';
     this.loadScopesFromLocalStorage()
@@ -60,8 +62,13 @@ export class ImportAttributesComponent implements OnInit {
         customHashFragment: "?code="+localStorage.getItem("credentialCode") + "&state=" + localStorage.getItem("credentialState") + "&session_state="+ localStorage.getItem("credentialSession_State"),
       }
       this.configureOauthService();
+      this.inProgress = true;
       if (!localStorage.getItem("credentialCode")){
         this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
+          if (!success || (null == this.oauthService.getIdToken())) {
+            this.inProgress = false;
+            return;
+          }
           console.log("Login successful: "+this.oauthService.getIdToken());
           this.newCredential.name = this.newIdProvider.name + "oidcjwt";
           this.newCredential.value = this.oauthService.getIdToken();
@@ -71,6 +78,10 @@ export class ImportAttributesComponent implements OnInit {
       }
       else{
         this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
+          if (!success || (null == this.oauthService.getIdToken())) {
+            this.inProgress = false;
+            return;
+          }
           console.log("Login successful: "+this.oauthService.getIdToken());
           this.newCredential.name = this.newIdProvider.name + "oidcjwt";
           this.newCredential.value = this.oauthService.getIdToken();
@@ -103,6 +114,7 @@ export class ImportAttributesComponent implements OnInit {
   }
 
   importAttributesFromCredential() {
+    this.inProgress = true;
     this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
       console.log("Stored credential");
       this.reclaimService.getCredentials(this.identity).subscribe(creds => {
@@ -115,6 +127,7 @@ export class ImportAttributesComponent implements OnInit {
         }
         if (null == cred) {
           console.log("ERROR: credential was not added!");
+          this.inProgress = false;
           return;
         }
         console.log("Trying to import " + cred.attributes.length + " attributes");
@@ -139,6 +152,7 @@ export class ImportAttributesComponent implements OnInit {
               this.newIdProvider.name = '';
               localStorage.removeItem('newIdProviderURL');
               localStorage.removeItem("credentialCode");
+              this.inProgress = false;
               this.oauthService.logOut();
             })
           )
@@ -280,7 +294,7 @@ export class ImportAttributesComponent implements OnInit {
 
     this.timer = setTimeout(() => {
       this.discoverIdProvider();
-    }, 400);
+    }, 800);
   }
 
   isValidEmailforDiscovery(){

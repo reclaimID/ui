@@ -48,6 +48,7 @@ export class EditIdentityComponent implements OnInit {
   showExtraInfo: boolean = false;
   showGeneralInfo: boolean = false;
   actions: string = '';
+  claimInEdit: Attribute = null;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
@@ -487,11 +488,18 @@ export class EditIdentityComponent implements OnInit {
     return this.credentials.length > 0
   }
 
+  mapIssuer(iss: string): string {
+    if (iss == "https://omejdn.nslab.ch") {
+      return "Berner Fachhochschule";
+    }
+    return iss;
+  }
+
   //FIXME credentials need an issuer field
   getIssuer(attribute: Attribute) {
     for (let i = 0; i < this.credentials.length; i++) {
       if (this.credentials[i].id == attribute.credential) {
-        return this.credentials[i].issuer;
+        return this.mapIssuer(this.credentials[i].issuer);
       }
     }
   }
@@ -501,7 +509,7 @@ export class EditIdentityComponent implements OnInit {
       if (this.credentials[i].id == attribute.credential) {
         for (let j = 0; j < this.credentials[i].attributes.length; j++) {
           if (attribute.value == this.credentials[i].attributes[j].name) {
-            return this.credentials[i].attributes[j].value;
+            return this.credentials[i].attributes[j].value.replace(/\"/g, "");
           }
         }
       }
@@ -549,4 +557,7 @@ export class EditIdentityComponent implements OnInit {
     return this.attributes.length > 0;
   }
 
+  editAttribute(claim: Attribute) {
+    this.claimInEdit = claim;
+  }
 }
