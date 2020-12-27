@@ -77,8 +77,8 @@ export class EditIdentityComponent implements OnInit {
     this.importIdProvider = new IdProvider ('', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
-    this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
-    this.newCredClaim = new Attribute('', '', '', '', 'STRING', '1');
+    this.newAttribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '0');
+    this.newCredClaim = new Attribute('', '', this.getZeroId(), '', 'STRING', '1');
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.loadImportScopesFromLocalStorage()
     this.loadImportIdProviderFromLocalStorage();
@@ -109,7 +109,7 @@ export class EditIdentityComponent implements OnInit {
   private bootstrapClaimArray(claimTemplate: Object): Attribute[] {
     var result = [];
     for (let claim in claimTemplate) {
-      let attr = new Attribute(claim, '', '', '', 'STRING', '0');
+      let attr = new Attribute(claim, '', this.getZeroId(), '', 'STRING', '0');
       result.push(attr);
     }
     return result;
@@ -208,7 +208,7 @@ export class EditIdentityComponent implements OnInit {
     this.missingAddressClaims = [];
     this.missingNonStandardClaims = [];
     for (let claim of claims) {
-      const attribute = new Attribute('', '', '', '', 'STRING', '');
+      const attribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '');
       attribute.flag = '0';
       attribute.name = claim;
       if (this.oidcService.isStandardProfileClaim(attribute)) {
@@ -243,6 +243,16 @@ export class EditIdentityComponent implements OnInit {
            this.checkConflict(this.missingAddressClaims, attribute) ||
            this.checkConflict(this.missingNonStandardClaims, attribute) ||*/
     return this.checkConflict(this.attributes, attribute);
+  }
+
+  canUpdateAttribute(attribute: Attribute): boolean {
+    if ((attribute.name === '') || (attribute.value === '')) {
+      return false;
+    }
+    if (attribute.name.indexOf(' ') >= 0) {
+      return false;
+    }
+    return true;
   }
 
   canAddAttribute(attribute: Attribute): boolean {
@@ -782,6 +792,21 @@ export class EditIdentityComponent implements OnInit {
       });
   }
 
+  getZeroId() {
+    return "0000000000000000000000000000000000000000000000000000";
+  }
 
+  credentialSelected(claim: Attribute, eventValue) {
+    claim.credential = eventValue;
+    claim.value = '';
+    claim.flag = (eventValue == this.getZeroId()) ? '0' : '1';
+  }
+
+  credentialClaimSelected(claim: Attribute, eventValue) {
+    claim.value = eventValue;
+    if (claim.name !== '') {
+      this.addAttribute();
+    }
+  }
 
 }
