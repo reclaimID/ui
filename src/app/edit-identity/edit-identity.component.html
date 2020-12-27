@@ -24,7 +24,8 @@
       <div class="table pb-1">
           <!-- Standard "email" claims first -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+              [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingEmailClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -49,7 +50,8 @@
           </div>
           <!-- Standard "email" claims missing on the identity -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingEmailClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -82,7 +84,8 @@
       <div class="table pb-1">
           <!-- Standard "profile" claims first -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingProfileClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -105,7 +108,8 @@
           </div>
           <!-- Standard "profile" claims missing on the identity -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingProfileClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -131,7 +135,8 @@
       <div class="table pb-1">
           <!-- Standard "address" claims first -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingAddressClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -153,7 +158,8 @@
           </div>
           <!-- Standard "profile" claims missing on the identity -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingAddressClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -179,7 +185,8 @@
       <div class="table pb-1">
           <!-- Standard "phone" claims first -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of existingPhoneClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -201,7 +208,8 @@
           </div>
           <!-- Standard "phone" claims missing on the identity -->
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
-              [class.text-primary]="isClaimRequested(claim) || claim == claimInEdit"
+               [class.inEdit]="claim == claimInEdit"
+              [class.text-primary]="isClaimRequested(claim)"
               [class.alert-danger]="newAttribute.name === claim.name"
               *ngFor="let claim of missingPhoneClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -263,8 +271,8 @@
       <!-- Missing "non-standard" claims that are requested -->
       <div class="table pb-1" *ngIf="isAnyRequestedNonStandardClaimMissing()">
           <div class="row mb-3 text-primary"
+            [class.inEdit]="missing == claimInEdit"
             [class.openid]="inOpenIdFlow()"
-            [class.text-primary]="missing == claimInEdit"
             [class.alert-danger]="newAttribute.name === missing.name"
             *ngFor="let missing of missingNonStandardClaims">
             <div class="col-sm"><div style="min-width: 15em">
@@ -295,8 +303,9 @@
       <!-- "non-standard" claims which do exist -->
       <div class="table pb-1">
           <div class="row mb-3"
+               [class.inEdit]="attribute == claimInEdit"
             [class.openid]="inOpenIdFlow()"
-            [class.text-primary]="isClaimRequested(attribute) || attribute == claimInEdit"
+            [class.text-primary]="isClaimRequested(attribute)"
             [class.alert-danger]="newAttribute.name === attribute.name"
             [class.text-secondary]="isClaimCred(attribute)"
             *ngFor="let attribute of existingNonStandardClaims">

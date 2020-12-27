@@ -9,3 +9,11 @@ button.fhg-link:hover {
   border: 2px solid #009374;
   color: #009374;
 }
+
+.table div.row {
+  padding: 5px;
+}
+
+.row.inEdit {
+  background-color: rgba(0,0,0,0.05);
+}
