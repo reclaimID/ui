@@ -65,7 +65,7 @@ export class IdentityListComponent implements OnInit {
       localStorage.setItem('credentialState', this.route.snapshot.queryParams["state"]);
       localStorage.setItem('credentialSession_State', this.route.snapshot.queryParams["session_state"]);
       var user = localStorage.getItem('userForCredential');
-      this.router.navigate(['/import-attributes', user]);
+      this.router.navigate(['/edit-identity', user]);
     }
     if (!this.oidcService.inOpenIdFlow() && undefined == this.route.snapshot.queryParams["authz_request"]) {
       this.oidcService.parseRouteParams(this.route.snapshot.queryParams);
