@@ -1,7 +1,3 @@
-<div *ngIf="actions !== ''" class="alert alert-primary fade show" style="position:fixed;top:0; width:100%;z-index:100;">
-  <i class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{actions}}
-</div>
-
 <!-- Identity edit screen -->
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
@@ -14,6 +10,15 @@
     <i class="fa fa-spinner fa-spin"></i>
     Please wait
   </div>
+  <div *ngIf="validImportEmail" class="col-sm alert alert-primary alert-dismissible fade show my-2" role="alert" >
+    {{getMessage("edit_identity_html@importInfo", {ISSUERNAME: getImportIssuerName()})}}<br/>
+              <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
+              <br/>
+    <button class="ml-1 btn btn-primary" (click)="import()">
+      <span class="fa fa-download"></span> {{getMessage("edit_identity_html@importFrom", {ISSUERNAME: getImportIssuerName()})}}
+    </button>
+  </div>
+
   <!-- Attribute table -->
   <div class="card-body" *ngIf="!importInProgress">
     <div>
@@ -68,9 +73,6 @@
               <button class="ml-2 btn btn-primary"  (click)="deleteAttribute(claim)">
                 <span class="fa fa-trash"></span>
               </button>
-              <button *ngIf="validImportEmail" class="ml-1 btn btn-primary" (click)="import()">
-                <span class="fa fa-download"></span> {{getMessage("edit_identity_html@importFrom", {ISSUERNAME: getImportIssuerName()})}}
-              </button>
 
             </div>
           </div>
@@ -112,14 +114,6 @@
               <button *ngIf="claim != claimInEdit" class="btn btn-primary"  (click)="editAttribute(claim)">
                 <span class="fa fa-plus"></span>
               </button>
-            </div>
-          </div>
-          <div class="row mb-3" *ngIf="validImportEmail">
-            <!-- Instructions -->
-            <div
-              class="col-sm alert alert-primary alert-dismissible fade show my-2" role="alert" >
-              {{getMessage("edit_identity_html@importInfo")}}<br/>
-              <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
             </div>
           </div>
       </div>

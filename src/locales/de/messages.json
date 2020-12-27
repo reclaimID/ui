@@ -50,7 +50,7 @@
     "edit_credentials_ts@noAccount": "Kein Konto mit diese E-Email Addresse gefunden",
     "edit_credentials_ts@errorWrongAddress": "Ein Fehler ist aufgetreten - Der Grund könnte eine falsche E-Email Adresse sein.",
     "edit_identity_html@basicInfo": "Gebräuchliche Informationen",
-    "edit_identity_html@importInfo": "Über den 'Importieren'-Knopf kannst du gegebenenfalls Attribute aus einem existierenden Konto importieren.",
+    "edit_identity_html@importInfo": "Deine E-Mail-Addresse deutet darauf hin, dass Du Attribute eines externen Kontos bei ``{{ISSUERNAME}}´´ importieren kannst.",
     "edit_identity_html@linkAccount": "Attribute importieren",
 
     "edit_identity_html@standardScopes": "Die unten stehenden Attribute entsprechen den standard \"scopes\" von OpenID Connect:\n``profile'', ``email'', ``phone'' and ``address''.",
