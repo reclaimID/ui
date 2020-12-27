@@ -9,18 +9,22 @@ export class ConfigService {
   defaultConfig: Config;
 
   constructor(private http: HttpClient) {
+    this.config = new Config('',true);
     var confString = localStorage.getItem('reclaimSettings');
+    this.config = new Config('',true);
     try {
-      this.config = JSON.parse(confString);
-      if (this.config == null) {
+      var jsonConfig = JSON.parse(confString);
+      if (jsonConfig == null) {
         this.loadDefaults();
       } else {
+        this.config = jsonConfig;
         console.log("Loaded settings: " + confString);
       }
     } catch(e) {
       this.loadDefaults();
       console.log("Error loading settings: " + e);
     }
+
   }
 
   loadDefaults() {
