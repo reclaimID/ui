@@ -417,9 +417,10 @@
                 </select>
               </div>
               <div style="float:right;">
-                <i class="text-secondary" style="float:right;"><i class="fa fa-certificate"></i> {{ getMessage("edit_identity_html@selfissued") }}</i>
+                <i *ngIf="!isClaimCredentialRequested(missing)" class="text-secondary" style="float:right;"><i class="fa fa-certificate"></i> {{ getMessage("edit_identity_html@selfissued") }}</i>
                 <select class="custom-select" *ngIf="isClaimCredentialRequested(missing)"
                   (change)="credentialSelected(missing, $event.target.value)" >
+                  <option value="" >{{ getMessage("edit_identity_html@selectSource") }}</option>
                   <option *ngFor="let cred of credentials" value={{cred.id}}>
                   {{getIssuerName(cred)}}
                   </option>
@@ -427,6 +428,9 @@
               </div>
             </div>
             <div class="col-sm">
+              <button [disabled]="!canAddAttribute(missing)" class="btn btn-primary"  (click)="addAttribute()">
+                <span class="fa fa-save"></span>
+              </button>
             </div>
           </div>
       </div>
