@@ -4,6 +4,7 @@ import { ReclaimService } from '../reclaim.service';
 import { Identity } from '../identity';
 import { GnsService } from '../gns.service';
 import { NamestoreService } from '../namestore.service';
+import { CredentialService } from '../credential.service';
 import { OpenIdService } from '../open-id.service';
 import { Attribute } from '../attribute';
 import { Credential } from '../credential';
@@ -11,9 +12,11 @@ import { IdentityService } from '../identity.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
 import { Authorization } from '../authorization';
-import { IdProvider } from '../idProvider';
 import { ConfigService } from '../config.service';
 import { LanguageService } from '../language.service';
+import { IdProvider } from '../idProvider';
+import { Scope } from '../scope';
+import { OAuthService, LoginOptions } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 'app-edit-identity',
@@ -33,7 +36,6 @@ export class EditIdentityComponent implements OnInit {
   optionalClaims: Attribute[]  = [];
   webfingerEmail: string;
   authorizations: Authorization[] = [];
-  newIdProvider: IdProvider;
   emailNotFoundAlertClosed: boolean = true;
   existingProfileClaims: Attribute[] = [];
   missingProfileClaims: Attribute[] = [];
@@ -50,6 +52,13 @@ export class EditIdentityComponent implements OnInit {
   actions: string = '';
   claimInEdit: Attribute = null;
 
+  //Attribute import
+  importIdProvider: IdProvider;
+  validImportEmail: boolean = false;
+  importInProgress: boolean = false;
+  scopes: Scope[];
+  newCredential: Credential;
+
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
               private gnsService: GnsService,
@@ -58,16 +67,21 @@ export class EditIdentityComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private configService: ConfigService,
               private languageService: LanguageService,
+              private credentialService: CredentialService,
+              private oauthService: OAuthService,
               private router: Router,) {}
 
   ngOnInit() {
     this.credentialValues = {};
     this.webfingerEmail = '';
-    this.newIdProvider = new IdProvider ('', '');
+    this.importIdProvider = new IdProvider ('', '');
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', '', '', 'STRING', '0');
     this.newCredClaim = new Attribute('', '', '', '', 'STRING', '1');
+    this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
+    this.loadImportScopesFromLocalStorage()
+    this.loadImportIdProviderFromLocalStorage();
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -79,6 +93,9 @@ export class EditIdentityComponent implements OnInit {
               this.identity = ids[i];
               this.updateAttributes();
               this.updateCredentials();
+              /*if (this.importIdProvider.url !== '') {
+                this.tryImportCredential();
+              }*/
             }
           }
         });
@@ -146,12 +163,14 @@ export class EditIdentityComponent implements OnInit {
       this.existingPhoneClaims = this.cleanupClaimArray(this.existingPhoneClaims);
       this.existingAddressClaims = this.cleanupClaimArray(this.existingAddressClaims);
       this.updateMissingAttributes();
+      this.validateEmailForImport();
     },
     err => {
       //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
       console.log(err);
     });
   }
+
 
   inOpenIdFlow() {
     return this.oidcService.inOpenIdFlow();
@@ -488,13 +507,6 @@ export class EditIdentityComponent implements OnInit {
     return this.credentials.length > 0
   }
 
-  mapIssuer(iss: string): string {
-    if (iss == "https://omejdn.nslab.ch") {
-      return "Berner Fachhochschule";
-    }
-    return iss;
-  }
-
   //FIXME credentials need an issuer field
   getIssuer(attribute: Attribute) {
     for (let i = 0; i < this.credentials.length; i++) {
@@ -560,4 +572,216 @@ export class EditIdentityComponent implements OnInit {
   editAttribute(claim: Attribute) {
     this.claimInEdit = claim;
   }
+
+  loadImportScopesFromLocalStorage(){
+    this.scopes = [];
+    var loadedScopes = localStorage.getItem("scopes");
+    if (loadedScopes==null){
+      return
+    }
+    loadedScopes.split(',{').forEach(scopeObject => {
+      var scopeName = scopeObject.split(',')[0];
+      var scopeChosen = scopeObject.split(',')[1].slice(0, -1);
+      const scopeInterface: Scope = {
+        scope: scopeName.split(':')[1].slice(1,-1),
+        chosen: (/true/i).test(scopeChosen.split(':')[1]),
+      }
+      this.scopes.push(scopeInterface)
+    }
+      );
+  }
+
+  loadImportIdProviderFromLocalStorage(){
+    this.importIdProvider.url = localStorage.getItem("importIdProviderURL") || '';
+    this.importIdProvider.name = this.importIdProvider.url.split('//')[1];
+  }
+
+  tryImportCredential() {
+    if (this.importIdProvider.url === '') {
+        return;
+    }
+    const loginOptions: LoginOptions = {
+      customHashFragment: "?code="+localStorage.getItem("credentialCode") + "&state=" + localStorage.getItem("credentialState") + "&session_state="+ localStorage.getItem("credentialSession_State"),
+    }
+    this.configureOauthService();
+    if (!localStorage.getItem("credentialCode")){
+      this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
+        if (!success || (null == this.oauthService.getIdToken())) {
+          this.importInProgress = false;
+          return;
+        }
+        console.log("Login successful: "+this.oauthService.getIdToken());
+        this.newCredential.name = this.importIdProvider.name + "oidcjwt";
+        this.newCredential.value = this.oauthService.getIdToken();
+        this.importAttributesFromCredential();
+      });
+    } else {
+      this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
+        if (!success || (null == this.oauthService.getIdToken())) {
+          this.importInProgress = false;
+          return;
+        }
+        console.log("Login successful: "+this.oauthService.getIdToken());
+        this.newCredential.name = this.importIdProvider.name + "oidcjwt";
+        this.newCredential.value = this.oauthService.getIdToken();
+        this.importAttributesFromCredential();
+      });
+    }
+  }
+
+  importAttributesFromCredential() {
+    this.importInProgress = true;
+    this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
+      console.log("Stored credential");
+      this.reclaimService.getCredentials(this.identity).subscribe(creds => {
+        this.reclaimService.getAttributes(this.identity).subscribe(attrs => {
+          var promises = [];
+          var cred = null;
+          for (var c of creds) {
+            if (c.name == this.newCredential.name) {
+              cred = c;
+            }
+          }
+          if (null == cred) {
+            console.log("ERROR: credential was not added!");
+            this.importInProgress = false;
+            return;
+          }
+          console.log("Trying to import " + cred.attributes.length + " attributes");
+
+          for (let attr of cred.attributes) {
+            if ((attr.name == "sub") ||
+                (attr.name == "nonce") ||
+                (attr.name == "email_verified") ||
+                (attr.name == "phone_number_verified")) {
+              continue;
+            }
+            //New attribute with name == claim name
+            var attestation = new Attribute(attr.name, '', cred.id, attr.name, 'STRING', '1');
+            for (let existAttr of attrs) {
+              /* Overwrite existing */
+              if (existAttr.name !== attr.name) {
+                continue;
+              }
+              attestation.id = existAttr.id;
+              break;
+            }
+            promises.push(
+              from(this.reclaimService.addAttribute(this.identity, attestation)));
+          //promises = promises.concat (this.storeAttribute(attestation));
+          }
+          forkJoin(promises)
+          .pipe(
+            finalize(() => {
+              this.importIdProvider.url = '';
+              this.importIdProvider.name = '';
+              localStorage.removeItem('importIdProviderURL');
+              localStorage.removeItem("credentialCode");
+              this.importInProgress = false;
+              this.oauthService.logOut();
+              this.updateAttributes();
+              this.updateCredentials();
+            })
+          ).subscribe(res => {
+            console.log("Finished attribute import.");
+          },
+          err => {
+            console.log(err);
+          });
+        });
+      });
+    });
+  }
+
+  validateEmailForImport() {
+    var emailAddr = null;
+    for (let attr of this.attributes) {
+      if (attr.name !== 'email') {
+        continue;
+      }
+      console.log("Found email attribute " + attr.value);
+      emailAddr = attr.value;
+      break;
+    }
+    if ((null == emailAddr) ||
+        !emailAddr.includes('@')) {
+      this.validImportEmail = false;
+      return;
+    }
+    if (emailAddr.length - emailAddr.indexOf('@') < 4) {
+      this.validImportEmail = false;
+      return;
+    }
+    this.discoverIdProvider(emailAddr);
+  }
+
+  discoverIdProvider(emailAddr: string) {
+    localStorage.setItem('userForCredential', this.identity.name);
+    let account = emailAddr;
+    if (this.configService.get().experiments) {
+      if (emailAddr.substr(emailAddr.indexOf('@')+1) === 'aisec.fraunhofer.de') {
+        account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'as.aisec.fraunhofer.de';
+      } else if (emailAddr.substr(emailAddr.indexOf('@')+1) === 'bfh.ch') {
+        account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'omejdn.nslab.ch';
+      }
+    }
+    this.credentialService.getLink(account).subscribe (idProvider => {
+      this.importIdProvider = new IdProvider((idProvider.links[0]).href,
+                                             (idProvider.links[0]).href.split('//')[1]);
+      localStorage.setItem('importIdProviderURL', this.importIdProvider.url);
+      this.getImportScopes();
+      console.log(this.importIdProvider.url);
+      this.validImportEmail = true;
+      this.tryImportCredential();
+    },
+    error => {
+      this.validImportEmail = false;
+      console.log (error);
+    });
+  }
+
+  mapIssuer(iss: string): string {
+    if (iss.includes("omejdn.nslab.ch")) {
+      return "Berner Fachhochschule";
+    }
+    return iss;
+  }
+
+
+  getImportIssuerName() {
+    return this.mapIssuer(this.importIdProvider.name);
+  }
+
+  getIssuerName(cred: Credential) {
+    return this.mapIssuer(cred.name);
+  }
+
+  import(){
+    this.configureOauthService();
+    this.oauthService.logOut(); //Make sure we logout before login
+    this.oauthService.loadDiscoveryDocumentAndLogin();
+  }
+
+  configureOauthService(){
+    var authCodeFlowConfig = this.credentialService.getOauthConfig(this.importIdProvider, this.scopes);
+    this.oauthService.configure(authCodeFlowConfig);
+  }
+
+  getImportScopes(){
+    this.configureOauthService();
+    this.credentialService.getDiscoveryDocument(this.oauthService.issuer).subscribe(openidConfig => {
+      this.scopes = [];
+      openidConfig["scopes_supported"].forEach(scope => {
+        const scopeInterface: Scope = {
+          scope: scope,
+          chosen: true,
+        }
+        this.scopes.push(scopeInterface)
+      });
+      localStorage.setItem("scopes", JSON.stringify(this.scopes));
+      });
+  }
+
+
+
 }
