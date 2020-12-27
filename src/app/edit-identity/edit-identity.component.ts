@@ -49,7 +49,6 @@ export class EditIdentityComponent implements OnInit {
   missingNonStandardClaims: Attribute[] = [];
   showExtraInfo: boolean = false;
   showGeneralInfo: boolean = false;
-  actions: string = '';
   claimInEdit: Attribute = null;
 
   //Attribute import
@@ -144,7 +143,7 @@ export class EditIdentityComponent implements OnInit {
       this.existingPhoneClaims = this.bootstrapClaimArray (this.oidcService.getStandardPhoneClaims());
       this.existingAddressClaims = this.bootstrapClaimArray (this.oidcService.getStandardAddressClaims());
       this.existingNonStandardClaims = [];
-      this.attributes = attributes;
+      this.attributes = attributes.sort();
       for (let attr of this.attributes) {
         if (this.oidcService.isStandardProfileClaim(attr)) {
           this.existingProfileClaims = this.updateClaimArray(this.existingProfileClaims, attr);
@@ -294,7 +293,6 @@ export class EditIdentityComponent implements OnInit {
        */
       this.newAttribute.credential = '';
     }
-    this.actions = "Saving...";
     this.storeAttributes()
       .pipe(
         finalize(() => {
@@ -306,7 +304,6 @@ export class EditIdentityComponent implements OnInit {
         }))
       .subscribe(res => {
         //FIXME success dialog/banner
-        this.actions = "";
         this.updateAttributes();
         this.router.navigate(['/']);
       },
@@ -381,7 +378,6 @@ export class EditIdentityComponent implements OnInit {
    * Adds a new attribute, stores all changes and STAYS on this page.
    */
   addAttribute() {
-    this.actions = "Saving..."
     this.storeAttributes()
       .pipe(
         finalize(() => {
@@ -392,7 +388,6 @@ export class EditIdentityComponent implements OnInit {
           this.updateAttributes();
         }))
       .subscribe(res => {
-        this.actions = '';
         console.log(res);
       },
       err => {
