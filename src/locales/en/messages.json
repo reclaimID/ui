@@ -108,6 +108,7 @@
     "claim@nickname": "Nickname",
     "claim@preferred_username": "Preferred username",
     "claim@picture": "Picture URL",
+    "claim@profile": "Profile URL",
     "claim@website": "Website URL",
     "claim@gender": "Gender",
     "claim@email": "Email address",

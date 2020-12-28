@@ -106,6 +106,7 @@
     "claim@nickname": "Pseudonym",
     "claim@preferred_username": "Bevorzugter Nutzername",
     "claim@picture": "Bild URL",
+    "claim@profile": "Profil URL",
     "claim@website": "Website URL",
     "claim@gender": "Geschlecht",
     "claim@email": "Mailadresse",

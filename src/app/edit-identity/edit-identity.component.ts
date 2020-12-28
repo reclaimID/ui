@@ -748,6 +748,8 @@ export class EditIdentityComponent implements OnInit {
   mapIssuer(iss: string): string {
     if (iss.includes("omejdn.nslab.ch")) {
       return "Berner Fachhochschule";
+    } else if (iss.includes("as.aisec.fraunhofer.de")) {
+      return "Fraunhofer AISEC";
     }
     return iss;
   }
