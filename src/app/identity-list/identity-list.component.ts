@@ -236,6 +236,16 @@ export class IdentityListComponent implements OnInit {
     if (undefined === this.attributes[identity.pubkey]) { return '' };
     for (let attr of this.attributes[identity.pubkey]) {
       if (attr.name === 'picture') {
+        for (let cred of this.credentials[identity.pubkey]) {
+          if (cred.id == attr.credential) {
+            for (let cattr of cred.attributes) {
+              if (cattr.name != attr.value) {
+                continue;
+              }
+              return cattr.value.replace(/"/g, '');
+            }
+          }
+        }
         return attr.value;
       }
     }

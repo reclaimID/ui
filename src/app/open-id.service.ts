@@ -234,7 +234,7 @@ export class OpenIdService {
             "middle_name": this.getMessage('claim@middle_name'),
             "nickname": this.getMessage('claim@nickname'),
             "preferred_username": this.getMessage('claim@preferred_username'),
-            //"profile": "Profile URL",
+            "profile": this.getMessage('claim@profile'),
             "picture": this.getMessage('claim@picture'),
             "website": this.getMessage('claim@website'),
             "gender": this.getMessage('claim@gender'),
