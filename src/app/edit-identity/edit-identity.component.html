@@ -129,21 +129,27 @@
           </div>
           <div class="col-sm" style="display:flex;">
             <div style="flex:1;">
-              <input *ngIf="!isClaimCred(newRequestedAttribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value">
+              <input *ngIf="!isClaimCred(newRequestedAttribute) && !isClaimCredentialRequested(newRequestedAttribute)"
+              placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value">
               <select class="custom-select"
-                *ngIf="newRequestedAttribute.credential !== '' && isClaimCred(newRequestedAttribute)" (change)="newRequestedAttribute.value=$event.target.value">
+                      *ngIf="isClaimCredentialRequested(newRequestedAttribute) && credentials.length > 0" (change)="newRequestedAttribute.value=$event.target.value">
                 <option [value]="getZeroId()" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
                 <option *ngFor="let claim of credentialValuesForClaim(newRequestedAttribute)" value={{claim.name}}>
                 {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
             </div>
+            <div class="alert alert-warning"
+              *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
+              {{ getMessage("edit_identity_html@selfissued") }}
+            </div>
             <div style="float:right;" *ngIf="credentials.length > 0">
               <select class="custom-select"
                 [(ngModel)]="newRequestedAttribute.credential"
 
                 (change)="newRequestedAttribute.credential=$event.target.value; newRequestedAttribute.flag = ($event.target.value == '') ? '0' : '1'" >
-                <option value="">{{ getMessage("edit_identity_html@selfissued") }}</option>
+                <option *ngIf="!isClaimCredentialRequested(newRequestedAttribute)"
+                [value]="getZeroId()">{{ getMessage("edit_identity_html@selfissued") }}</option>
                 <option *ngFor="let cred of credentials" value={{cred.id}}>
                 {{getIssuerName(cred)}}
                 </option>

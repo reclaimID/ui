@@ -245,6 +245,12 @@ export class EditIdentityComponent implements OnInit {
       const attribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '');
       attribute.flag = '0';
       attribute.name = claim;
+      if (this.isClaimCredentialRequested(attribute)) {
+        attribute.flag = '1';
+        if (this.credentials.length > 0) {
+          attribute.credential = this.credentials[0].id;
+        }
+      }
       if (this.oidcService.isStandardProfileClaim(attribute)) {
         this.missingProfileClaims.push(attribute);
       } else if (this.oidcService.isStandardEmailClaim(attribute)) {
