@@ -46,7 +46,7 @@ export class EditIdentityComponent implements OnInit {
   missingAddressClaims: Attribute[] = [];
   existingNonStandardClaims: Attribute[] = [];
   missingNonStandardClaims: Attribute[] = [];
-  showExtraInfo: boolean = false;
+  showMissingInfo: boolean = false;
   showGeneralInfo: boolean = false;
   claimInEdit: Attribute = null;
 
@@ -204,8 +204,8 @@ export class EditIdentityComponent implements OnInit {
 
   resetAttributes() {
     this.resetStandardAttribute(this.newStandardAttribute);
+    this.resetStandardAttribute(this.newRequestedAttribute);
     this.resetAttribute(this.newAttribute);
-    this.resetAttribute(this.newRequestedAttribute);
   }
 
   inOpenIdFlow() {
@@ -789,7 +789,7 @@ export class EditIdentityComponent implements OnInit {
       }
     }
     claims = claims.concat(this.missingNonStandardClaims);
-    return claims;
+    return this.sortAttributes(claims);
   }
 
   setNewRequestedAttribute(attrName: string) {

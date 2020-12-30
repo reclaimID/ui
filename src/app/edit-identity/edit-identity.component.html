@@ -23,12 +23,68 @@
   <div class="card-body" *ngIf="!importInProgress">
     <div>
       <h3 class="mb-2"> {{getMessage("edit_identity_html@addAttributes")}}</h3>
-      <p> {{getMessage("edit_identity_html@addStandardClaim")}} <span (click)="showGeneralInfo = !showGeneralInfo" class="fa fa-question-circle"></span></p>
+      <p *ngIf="getMissingClaims().length > 0"> {{getMessage("edit_identity_html@addRequestedMissingClaim")}} <span (click)="showMissingInfo = !showMissingInfo" class="fa fa-question-circle"></span></p>
+      <div class="alert alert-info fade show" *ngIf="showMissingInfo" >
+        {{getMessage("edit_identity_html@infoMissingClaims")}}
+      </div>
+
+      <div *ngIf="getMissingClaims().length > 0"
+        class="table pb-1">
+        <!-- Add standard attribute -->
+        <div class="row mb-3"
+             [class.alert-danger]="isInConflict(newRequestedAttribute)">
+          <div class="col-sm">
+            <select class="custom-select"
+              [ngModel]="newRequestedAttribute.name"
+              (change)="setNewRequestedAttribute($event.target.value)">
+              <option value="" >{{ getMessage("edit_identity_html@selectAttribute") }}</option>
+              <option *ngFor="let claim of getMissingClaims()" value={{claim.name}}>
+                {{getDescription(claim)}}
+              </option>
+            </select>
+          </div>
+          <div class="col-sm" style="display:flex;">
+            <div style="flex:1;">
+              <input *ngIf="!isClaimCred(newRequestedAttribute) && !isClaimCredentialRequested(newRequestedAttribute)"
+              placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value">
+              <select class="custom-select"
+                      *ngIf="isClaimCredentialRequested(newRequestedAttribute) && credentials.length > 0" (change)="newRequestedAttribute.value=$event.target.value">
+                <option [value]="getZeroId()" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
+                <option *ngFor="let claim of credentialValuesForClaim(newRequestedAttribute)" value={{claim.name}}>
+                {{claim.value}} <i>({{claim.name}})</i>
+                </option>
+              </select>
+              <div class="alert alert-warning"
+                *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
+                {{ getMessage("edit_identity_html@credentialRequired") }}
+              </div>
+            </div>
+            <div style="float:right;" *ngIf="credentials.length > 0">
+              <select class="custom-select"
+                [(ngModel)]="newRequestedAttribute.credential"
+
+                (change)="newRequestedAttribute.credential=$event.target.value; newRequestedAttribute.flag = ($event.target.value == '') ? '0' : '1'" >
+                <option *ngIf="!isClaimCredentialRequested(newRequestedAttribute)"
+                [value]="getZeroId()">{{ getMessage("edit_identity_html@selfissued") }}</option>
+                <option *ngFor="let cred of credentials" value={{cred.id}}>
+                {{getIssuerName(cred)}}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-sm">
+            <button [disabled]="!canAddAttribute(newRequestedAttribute)" class="btn btn-primary"  (click)="saveAttribute(newRequestedAttribute)">
+              <span class="fa fa-plus"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p *ngIf="getMissingClaims() == 0"> {{getMessage("edit_identity_html@addStandardClaim")}} <span (click)="showGeneralInfo = !showGeneralInfo" class="fa fa-question-circle"></span></p>
       <div class="alert alert-secondary fade show" *ngIf="showGeneralInfo" >
         {{getMessage("edit_identity_html@standardScopes")}}
       </div>
-
-      <div class="table pb-1">
+      <div class="table pb-1" *ngIf="getMissingClaims() == 0">
         <!-- Add standard attribute -->
         <div class="row mb-3"
              [class.alert-danger]="isInConflict(newStandardAttribute)">
@@ -109,60 +165,6 @@
             </div>
           </div>
 
-      </div>
-
-      <p *ngIf="getMissingClaims().length > 0"
-        class="card-subtitle mb-4"> {{getMessage("edit_identity_html@addRequestedMissingClaim")}}</p>
-      <div *ngIf="getMissingClaims().length > 0"
-        class="table pb-1">
-        <!-- Add standard attribute -->
-        <div class="row mb-3"
-             [class.alert-danger]="isInConflict(newRequestedAttribute)">
-          <div class="col-sm">
-            <select class="custom-select"
-              [ngModel]="newRequestedAttribute.name"
-              (change)="setNewRequestedAttribute($event.target.value)">
-              <option value="" >{{ getMessage("edit_identity_html@selectAttribute") }}</option>
-              <option *ngFor="let claim of getMissingClaims()" value={{claim.name}}>
-                {{getDescription(claim)}}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm" style="display:flex;">
-            <div style="flex:1;">
-              <input *ngIf="!isClaimCred(newRequestedAttribute) && !isClaimCredentialRequested(newRequestedAttribute)"
-              placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value">
-              <select class="custom-select"
-                      *ngIf="isClaimCredentialRequested(newRequestedAttribute) && credentials.length > 0" (change)="newRequestedAttribute.value=$event.target.value">
-                <option [value]="getZeroId()" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
-                <option *ngFor="let claim of credentialValuesForClaim(newRequestedAttribute)" value={{claim.name}}>
-                {{claim.value}} <i>({{claim.name}})</i>
-                </option>
-              </select>
-              <div class="alert alert-warning"
-                *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
-                {{ getMessage("edit_identity_html@credentialRequired") }}
-              </div>
-            </div>
-            <div style="float:right;" *ngIf="credentials.length > 0">
-              <select class="custom-select"
-                [(ngModel)]="newRequestedAttribute.credential"
-
-                (change)="newRequestedAttribute.credential=$event.target.value; newRequestedAttribute.flag = ($event.target.value == '') ? '0' : '1'" >
-                <option *ngIf="!isClaimCredentialRequested(newRequestedAttribute)"
-                [value]="getZeroId()">{{ getMessage("edit_identity_html@selfissued") }}</option>
-                <option *ngFor="let cred of credentials" value={{cred.id}}>
-                {{getIssuerName(cred)}}
-                </option>
-              </select>
-            </div>
-          </div>
-          <div class="col-sm">
-            <button [disabled]="!canAddAttribute(newRequestedAttribute)" class="btn btn-primary"  (click)="saveAttribute(newRequestedAttribute)">
-              <span class="fa fa-plus"></span>
-            </button>
-          </div>
-        </div>
       </div>
 
       <hr >
