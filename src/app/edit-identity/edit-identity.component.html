@@ -111,18 +111,18 @@
 
       </div>
 
-      <p *ngIf="missingNonStandardClaims.length > 0"
+      <p *ngIf="getMissingClaims().length > 0"
         class="card-subtitle mb-4"> {{getMessage("edit_identity_html@addRequestedMissingClaim")}}</p>
-      <div *ngIf="missingNonStandardClaims.length > 0"
+      <div *ngIf="getMissingClaims().length > 0"
         class="table pb-1">
         <!-- Add standard attribute -->
         <div class="row mb-3"
              [class.alert-danger]="isInConflict(newRequestedAttribute)">
           <div class="col-sm">
             <select class="custom-select"
-              (change)="newRequestedAttribute.name=$event.target.value">
+              (change)="setNewRequestedAttribute($event.target.value)">
               <option value="" >{{ getMessage("edit_identity_html@selectAttribute") }}</option>
-              <option *ngFor="let claim of missingNonStandardClaims" value={{claim.name}}>
+              <option *ngFor="let claim of getMissingClaims()" value={{claim}}>
                 {{getDescription(claim)}}
               </option>
             </select>
@@ -140,7 +140,7 @@
               </select>
               <div class="alert alert-warning"
                 *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
-                {{ getMessage("edit_identity_html@credentialRequested") }}
+                {{ getMessage("edit_identity_html@credentialRequired") }}
               </div>
             </div>
             <div style="float:right;" *ngIf="credentials.length > 0">

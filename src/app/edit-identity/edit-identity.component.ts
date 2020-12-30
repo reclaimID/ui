@@ -779,4 +779,27 @@ export class EditIdentityComponent implements OnInit {
     claims = claims.concat(this.missingPhoneClaims);
     return claims;
   }
-}
+
+  getMissingClaims() {
+    var sClaims = this.getMissingStandardClaims();
+    let claims = [];
+    for (let sClaim of sClaims) {
+      if (this.isClaimRequested(sClaim)) {
+        claims.push(sClaim);
+      }
+    }
+    claims = claims.concat(this.missingNonStandardClaims);
+    return claims;
+  }
+
+  setNewRequestedAttribute(attr: Attribute) {
+    this.newRequestedAttribute.name = attr.name;
+    this.newRequestedAttribute.flag = '0';
+    if (this.isClaimCredentialRequested(attr)) {
+      this.newRequestedAttribute.flag = '1';
+      if (this.credentials.length > 0) {
+        this.newRequestedAttribute.credential = this.credentials[0].id;
+      }
+    }
+  }
+  }
