@@ -118,6 +118,8 @@ export class ImportAttributesComponent implements OnInit {
     this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
       console.log("Stored credential");
       this.reclaimService.getCredentials(this.identity).subscribe(creds => {
+        this.reclaimService.getAttributes(this.identity).subscribe(attrs => {
+
         var promises = [];
         var cred = null;
         for (var c of creds) {
@@ -141,9 +143,17 @@ export class ImportAttributesComponent implements OnInit {
           }
           //New attribute with name == claim name
           var attestation = new Attribute(attr.name, '', cred.id, attr.name, 'STRING', '1');
+          for (let existAttr of attrs) {
+            /* Overwrite existing */
+            if (existAttr.name !== attr.name) {
+              continue;
+            }
+            attestation.id = existAttr.id;
+            break;
+          }
+
           promises.push(
             from(this.reclaimService.addAttribute(this.identity, attestation)));
-          //promises = promises.concat (this.storeAttribute(attestation));
         }
         forkJoin(promises)
           .pipe(
@@ -151,7 +161,7 @@ export class ImportAttributesComponent implements OnInit {
               this.newIdProvider.url = '';
               this.newIdProvider.name = '';
               localStorage.removeItem('newIdProviderURL');
-              localStorage.removeItem("credentialCode");
+              localStorage.removeItem('credentialCode');
               this.inProgress = false;
               this.oauthService.logOut();
             })
@@ -162,6 +172,7 @@ export class ImportAttributesComponent implements OnInit {
           err => {
             console.log(err);
           });
+        });
       });
     });
   }

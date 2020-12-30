@@ -81,4 +81,16 @@ export class CredentialService {
         return this.http.get<any>(url);
     }
 
+    mapIssuerName(iss: string): string {
+      if (iss.includes("omejdn.nslab.ch")) {
+        return "Berner Fachhochschule";
+      } else if (iss.includes("as.aisec.fraunhofer.de")) {
+        return "Fraunhofer AISEC";
+      }
+      return iss;
+    }
+
+    getIssuerName(cred: Credential) {
+      return this.mapIssuerName(cred.name);
+    }
 }

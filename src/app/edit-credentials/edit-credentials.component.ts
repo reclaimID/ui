@@ -140,5 +140,8 @@ export class EditCredentialsComponent implements OnInit {
     return this.languageService.getMessage(key, sub);
   }
 
+  getIssuerName(cred: Credential): string {
+    return this.credentialService.getIssuerName(cred);
+  }
 
 }
