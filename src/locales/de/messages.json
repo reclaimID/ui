@@ -57,6 +57,7 @@
     "edit_identity_html@addRequestedMissingClaim": "Angefragte, aber fehlende Attribute:",
     "edit_identity_html@importInfo": "Deine E-Mail-Addresse deutet darauf hin, dass Du Attribute eines externen Kontos bei ``{{ISSUERNAME}}´´ importieren kannst.",
     "edit_identity_html@linkAccount": "Attribute importieren",
+    "edit_identity_html@credentialRequired": "Dieses Attribut benötigt eine Attestierung aber Du hast noch keine.",
     "edit_identity_html@standardScopes": "Die unten stehenden Attribute entsprechen den standard \"scopes\" von OpenID Connect:\n``profile'', ``email'', ``phone'' and ``address''.",
     "edit_identity_html@selfissued": "Selbst ausgestellt",
     "edit_identity_html@importFrom": "Von ``{{ISSUERNAME}}´´ importieren",
