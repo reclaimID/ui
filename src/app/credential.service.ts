@@ -4,6 +4,7 @@ import { Observable} from 'rxjs';
 import { AuthConfig } from 'angular-oauth2-oidc';
 import { IdProvider } from './idProvider';
 import { Scope } from './scope';
+import { Credential } from './credential';
 
 @Injectable()
 export class CredentialService {
