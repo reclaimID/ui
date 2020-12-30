@@ -30,10 +30,9 @@ export class EditIdentityComponent implements OnInit {
   credentials: Credential[] = [];
   credentialValues: {};
   newAttribute: Attribute;
-  newCredClaim: Attribute;
-  missingCred: Attribute[]  = [];
+  newStandardAttribute: Attribute;
+  newRequestedAttribute: Attribute;
   requestedClaims: Attribute[]  = [];
-  optionalClaims: Attribute[]  = [];
   webfingerEmail: string;
   authorizations: Authorization[] = [];
   emailNotFoundAlertClosed: boolean = true;
@@ -77,7 +76,8 @@ export class EditIdentityComponent implements OnInit {
     this.loadAuthorizationsFromLocalStorage();
     this.identity = new Identity('','');
     this.newAttribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '0');
-    this.newCredClaim = new Attribute('', '', this.getZeroId(), '', 'STRING', '1');
+    this.newStandardAttribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '0');
+    this.newRequestedAttribute = new Attribute('', '', this.getZeroId(), '', 'STRING', '0');
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.loadImportScopesFromLocalStorage()
     this.loadImportIdProviderFromLocalStorage();
@@ -136,6 +136,38 @@ export class EditIdentityComponent implements OnInit {
     return result;
   }
 
+  private getAttributePriority(attr: Attribute) {
+      if (this.oidcService.isStandardProfileClaim(attr)) {
+        return 5;
+      } else if (this.oidcService.isStandardEmailClaim(attr)) {
+        return 6;
+      } else if (this.oidcService.isStandardAddressClaim(attr)) {
+        return 4;
+      } else if (this.oidcService.isStandardPhoneClaim(attr)) {
+        return 3;
+      } else {
+        return 2;
+      }
+  }
+
+  sortAttributes(attrs: Attribute[]) {
+    return attrs.sort((a,b) => {
+      if (this.getAttributePriority(a) > this.getAttributePriority(b)) {
+        return -1;
+      }
+      if (this.getAttributePriority(a) < this.getAttributePriority(b)) {
+        return 1;
+      }
+      if (a.name > b.name) {
+        return -1;
+      }
+      if (a.name < b.name) {
+        return 1;
+      }
+      return 0;
+    });
+  }
+
   private updateAttributes() {
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
       this.existingProfileClaims = this.bootstrapClaimArray (this.oidcService.getStandardProfileClaims());
@@ -143,7 +175,7 @@ export class EditIdentityComponent implements OnInit {
       this.existingPhoneClaims = this.bootstrapClaimArray (this.oidcService.getStandardPhoneClaims());
       this.existingAddressClaims = this.bootstrapClaimArray (this.oidcService.getStandardAddressClaims());
       this.existingNonStandardClaims = [];
-      this.attributes = attributes.sort();
+      this.attributes = this.sortAttributes(attributes);
       for (let attr of this.attributes) {
         if (this.oidcService.isStandardProfileClaim(attr)) {
           this.existingProfileClaims = this.updateClaimArray(this.existingProfileClaims, attr);
@@ -163,6 +195,7 @@ export class EditIdentityComponent implements OnInit {
       this.existingAddressClaims = this.cleanupClaimArray(this.existingAddressClaims);
       this.updateMissingAttributes();
       this.validateEmailForImport();
+      this.resetAttributes();
     },
     err => {
       //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
@@ -170,6 +203,11 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
+  resetAttributes() {
+    this.resetStandardAttribute(this.newStandardAttribute);
+    this.resetAttribute(this.newAttribute);
+    this.resetAttribute(this.newRequestedAttribute);
+  }
 
   inOpenIdFlow() {
     return this.oidcService.inOpenIdFlow();
@@ -237,10 +275,10 @@ export class EditIdentityComponent implements OnInit {
 
   isInConflict(attribute: Attribute): boolean {
     /*return this.checkConflict(this.missingProfileClaims, attribute) ||
-           this.checkConflict(this.missingEmailClaims, attribute) ||
-           this.checkConflict(this.missingPhoneClaims, attribute) ||
-           this.checkConflict(this.missingAddressClaims, attribute) ||
-           this.checkConflict(this.missingNonStandardClaims, attribute) ||*/
+      this.checkConflict(this.missingEmailClaims, attribute) ||
+      this.checkConflict(this.missingPhoneClaims, attribute) ||
+      this.checkConflict(this.missingAddressClaims, attribute) ||
+      this.checkConflict(this.missingNonStandardClaims, attribute) ||*/
     return this.checkConflict(this.attributes, attribute);
   }
 
@@ -268,125 +306,62 @@ export class EditIdentityComponent implements OnInit {
     return this.canSaveAttributes();
   }
 
-  /**
-   * TODO fix newAttribute so that we can make
-   * it either attested or plain
-   */
+  isAttributeOk(attr: Attribute) {
+    return ((attr.name === '') &&
+            (attr.value === '')) &&
+            !this.isInConflict(attr);
+  }
+
   canSaveAttributes(): boolean {
     if (this.canAddAttribute(this.newAttribute)) {
       return true;
     }
-    return ((this.newAttribute.name === '') &&
-      (this.newAttribute.value === '')) &&
-      !this.isInConflict(this.newAttribute);
+    return this.isAttributeOk(this.newAttribute) &&
+      this.isAttributeOk(this.newStandardAttribute);
   }
 
-  saveIdentity() {
+  goBack() {
     localStorage.removeItem("userForCredential");
-    this.saveIdentityAttributes();
+    this.router.navigate(['/']);
   }
 
-  saveIdentityAttributes() {
-    if (this.newAttribute.flag === '0') {
-      /**
-       * Make sure credential is not still set
-       */
-      this.newAttribute.credential = '';
+  resetAttribute(attr: Attribute) {
+    attr.name = '';
+    attr.value = '';
+    attr.type = 'STRING';
+    attr.flag = '0';
+    attr.credential = this.getZeroId();
+  }
+
+  resetStandardAttribute(attr: Attribute) {
+    this.resetAttribute(attr);
+    for (let claim of this.attributes) {
+      if (claim.name === 'email') {
+        return;
+      }
     }
-    this.storeAttributes()
-      .pipe(
-        finalize(() => {
-          this.newAttribute.name = '';
-          this.newAttribute.value = '';
-          this.newAttribute.type = 'STRING';
-          this.newAttribute.flag = '0';
-          this.router.navigate(['/']);
-        }))
-      .subscribe(res => {
-        //FIXME success dialog/banner
-        this.updateAttributes();
-        this.router.navigate(['/']);
-      },
-      err => {
-        console.log(err);
-        //this.errorInfos.push("Failed to update identity ``" +  this.identityInEdit.name + "''");
-      });
+    attr.name = 'email';
   }
 
 
   deleteAttribute(attribute) {
     this.reclaimService.deleteAttribute(this.identity, attribute)
-      .subscribe(res => {
-        //FIXME info dialog
+    .subscribe(res => {
+      //FIXME info dialog
+      this.updateAttributes();
+    },
+    err => {
+      //this.errorInfos.push("Failed to delete attribute ``" + attribute.name + "''");
+      console.log(err);
+    });
+  }
+
+  saveAttribute(attr: Attribute) {
+    this.reclaimService.addAttribute(this.identity, attr)
+    .pipe(
+      finalize(() => {
         this.updateAttributes();
-      },
-      err => {
-        //this.errorInfos.push("Failed to delete attribute ``" + attribute.name + "''");
-        console.log(err);
-      });
-  }
-
-  private storeMissingAttributes(missing: Attribute[]): any {
-    const promises = [];
-    let i;
-    if (undefined !== missing) {
-      for (let attr of missing) {
-        if (attr.value === '') {
-          continue;
-        }
-        if (attr.flag === '0') {
-          attr.credential = '';
-        }
-        promises.push(from(this.reclaimService.addAttribute(
-          this.identity, attr)));
-      }
-    }
-    return promises;
-  }
-
-  /**
-   * FIXME incorporate attested attributes here!
-   */
-  private storeAttributes() {
-    var promises = [];
-    promises = promises.concat (this.storeMissingAttributes (this.missingProfileClaims));
-    promises = promises.concat (this.storeMissingAttributes (this.missingEmailClaims));
-    promises = promises.concat (this.storeMissingAttributes (this.missingPhoneClaims));
-    promises = promises.concat (this.storeMissingAttributes (this.missingAddressClaims));
-    promises = promises.concat (this.storeMissingAttributes (this.missingNonStandardClaims));
-
-    if (undefined !== this.attributes) {
-      for (let attr of this.attributes) {
-        /*if (attr.flag === '1') {
-          continue; //Is an credential
-        }*/
-        if (attr.flag === '0') {
-          attr.credential = '';
-        }
-        promises.push(
-          from(this.reclaimService.addAttribute(this.identity, attr)));
-      }
-    }
-    if (this.newAttribute.value !== '') {
-      promises.push(from(this.reclaimService.addAttribute(this.identity, this.newAttribute)));
-    }
-
-    return forkJoin(promises);
-  }
-
-  /**
-   * Adds a new attribute, stores all changes and STAYS on this page.
-   */
-  addAttribute() {
-    this.storeAttributes()
-      .pipe(
-        finalize(() => {
-          this.newAttribute.name = '';
-          this.newAttribute.value = '';
-          this.newAttribute.type = 'STRING';
-          this.newAttribute.flag = '0';
-          this.updateAttributes();
-        }))
+      }))
       .subscribe(res => {
         console.log(res);
       },
@@ -445,12 +420,12 @@ export class EditIdentityComponent implements OnInit {
       return false;
     }
     var requestedClaims = this.oidcService.getClaimNamesForRequest();
-    for (let claim in requestedClaims) {
+    for (let claim of requestedClaims) {
       if (this.isAttributeNameInList(claim, this.missingProfileClaims) ||
           this.isAttributeNameInList(claim, this.missingEmailClaims) ||
-          this.isAttributeNameInList(claim, this.missingAddressClaims) ||
-          this.isAttributeNameInList(claim, this.missingPhoneClaims) ||
-          this.isAttributeNameInList(claim, this.missingNonStandardClaims)) {
+            this.isAttributeNameInList(claim, this.missingAddressClaims) ||
+              this.isAttributeNameInList(claim, this.missingPhoneClaims) ||
+                this.isAttributeNameInList(claim, this.missingNonStandardClaims)) {
         return true;
       }
     }
@@ -555,8 +530,8 @@ export class EditIdentityComponent implements OnInit {
           var value = authInfo.split(": ")[1];
           newAuthorization[key] = value;
         }
-          )
-        this.authorizations.push(newAuthorization);
+                                  )
+                                  this.authorizations.push(newAuthorization);
       }
     });
   }
@@ -593,7 +568,7 @@ export class EditIdentityComponent implements OnInit {
       }
       this.scopes.push(scopeInterface)
     }
-      );
+                                                );
   }
 
   loadImportIdProviderFromLocalStorage(){
@@ -603,7 +578,7 @@ export class EditIdentityComponent implements OnInit {
 
   tryImportCredential() {
     if (this.importIdProvider.url === '') {
-        return;
+      return;
     }
     const loginOptions: LoginOptions = {
       customHashFragment: "?code="+localStorage.getItem("credentialCode") + "&state=" + localStorage.getItem("credentialState") + "&session_state="+ localStorage.getItem("credentialSession_State"),
@@ -657,8 +632,8 @@ export class EditIdentityComponent implements OnInit {
           for (let attr of cred.attributes) {
             if ((attr.name == "sub") ||
                 (attr.name == "nonce") ||
-                (attr.name == "email_verified") ||
-                (attr.name == "phone_number_verified")) {
+                  (attr.name == "email_verified") ||
+                    (attr.name == "phone_number_verified")) {
               continue;
             }
             //New attribute with name == claim name
@@ -673,7 +648,6 @@ export class EditIdentityComponent implements OnInit {
             }
             promises.push(
               from(this.reclaimService.addAttribute(this.identity, attestation)));
-          //promises = promises.concat (this.storeAttribute(attestation));
           }
           forkJoin(promises)
           .pipe(
@@ -711,7 +685,7 @@ export class EditIdentityComponent implements OnInit {
     if ((null == emailAddr) ||
         !emailAddr.includes('@')) {
       this.validImportEmail = false;
-      return;
+    return;
     }
     if (emailAddr.length - emailAddr.indexOf('@') < 4) {
       this.validImportEmail = false;
@@ -733,11 +707,11 @@ export class EditIdentityComponent implements OnInit {
     this.credentialService.getLink(account).subscribe (idProvider => {
       this.importIdProvider = new IdProvider((idProvider.links[0]).href,
                                              (idProvider.links[0]).href.split('//')[1]);
-      localStorage.setItem('importIdProviderURL', this.importIdProvider.url);
-      this.getImportScopes();
-      console.log(this.importIdProvider.url);
-      this.validImportEmail = true;
-      this.tryImportCredential();
+                                             localStorage.setItem('importIdProviderURL', this.importIdProvider.url);
+                                             this.getImportScopes();
+                                             console.log(this.importIdProvider.url);
+                                             this.validImportEmail = true;
+                                             this.tryImportCredential();
     },
     error => {
       this.validImportEmail = false;
@@ -786,7 +760,7 @@ export class EditIdentityComponent implements OnInit {
         this.scopes.push(scopeInterface)
       });
       localStorage.setItem("scopes", JSON.stringify(this.scopes));
-      });
+    });
   }
 
   getZeroId() {
@@ -802,8 +776,16 @@ export class EditIdentityComponent implements OnInit {
   credentialClaimSelected(claim: Attribute, eventValue) {
     claim.value = eventValue;
     if (claim.name !== '') {
-      this.addAttribute();
+      this.saveAttribute(claim);
     }
   }
 
+  getMissingStandardClaims() {
+    var claims = [];
+    claims = claims.concat(this.missingProfileClaims);
+    claims = claims.concat(this.missingEmailClaims);
+    claims = claims.concat(this.missingAddressClaims);
+    claims = claims.concat(this.missingPhoneClaims);
+    return claims;
+  }
 }
