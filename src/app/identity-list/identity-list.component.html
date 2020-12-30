@@ -123,9 +123,7 @@
       {{ getMessage("identity_list_html@noAttributes1") }} <a class="buttonlink"
         [routerLink]="['/edit-identity', identity.name]">{{ getMessage("identity_list_html@noAttributes2") }}</a>
     </div>
-    <div [hidden]="!isAnyRequestedClaimMissing(identity)" class="alert alert-warning alert-dismissible fade show"
-      [class.alert-warning]="!isAnyRequiredClaimMissing(identity)"
-      [class.alert-danger]="isAnyRequiredClaimMissing(identity)" role="alert">
+    <div [hidden]="!isAnyRequestedClaimMissing(identity)" class="alert alert-warning alert-dismissible fade show" role="alert">
       <span class="fa fa-openid"></span> {{ getMessage("identity_list_html@missingInformation") }}
       <ul>
         <li *ngIf="isProfileRequested() && isProfileMissing(identity)"><b>{{ getProfileDescription() }}</b></li>
@@ -133,7 +131,7 @@
         <li *ngIf="isPhoneRequested() && isPhoneMissing(identity)"><b>{{ getPhoneDescription() }}</b></li>
         <li *ngIf="isAddressRequested() && isAddressMissing(identity)"><b>{{ getAddressDescription() }}</b></li>
         <li *ngFor="let attr of getMissingClaims(identity)"><b>{{attr.name}}</b><i>
-            ({{ getMessage("identity_list_html@required") }})</i></li>
+            ({{ getMessage("identity_list_html@essential") }})</i></li>
       </ul>
       <button class="btn btn-primary" [routerLink]="['/edit-identity', identity.name]">
         <span class="fa fa-edit"></span> {{ getMessage("identity_list_html@editId") }}
@@ -180,7 +178,7 @@
       </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
-      <button [disabled]="!isClientVerified() || isAnyRequiredClaimMissing(identity)" (click)="loginIdentity(identity)"
+      <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)"
         class="btn btn-primary mr-1 openid-login">
         <span *ngIf="isClientVerified()">{{ getMessage("identity_list_html@shareInfo1") }} <i
             class="fa fa-openid text-primary"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
