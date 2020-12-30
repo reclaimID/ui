@@ -92,9 +92,6 @@ export class EditIdentityComponent implements OnInit {
               this.identity = ids[i];
               this.updateAttributes();
               this.updateCredentials();
-              /*if (this.importIdProvider.url !== '') {
-                this.tryImportCredential();
-              }*/
             }
           }
         });
@@ -274,11 +271,6 @@ export class EditIdentityComponent implements OnInit {
   }
 
   isInConflict(attribute: Attribute): boolean {
-    /*return this.checkConflict(this.missingProfileClaims, attribute) ||
-      this.checkConflict(this.missingEmailClaims, attribute) ||
-      this.checkConflict(this.missingPhoneClaims, attribute) ||
-      this.checkConflict(this.missingAddressClaims, attribute) ||
-      this.checkConflict(this.missingNonStandardClaims, attribute) ||*/
     return this.checkConflict(this.attributes, attribute);
   }
 
@@ -487,11 +479,14 @@ export class EditIdentityComponent implements OnInit {
     return this.credentials.length > 0
   }
 
-  //FIXME credentials need an issuer field
-  getIssuer(attribute: Attribute) {
+  getImportIssuerName(): string {
+    return this.credentialService.mapIssuerName(this.importIdProvider.name);
+  }
+
+  getIssuerNameForAttribute(attribute: Attribute): string {
     for (let i = 0; i < this.credentials.length; i++) {
       if (this.credentials[i].id == attribute.credential) {
-        return this.mapIssuer(this.credentials[i].issuer);
+        return this.getIssuerName(this.credentials[i]);
       }
     }
   }
@@ -655,7 +650,8 @@ export class EditIdentityComponent implements OnInit {
               this.importIdProvider.url = '';
               this.importIdProvider.name = '';
               localStorage.removeItem('importIdProviderURL');
-              localStorage.removeItem("credentialCode");
+              localStorage.removeItem('credentialCode');
+              localStorage.removeItem('importTargetComponent');
               this.importInProgress = false;
               this.oauthService.logOut();
               this.updateAttributes();
@@ -719,27 +715,15 @@ export class EditIdentityComponent implements OnInit {
     });
   }
 
-  mapIssuer(iss: string): string {
-    if (iss.includes("omejdn.nslab.ch")) {
-      return "Berner Fachhochschule";
-    } else if (iss.includes("as.aisec.fraunhofer.de")) {
-      return "Fraunhofer AISEC";
-    }
-    return iss;
-  }
 
-
-  getImportIssuerName() {
-    return this.mapIssuer(this.importIdProvider.name);
-  }
-
-  getIssuerName(cred: Credential) {
-    return this.mapIssuer(cred.name);
+  getIssuerName(cred: Credential): string {
+    return this.credentialService.getIssuerName(cred);
   }
 
   import(){
     this.configureOauthService();
     this.oauthService.logOut(); //Make sure we logout before login
+    localStorage.setItem('importTargetComponent', 'edit-identity');
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 

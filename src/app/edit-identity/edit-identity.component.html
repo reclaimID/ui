@@ -158,11 +158,16 @@
         </div>
       </div>
 
-      <hr>
-
+      <hr >
       <!-- All existing attributes -->
-      <h3 class="card-subtitle mb-4"> {{getMessage("edit_identity_html@storedAttributes")}}</h3>
-      <div class="table pb-1">
+      <div *ngIf="attributes.length == 0"
+        class="alert alert-primary">
+        {{ getMessage('identity_list_html@noAttributes1') }}
+      </div>
+      <h3 *ngIf="attributes.length > 0"
+        class="card-subtitle mb-4"> {{getMessage("edit_identity_html@storedAttributes")}}</h3>
+      <div *ngIf="attributes.length > 0"
+        class="table pb-1">
           <div class="row mb-3" [class.openid]="inOpenIdFlow()"
               [class.inEdit]="claim == claimInEdit"
               [class.text-primary]="isClaimRequested(claim)"
@@ -185,7 +190,7 @@
               </div>
               <div style="flex:1;" *ngIf="claim != claimInEdit">
                 <span *ngIf="!isClaimCred(claim) && (claim != claimInEdit)">{{ claim.value }} <i class="text-secondary" style="float:right;"><i class="fa fa-certificate"></i> {{ getMessage("edit_identity_html@selfissued") }}</i></span>
-                <span *ngIf="isClaimCred(claim) && (claim != claimInEdit)"  >{{ getCredValue(claim) }} <i class="text-primary" style="float:right;"><i class="fa fa-certificate"></i> {{ getIssuer(claim) }}</i></span>
+                <span *ngIf="isClaimCred(claim) && (claim != claimInEdit)"  >{{ getCredValue(claim) }} <i class="text-primary" style="float:right;"><i class="fa fa-certificate"></i> {{ getIssuerNameForAttribute(claim) }}</i></span>
               </div>
               <div *ngIf="claim == claimInEdit" style="float:right;">
                 <select class="custom-select"

@@ -23,8 +23,6 @@
     "authorization_request_html@cancelRequest": "Cancel verification request",
     "authorization_request_html@requestCancelled": "Request cancelled",
     "import_attributes_html@import": "Import",
-    "import_attributes_html@importFor": "Import attributes for",
-    "import_attributes_html@confirm": "Confirm",
     "edit_authorizations_html@manageAuths": "Manage authorizations for",
     "edit_authorizations_html@authEntity": "Authorized Entity:",
     "edit_authorizations_html@sharedAttributes": "Shared attributes:",
