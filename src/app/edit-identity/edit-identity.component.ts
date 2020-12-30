@@ -797,7 +797,7 @@ export class EditIdentityComponent implements OnInit {
     this.newRequestedAttribute.name = attrName;
     this.newRequestedAttribute.flag = '0';
     this.newRequestedAttribute.value = '';
-    if (this.isClaimCredentialRequested(this.newRequestedAttribute.name)) {
+    if (this.isClaimCredentialRequested(this.newRequestedAttribute)) {
       this.newRequestedAttribute.flag = '1';
       if (this.credentials.length > 0) {
         this.newRequestedAttribute.credential = this.credentials[0].id;
