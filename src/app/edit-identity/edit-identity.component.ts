@@ -91,7 +91,6 @@ export class EditIdentityComponent implements OnInit {
             if (ids[i].name == p['id']) {
               this.identity = ids[i];
               this.updateAttributes();
-              this.updateCredentials();
             }
           }
         });
@@ -167,36 +166,39 @@ export class EditIdentityComponent implements OnInit {
 
   private updateAttributes() {
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
-      this.existingProfileClaims = this.bootstrapClaimArray (this.oidcService.getStandardProfileClaims());
-      this.existingEmailClaims = this.bootstrapClaimArray (this.oidcService.getStandardEmailClaims());
-      this.existingPhoneClaims = this.bootstrapClaimArray (this.oidcService.getStandardPhoneClaims());
-      this.existingAddressClaims = this.bootstrapClaimArray (this.oidcService.getStandardAddressClaims());
-      this.existingNonStandardClaims = [];
-      this.attributes = this.sortAttributes(attributes);
-      for (let attr of this.attributes) {
-        if (this.oidcService.isStandardProfileClaim(attr)) {
-          this.existingProfileClaims = this.updateClaimArray(this.existingProfileClaims, attr);
-        } else if (this.oidcService.isStandardEmailClaim(attr)) {
-          this.existingEmailClaims = this.updateClaimArray(this.existingEmailClaims, attr);
-        } else if (this.oidcService.isStandardAddressClaim(attr)) {
-          this.existingAddressClaims = this.updateClaimArray(this.existingAddressClaims, attr);
-        } else if (this.oidcService.isStandardPhoneClaim(attr)) {
-          this.existingPhoneClaims = this.updateClaimArray(this.existingPhoneClaims, attr);
-        } else {
-          this.existingNonStandardClaims.push(attr);
+      this.reclaimService.getCredentials(this.identity).subscribe(credentials => {
+        this.credentials = credentials;
+        this.existingProfileClaims = this.bootstrapClaimArray (this.oidcService.getStandardProfileClaims());
+        this.existingEmailClaims = this.bootstrapClaimArray (this.oidcService.getStandardEmailClaims());
+        this.existingPhoneClaims = this.bootstrapClaimArray (this.oidcService.getStandardPhoneClaims());
+        this.existingAddressClaims = this.bootstrapClaimArray (this.oidcService.getStandardAddressClaims());
+        this.existingNonStandardClaims = [];
+        this.attributes = this.sortAttributes(attributes);
+        for (let attr of this.attributes) {
+          if (this.oidcService.isStandardProfileClaim(attr)) {
+            this.existingProfileClaims = this.updateClaimArray(this.existingProfileClaims, attr);
+          } else if (this.oidcService.isStandardEmailClaim(attr)) {
+            this.existingEmailClaims = this.updateClaimArray(this.existingEmailClaims, attr);
+          } else if (this.oidcService.isStandardAddressClaim(attr)) {
+            this.existingAddressClaims = this.updateClaimArray(this.existingAddressClaims, attr);
+          } else if (this.oidcService.isStandardPhoneClaim(attr)) {
+            this.existingPhoneClaims = this.updateClaimArray(this.existingPhoneClaims, attr);
+          } else {
+            this.existingNonStandardClaims.push(attr);
+          }
         }
-      }
-      this.existingProfileClaims = this.cleanupClaimArray(this.existingProfileClaims);
-      this.existingEmailClaims = this.cleanupClaimArray(this.existingEmailClaims);
-      this.existingPhoneClaims = this.cleanupClaimArray(this.existingPhoneClaims);
-      this.existingAddressClaims = this.cleanupClaimArray(this.existingAddressClaims);
-      this.updateMissingAttributes();
-      this.validateEmailForImport();
-      this.resetAttributes();
-    },
-    err => {
-      //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
-      console.log(err);
+        this.existingProfileClaims = this.cleanupClaimArray(this.existingProfileClaims);
+        this.existingEmailClaims = this.cleanupClaimArray(this.existingEmailClaims);
+        this.existingPhoneClaims = this.cleanupClaimArray(this.existingPhoneClaims);
+        this.existingAddressClaims = this.cleanupClaimArray(this.existingAddressClaims);
+        this.updateMissingAttributes();
+        this.validateEmailForImport();
+        this.resetAttributes();
+      },
+      err => {
+        //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
+        console.log(err);
+      });
     });
   }
 
@@ -661,7 +663,6 @@ export class EditIdentityComponent implements OnInit {
               this.importInProgress = false;
               this.oauthService.logOut();
               this.updateAttributes();
-              this.updateCredentials();
             })
           ).subscribe(res => {
             console.log("Finished attribute import.");
