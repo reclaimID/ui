@@ -120,9 +120,10 @@
              [class.alert-danger]="isInConflict(newRequestedAttribute)">
           <div class="col-sm">
             <select class="custom-select"
+              [ngModel]="newRequestedAttribute.name"
               (change)="setNewRequestedAttribute($event.target.value)">
               <option value="" >{{ getMessage("edit_identity_html@selectAttribute") }}</option>
-              <option *ngFor="let claim of getMissingClaims()" value={{claim}}>
+              <option *ngFor="let claim of getMissingClaims()" value={{claim.name}}>
                 {{getDescription(claim)}}
               </option>
             </select>

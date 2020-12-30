@@ -792,10 +792,12 @@ export class EditIdentityComponent implements OnInit {
     return claims;
   }
 
-  setNewRequestedAttribute(attr: Attribute) {
-    this.newRequestedAttribute.name = attr.name;
+  setNewRequestedAttribute(attrName: string) {
+    this.resetAttribute(this.newRequestedAttribute);
+    this.newRequestedAttribute.name = attrName;
     this.newRequestedAttribute.flag = '0';
-    if (this.isClaimCredentialRequested(attr)) {
+    this.newRequestedAttribute.value = '';
+    if (this.isClaimCredentialRequested(this.newRequestedAttribute.name)) {
       this.newRequestedAttribute.flag = '1';
       if (this.credentials.length > 0) {
         this.newRequestedAttribute.credential = this.credentials[0].id;
