@@ -138,10 +138,10 @@
                 {{claim.value}} <i>({{claim.name}})</i>
                 </option>
               </select>
-            </div>
-            <div class="alert alert-warning"
-              *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
-              {{ getMessage("edit_identity_html@selfissued") }}
+              <div class="alert alert-warning"
+                *ngIf="(credentials.length == 0) && isClaimCredentialRequested(newRequestedAttribute)">
+                {{ getMessage("edit_identity_html@credentialRequested") }}
+              </div>
             </div>
             <div style="float:right;" *ngIf="credentials.length > 0">
               <select class="custom-select"
