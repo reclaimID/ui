@@ -33,7 +33,7 @@
           <input placeholder="user@example.com" [(ngModel)]="webfingerEmail" (keyup)="validateEmail()">
         </div>
         <button class="btn btn-primary fhg-link" (click)="import()" [disabled]="!validEmail">
-          <span class="fa fa-download"></span> {{getMessage("import_attributes_html@import")}}
+          <span class="fa fa-download"></span> {{getMessage("import")}}
         </button>
         <i *ngIf="discoveringIdProvider" class="ml-1 fa fa-spinner fa-spin"></i>
       </div>

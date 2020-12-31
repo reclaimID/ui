@@ -6,11 +6,31 @@
     </div>
   </div>
 
-  <div class="card-body text-center fa-4x" *ngIf="importInProgress">
-    <i class="fa fa-spinner fa-spin"></i>
-    Please wait
+  <div class="card-body" *ngIf="importInProgress && attributesToOverwriteOnImport.length > 0">
+      <div class="alert alert-warning">{{ getMessage("edit_identity_html@importOverwriteInfo") }}</div>
+      <div *ngFor="let overwriteInfo of attributesToOverwriteOnImport" style="margin: 1em" (click)="overwriteInfo[1] = !overwriteInfo[1]">
+        <i [className]="overwriteInfo[1] ? 'fa fa-toggle-on mr-2 text-primary' : 'fa fa-toggle-off mr-2'"></i>
+        <b>{{ getDescription(overwriteInfo[0]) }}</b>
+        <span [className]="!overwriteInfo[1] ? 'ml-4 text-primary' : 'text-secondary ml-4'">{{ getAttrValue(getAttributeByName(overwriteInfo[0].name)) }}</span> <i class="ml-1" *ngIf="isClaimCred(getAttributeByName(overwriteInfo[0].name))">({{getMessage("attested")}})</i>  <i class="fa fa-arrow-right mr-2 ml-2"></i> <span [className]="overwriteInfo[1] ? 'text-primary' : 'text-secondary'">{{ getAttrValue(overwriteInfo[0]) }}</span> <i class="ml-1" *ngIf="isClaimCred(overwriteInfo[0])">({{getMessage("attested")}})</i>
+      </div>
+      <button class="ml-1 btn btn-primary"
+           (click)="toggleAllOverwriteInfo()">
+        <b *ngIf="!allSetToOverride()">{{ getMessage("selectAll") }}</b>
+        <b *ngIf="allSetToOverride()">{{ getMessage("deselectAll") }}</b>
+      </button><br/>
+      <button class="ml-1 btn btn-primary" (click)="proceedAttributeImport()">
+        <span class="fa fa-download"></span> {{getMessage("import") }}
+      </button>
+      <button class="ml-1 btn btn-primary" (click)="abortAttributeImport()">
+        <span class="fa fa-download"></span> {{getMessage("Back") }}
+      </button>
   </div>
-  <div *ngIf="validImportEmail" class="col-sm alert alert-primary alert-dismissible fade show my-2" role="alert" >
+  <div class="text-center card-body" *ngIf="importInProgress && attributesToOverwriteOnImport.length == 0">
+    <div class="text-center fa fa-4x">
+      <i *ngIf="attributesToOverwriteOnImport.length == 0" class="fa fa-cog fa-spin"></i>
+    </div>
+  </div>
+  <div *ngIf="validImportEmail && !importInProgress" class="col-sm alert alert-primary alert-dismissible fade show my-2" role="alert" >
     {{getMessage("edit_identity_html@importInfo", {ISSUERNAME: getImportIssuerName()})}}<br/>
               <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
               <br/>
