@@ -52,6 +52,8 @@ export class EditIdentityComponent implements OnInit {
 
   //Attribute import
   importIdProvider: IdProvider;
+  attributesToImport: Attribute[] = [];
+  attributesToOverwriteOnImport: any[] = [];
   validImportEmail: boolean = false;
   importInProgress: boolean = false;
   scopes: Scope[];
@@ -81,6 +83,7 @@ export class EditIdentityComponent implements OnInit {
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.loadImportScopesFromLocalStorage()
     this.loadImportIdProviderFromLocalStorage();
+    this.importInProgress = true;
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -612,14 +615,98 @@ export class EditIdentityComponent implements OnInit {
     }
   }
 
+  abortAttributeImport() {
+    this.importIdProvider.url = '';
+    this.importIdProvider.name = '';
+    this.attributesToImport = [];
+    this.attributesToOverwriteOnImport = [];
+    localStorage.removeItem('importIdProviderURL');
+    localStorage.removeItem('credentialCode');
+    localStorage.removeItem('importTargetComponent');
+    this.importInProgress = false;
+    this.oauthService.logOut();
+    this.updateAttributes();
+  }
+
+  proceedAttributeImport() {
+    let promises = [];
+    for (let attestation of this.attributesToImport) {
+      let skip = false;
+      for (let overwriteAttrInfo of this.attributesToOverwriteOnImport) {
+        if ((overwriteAttrInfo[0].name === attestation.name) &&
+            !overwriteAttrInfo[1]) {
+          skip = true;
+        }
+      }
+      if (!skip) {
+        promises.push(
+          from(this.reclaimService.addAttribute(this.identity, attestation)));
+      }
+    }
+    forkJoin(promises)
+    .pipe(
+      finalize(() => {
+        this.importIdProvider.url = '';
+        this.importIdProvider.name = '';
+        this.attributesToImport = [];
+        this.attributesToOverwriteOnImport = [];
+        localStorage.removeItem('importIdProviderURL');
+        localStorage.removeItem('credentialCode');
+        localStorage.removeItem('importTargetComponent');
+        this.importInProgress = false;
+        this.oauthService.logOut();
+        this.updateAttributes();
+      })
+    ).subscribe(res => {
+      console.log("Finished attribute import.");
+    },
+    err => {
+      console.log(err);
+    });
+
+  }
+
+  toggleAllOverwriteInfo() {
+    let target = !this.allSetToOverride();
+    for (let overwriteInfo of this.attributesToOverwriteOnImport) {
+      overwriteInfo[1] = target;
+    }
+  }
+
+  allSetToOverride() {
+    for (let overwriteInfo of this.attributesToOverwriteOnImport) {
+      if (!overwriteInfo[1]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  getAttrValue(attr: Attribute) {
+    if (attr.credential === this.getZeroId()) {
+      return attr.value;
+    }
+    return this.getCredValue(attr);
+  }
+
+  getAttributeByName(name: string) {
+    for (let attr of this.attributes) {
+      if (attr.name === name) {
+        return attr;
+      }
+    }
+    return null;
+  }
+
   importAttributesFromCredential() {
     this.importInProgress = true;
     this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
       console.log("Stored credential");
       this.reclaimService.getCredentials(this.identity).subscribe(creds => {
+        this.credentials = creds;
         this.reclaimService.getAttributes(this.identity).subscribe(attrs => {
-          var promises = [];
           var cred = null;
+          this.attributesToImport = [];
           for (var c of creds) {
             if (c.name == this.newCredential.name) {
               cred = c;
@@ -646,36 +733,24 @@ export class EditIdentityComponent implements OnInit {
               if (existAttr.name !== attr.name) {
                 continue;
               }
+              console.log("Found conflicting attribute " + attr.name);
+              this.attributesToOverwriteOnImport.push([attestation, false]);
               attestation.id = existAttr.id;
               break;
             }
-            promises.push(
-              from(this.reclaimService.addAttribute(this.identity, attestation)));
+            this.attributesToImport.push(attestation);
           }
-          forkJoin(promises)
-          .pipe(
-            finalize(() => {
-              this.importIdProvider.url = '';
-              this.importIdProvider.name = '';
-              localStorage.removeItem('importIdProviderURL');
-              localStorage.removeItem('credentialCode');
-              localStorage.removeItem('importTargetComponent');
-              this.importInProgress = false;
-              this.oauthService.logOut();
-              this.updateAttributes();
-            })
-          ).subscribe(res => {
-            console.log("Finished attribute import.");
-          },
-          err => {
-            console.log(err);
-          });
+          if (this.attributesToOverwriteOnImport.length > 0) {
+            console.log("Wait for user input");
+            return;
+          }
+          this.proceedAttributeImport();
         });
       });
     });
   }
 
-  validateEmailForImport() {
+  private validateEmailForImport() {
     var emailAddr = null;
     for (let attr of this.attributes) {
       if (attr.name !== 'email') {
