@@ -584,6 +584,7 @@ export class EditIdentityComponent implements OnInit {
 
   tryImportCredential() {
     if (this.importIdProvider.url === '') {
+      this.importInProgress = false;
       return;
     }
     const loginOptions: LoginOptions = {
@@ -666,20 +667,10 @@ export class EditIdentityComponent implements OnInit {
 
   }
 
-  toggleAllOverwriteInfo() {
-    let target = !this.allSetToOverride();
+  setAllOverwriteInfo(target: boolean) {
     for (let overwriteInfo of this.attributesToOverwriteOnImport) {
       overwriteInfo[1] = target;
     }
-  }
-
-  allSetToOverride() {
-    for (let overwriteInfo of this.attributesToOverwriteOnImport) {
-      if (!overwriteInfo[1]) {
-        return false;
-      }
-    }
-    return true;
   }
 
   getAttrValue(attr: Attribute) {
@@ -752,6 +743,7 @@ export class EditIdentityComponent implements OnInit {
 
   private validateEmailForImport() {
     var emailAddr = null;
+    this.importInProgress = false;
     for (let attr of this.attributes) {
       if (attr.name !== 'email') {
         continue;
@@ -769,6 +761,7 @@ export class EditIdentityComponent implements OnInit {
       this.validImportEmail = false;
       return;
     }
+    this.importInProgress = true;
     this.discoverIdProvider(emailAddr);
   }
 
@@ -792,6 +785,7 @@ export class EditIdentityComponent implements OnInit {
                                              this.tryImportCredential();
     },
     error => {
+      this.importInProgress = false;
       this.validImportEmail = false;
       console.log (error);
     });
