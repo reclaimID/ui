@@ -50,11 +50,11 @@
         </button>
       </div>
     </div>
+    <button class="ml-1 btn btn-primary" (click)="abortAttributeImport()">
+      <span class="fa fa-times"></span> {{getMessage("Abort") }}
+    </button>
     <button class="ml-1 btn btn-primary" (click)="proceedAttributeImport()">
       <span class="fa fa-download"></span> {{getMessage("import") }}
-    </button>
-    <button class="ml-1 btn btn-primary" (click)="abortAttributeImport()">
-      <span class="fa fa-download"></span> {{getMessage("Back") }}
     </button>
   </div>
   <div class="text-center card-body" *ngIf="importInProgress && attributesToOverwriteOnImport.length == 0">
