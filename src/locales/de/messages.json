@@ -69,6 +69,7 @@
     "edit_identity_html@infoMissingClaims": "Die Website hat die folgenden Attribute angefragt. Du bist nicht verpflichtet diese Attribute bereitzustellen. Die Webseite könnte jedoch die Informationen im Rahmen einer Dienstleistung benötigen.",
     "edit_identity_html@selfissued": "Selbst ausgestellt",
     "edit_identity_html@importFrom": "Von ``{{ISSUERNAME}}´´ importieren",
+    "import_attributes_html@importFor": "Attribute für {{IDENTITYNAME}} importieren",
     "edit_identity_html@unset": "Nicht gesetzt",
     "edit_identity_html@attribute": "Attribut",
     "edit_identity_html@selectAttribute": "<Attributsnamen auswählen>",

@@ -294,7 +294,7 @@
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="goBack()">
-        <span class="fa fa-save"></span> {{ getMessage("Back") }}
+        <span class="fa fa-arrow-left"></span> {{ getMessage("Back") }}
       </button>
       <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'">
         <span class="fab fa-openid"></span>
