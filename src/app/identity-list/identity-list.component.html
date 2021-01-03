@@ -29,7 +29,7 @@
     <div class="alert alert-danger show" role="alert">
       <b>{{getMessage("authorization_request_html@authFailed")}}</b><br />
       <button class="btn btn-primary mt-4" *ngIf="!isClientVerified()" (click)="retryVerify();">
-        <span class="fa fa-openid"></span> {{getMessage("authorization_request_html@retry")}}
+        <span class="fab fa-openid"></span> {{getMessage("authorization_request_html@retry")}}
       </button>
     </div>
   </div>
