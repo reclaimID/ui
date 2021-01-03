@@ -671,6 +671,7 @@ export class EditIdentityComponent implements OnInit {
     for (let overwriteInfo of this.attributesToOverwriteOnImport) {
       overwriteInfo[1] = target;
     }
+    this.proceedAttributeImport();
   }
 
   getAttrValue(attr: Attribute) {
@@ -710,6 +711,7 @@ export class EditIdentityComponent implements OnInit {
           }
           console.log("Trying to import " + cred.attributes.length + " attributes");
 
+          var needsUserInteraction = false;
           for (let attr of cred.attributes) {
             if ((attr.name == "sub") ||
                 (attr.name == "nonce") ||
@@ -725,13 +727,21 @@ export class EditIdentityComponent implements OnInit {
                 continue;
               }
               console.log("Found conflicting attribute " + attr.name);
-              this.attributesToOverwriteOnImport.push([attestation, false]);
+              this.attributesToOverwriteOnImport.push([attestation, !this.isClaimCred(existAttr)]);
               attestation.id = existAttr.id;
+              /* If the new attribute is attested, and the old wasn't, we
+               * override by default. Otherwise, we need to have the user
+               * make a decision
+               */
+              if (this.isClaimCred(existAttr)) {
+                needsUserInteraction = true;
+              }
               break;
             }
             this.attributesToImport.push(attestation);
           }
-          if (this.attributesToOverwriteOnImport.length > 0) {
+          if ((this.attributesToOverwriteOnImport.length > 0) &&
+              needsUserInteraction) {
             console.log("Wait for user input");
             return;
           }
