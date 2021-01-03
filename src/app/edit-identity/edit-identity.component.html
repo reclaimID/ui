@@ -235,7 +235,7 @@
                  [class.alert-danger]="newAttribute.name === claim.name"
                  *ngFor="let claim of attributes">
               <div class="col-sm">
-                <i *ngIf="isClaimRequested(claim)" class="fa fa-openid"></i><b> {{ getDescription(claim) }}</b>
+                <i *ngIf="isClaimRequested(claim)" class="fab fa-openid"></i><b> {{ getDescription(claim) }}</b>
               </div>
               <div class="col-sm" style="display:flex;">
                 <div style="flex:1;" *ngIf="claim == claimInEdit">
@@ -297,11 +297,11 @@
         <span class="fa fa-save"></span> {{ getMessage("Back") }}
       </button>
       <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'">
-        <span class="fa fa-openid"></span>
+        <span class="fab fa-openid"></span>
         {{ getMessage("edit_identity_html@manageAuths") }}
       </button>
       <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/edit-credentials', identity.name]" [style.float]="'right'">
-        <span class="fa fa-openid"></span>
+        <span class="fab fa-openid"></span>
         {{ getMessage("edit_identity_html@manageCreds") }}
       </button>
       <button *ngIf="!inOpenIdFlow() && isExperimental()" class="btn btn-primary" [routerLink]="['/import-attributes', identity.name ]" [style.float]="'right'">
