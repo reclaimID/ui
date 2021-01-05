@@ -1,2 +1,7 @@
-<div class="logo"><img src="assets/reclaim_icon.png"/><button class="btn btn-primary" [routerLink]="['/config']" style="float:right;"><i class="fa fa-cog"></i></button></div>
+<div class="logo">
+  <img src="assets/reclaim_icon.png"/>
+  <button class="btn btn-primary" [routerLink]="['/config']" style="float:right;">
+    <i class="fa fa-cog"></i> {{ getMessage("Settings") }}
+  </button>
+</div>
 <router-outlet></router-outlet>
