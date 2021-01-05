@@ -52,6 +52,19 @@ export class OpenIdService {
     this.inOidcFlow = this.params['redirect_uri'] !== undefined;
   }
 
+  getState() {
+    return JSON.stringify(this.params);
+  }
+
+  loadState(state_string: string) {
+    try {
+      let state = JSON.parse(state_string);
+      this.parseRouteParams(state);
+    } catch(e) {
+      console.log("ERROR: unable to load state " + state_string + " " + e);
+    }
+  }
+
   private buildAuthorizeRedirect(): any {
     var redirectUri = this.config.get().apiUrl + '/openid/authorize';
     redirectUri += '?client_id=' + this.params['client_id'];

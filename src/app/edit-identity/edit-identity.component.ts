@@ -84,6 +84,10 @@ export class EditIdentityComponent implements OnInit {
     this.loadImportScopesFromLocalStorage()
     this.loadImportIdProviderFromLocalStorage();
     this.importInProgress = true;
+    let oidcState = localStorage.getItem('oidcRequestState');
+    if (oidcState) {
+      this.oidcService.loadState(oidcState);
+    }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -623,6 +627,7 @@ export class EditIdentityComponent implements OnInit {
     this.attributesToOverwriteOnImport = [];
     localStorage.removeItem('importIdProviderURL');
     localStorage.removeItem('credentialCode');
+    localStorage.removeItem('oidcRequestState');
     localStorage.removeItem('importTargetComponent');
     this.importInProgress = false;
     this.oauthService.logOut();
@@ -653,6 +658,7 @@ export class EditIdentityComponent implements OnInit {
         this.attributesToOverwriteOnImport = [];
         localStorage.removeItem('importIdProviderURL');
         localStorage.removeItem('credentialCode');
+        localStorage.removeItem('oidcRequestState');
         localStorage.removeItem('importTargetComponent');
         this.importInProgress = false;
         this.oauthService.logOut();
@@ -810,6 +816,10 @@ export class EditIdentityComponent implements OnInit {
     this.configureOauthService();
     this.oauthService.logOut(); //Make sure we logout before login
     localStorage.setItem('importTargetComponent', 'edit-identity');
+    /**
+     * Save current openid request state (if any)
+     */
+    localStorage.setItem('oidcRequestState', this.oidcService.getState());
     this.oauthService.loadDiscoveryDocumentAndLogin();
   }
 
