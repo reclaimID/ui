@@ -24,11 +24,7 @@ export class CredentialService {
         var redirectUri;
         if (window.location.href.includes('localhost')){
             const user = localStorage.getItem('userForCredential');
-            if (window.location.href.includes('import-attributes')){
-              redirectUri = 'http://localhost:4200/edit-identity/' + user;
-            } else {
-              redirectUri = 'http://localhost:4200/edit-identity/' + user;
-            }
+            redirectUri = 'http://localhost:4200/edit-identity/' + user;
         }
         else {
             redirectUri = "https://ui.reclaim";
