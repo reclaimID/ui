@@ -98,9 +98,11 @@
             <div class="col-sm" style="display:flex;">
               <div style="flex:1;">
                 <input *ngIf="!isClaimCred(newRequestedAttribute) && !isClaimCredentialRequested(newRequestedAttribute)"
-                   placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value">
+                   placeholder="{{ getMessage('Value') }}" [(ngModel)]="newRequestedAttribute.value"
+                   (keyup.enter)="canAddAttribute(newRequestedAttribute) && saveAttribute(newRequestedAttribute)">
                 <select class="custom-select"
-                        *ngIf="isClaimCredentialRequested(newRequestedAttribute) && credentials.length > 0" (change)="newRequestedAttribute.value=$event.target.value">
+                        *ngIf="isClaimCredentialRequested(newRequestedAttribute) && credentials.length > 0"
+                        (change)="newRequestedAttribute.value=$event.target.value">
                   <option [value]="getZeroId()" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
                   <option *ngFor="let claim of credentialValuesForClaim(newRequestedAttribute)" value={{claim.name}}>
                   {{claim.value}} <i>({{claim.name}})</i>
@@ -152,7 +154,8 @@
               </div>
               <div class="col-sm" style="display:flex;">
                 <div style="flex:1;">
-                  <input *ngIf="!isClaimCred(newStandardAttribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="newStandardAttribute.value">
+                  <input *ngIf="!isClaimCred(newStandardAttribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="newStandardAttribute.value"
+                  (keyup.enter)="canAddAttribute(newStandardAttribute) && saveAttribute(newStandardAttribute)">
                   <select class="custom-select"
                           *ngIf="newStandardAttribute.credential !== '' && isClaimCred(newStandardAttribute)" (change)="newStandardAttribute.value=$event.target.value">
                     <option value="" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
@@ -186,11 +189,15 @@
             <div class="row mb-3"
                  [class.alert-danger]="isInConflict(newAttribute)">
               <div class="col-sm">
-                <input [class.text-danger]="!attributeNameValid(newAttribute)" placeholder="{{ getMessage('edit_identity_html@name') }}" [(ngModel)]="newAttribute.name">
+                <input [class.text-danger]="!attributeNameValid(newAttribute)"
+                placeholder="{{ getMessage('edit_identity_html@name') }}" [(ngModel)]="newAttribute.name"
+                (keyup.enter)="canAddAttribute(newAttribute) && saveAttribute(newAttribute)">
               </div>
               <div class="col-sm" style="display:flex;">
                 <div style="flex:1;">
-                  <input *ngIf="!isClaimCred(newAttribute)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="newAttribute.value">
+                  <input *ngIf="!isClaimCred(newAttribute)" placeholder="{{ getMessage('Value') }}"
+                  [(ngModel)]="newAttribute.value"
+                  (keyup.enter)="canAddAttribute(newAttribute) && saveAttribute(newAttribute)">
                   <select class="custom-select"
                           *ngIf="newAttribute.credential !== '' && isClaimCred(newAttribute)" (change)="newAttribute.value=$event.target.value">
                     <option value="" >{{ getMessage("edit_identity_html@selectClaim") }}</option>
@@ -247,7 +254,9 @@
               </div>
               <div class="col-sm" style="display:flex;">
                 <div style="flex:1;" *ngIf="claim == claimInEdit">
-                  <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}" [(ngModel)]="claim.value">
+                  <input *ngIf="!isClaimCred(claim)" placeholder="{{ getMessage('Value') }}"
+                  [(ngModel)]="claim.value"
+                  (keyup.enter)="canUpdateAttribute(claim) && saveAttribute(claim)">
                   <select class="custom-select"
                           [(ngModel)]="claim.value"
                           *ngIf="claim.credential !== '' && isClaimCred(claim)" (change)="credentialClaimSelected(claim, $event.target.value)">

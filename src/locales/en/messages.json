@@ -108,6 +108,7 @@
     "identity_list_html@editId": "Edit identity",
     "identity_list_html@moreAttributes": "… and {{ATTRIBUTENUMBER}} more attributes",
     "identity_list_html@showAll": "Show all attributes",
+    "identity_list_html@showLess": "Show less attributes",
     "identity_list_html@shareInfo1": "Share information marked with",
     "identity_list_html@shareInfo2": "from this identity.",
     "identity_list_html@sharingDisabled": "Sharing disabled",

@@ -172,8 +172,13 @@
         </div>
         <button class="btn btn-primary mt-3" (click)="openIdentity = identity"
           *ngIf="(openIdentity != identity) && hasLotsOfAttributes(identity)">
-          <i class="fa fa-expand"></i>
+          <i class="fa fa-angle-down"></i>
           {{ getMessage("identity_list_html@showAll") }}
+        </button>
+        <button class="btn btn-primary mt-3" (click)="openIdentity = null"
+          *ngIf="(openIdentity == identity)">
+          <i class="fa fa-angle-up"></i>
+          {{ getMessage("identity_list_html@showLess") }}
         </button>
       </div>
     </div>

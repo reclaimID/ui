@@ -142,24 +142,43 @@ export class IdentityListComponent implements OnInit {
     return this.oidcService.getClaimDescription(attr);
   }
 
-  sortAttributeByStandardClaims(mylist: string[]) {
-    return function(a1: Attribute, a2: Attribute) {
-      var claimNames = mylist;
-      let idx1 = claimNames.indexOf(a1.name);
-      let idx2 = claimNames.indexOf(a2.name);
-      if ((idx1 == -1) && (idx2 != -1)) { return 1;}
-      if ((idx2 == -1) && (idx1 != -1)) { return -1;}
-      if (idx1 > idx2) {return 1;}
-      if (idx1 < idx2) {return -1;}
+  private sortAttributes(attrs: Attribute[]) {
+    return attrs.sort((a,b) => {
+      if (this.getAttributePriority(a) > this.getAttributePriority(b)) {
+        return -1;
+      }
+      if (this.getAttributePriority(a) < this.getAttributePriority(b)) {
+        return 1;
+      }
+      if (a.name > b.name) {
+        return -1;
+      }
+      if (a.name < b.name) {
+        return 1;
+      }
       return 0;
-    }
+    });
+  }
+
+  private getAttributePriority(attr: Attribute) {
+      if (this.oidcService.isStandardProfileClaim(attr)) {
+        return 5;
+      } else if (this.oidcService.isStandardEmailClaim(attr)) {
+        return 6;
+      } else if (this.oidcService.isStandardAddressClaim(attr)) {
+        return 4;
+      } else if (this.oidcService.isStandardPhoneClaim(attr)) {
+        return 3;
+      } else {
+        return 2;
+      }
   }
 
   private updateAttributes(identity) {
     this.attributes[identity.pubkey] = [];
     this.missingClaims[identity.pubkey] = [];
     this.reclaimService.getAttributes(identity).subscribe(attributes => {
-      this.attributes[identity.pubkey] = attributes.sort(this.sortAttributeByStandardClaims(this.oidcService.getStandardClaimNames()));
+      this.attributes[identity.pubkey] = this.sortAttributes(attributes);
       this.updateMissingClaims(identity);
     },
     err => {
