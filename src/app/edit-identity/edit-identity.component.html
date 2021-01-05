@@ -297,7 +297,7 @@
         <span class="fa fa-arrow-left"></span> {{ getMessage("Back") }}
       </button>
       <button *ngIf="oidcService.inOpenIdFlow()" [disabled]="!isClientVerified() || attributes.length <= 0" (click)="loginIdentity(identity)"
-        class="btn btn-success btn-lg mr-1 openid-login">
+        class="btn btn-success mr-1 openid-login">
         <span *ngIf="isClientVerified() && attributes.length > 0">{{ getMessage("identity_list_html@shareInfo1") }} <i
             class="fa fa-share-alt"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
         <span *ngIf="!isClientVerified() || attributes.length <= 0"><i class="fa fa-exclamation-circle"></i>

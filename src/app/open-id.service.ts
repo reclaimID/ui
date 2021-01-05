@@ -293,7 +293,7 @@ export class OpenIdService {
     if (scopes.includes("address")) {
       result = result.concat(Object.keys(this.getStandardAddressClaims()));
     }
-    if (scopes.includes("phone_number")) {
+    if (scopes.includes("phone")) {
       result = result.concat(Object.keys(this.getStandardPhoneClaims()));
     }
     result = result.concat(this.getRequestedNonStandardClaims());
