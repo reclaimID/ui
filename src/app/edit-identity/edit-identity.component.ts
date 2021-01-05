@@ -596,6 +596,7 @@ export class EditIdentityComponent implements OnInit {
 
   tryImportCredential() {
     if (this.importIdProvider.url === '') {
+      console.log("No ID provider flow to pick up from...")
       this.importInProgress = false;
       return;
     }
@@ -634,6 +635,7 @@ export class EditIdentityComponent implements OnInit {
     this.attributesToImport = [];
     this.attributesToOverwriteOnImport = [];
     localStorage.removeItem('importIdProviderURL');
+    localStorage.removeItem('emailForCredential');
     localStorage.removeItem('credentialCode');
     localStorage.removeItem('oidcRequestState');
     localStorage.removeItem('importTargetComponent');
@@ -665,6 +667,7 @@ export class EditIdentityComponent implements OnInit {
         this.attributesToImport = [];
         this.attributesToOverwriteOnImport = [];
         localStorage.removeItem('importIdProviderURL');
+        localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
         localStorage.removeItem('oidcRequestState');
         localStorage.removeItem('importTargetComponent');
@@ -766,16 +769,19 @@ export class EditIdentityComponent implements OnInit {
   }
 
   private validateEmailForImport() {
-    var emailAddr = null;
+    var emailAddr = localStorage.getItem('emailForCredential');
     this.importInProgress = false;
-    for (let attr of this.attributes) {
-      if (attr.name !== 'email') {
-        continue;
+    if ((undefined === emailAddr) || (null == emailAddr)) {
+      for (let attr of this.attributes) {
+        if (attr.name !== 'email') {
+          continue;
+        }
+        console.log("Found email attribute " + attr.value);
+        emailAddr = this.isClaimCred(attr) ? this.getCredValue(attr) : attr.value;
+        break;
       }
-      console.log("Found email attribute " + attr.value);
-      emailAddr = attr.value;
-      break;
     }
+    console.log("Checking email "+ emailAddr);
     if ((null == emailAddr) ||
         !emailAddr.includes('@')) {
       this.validImportEmail = false;
@@ -942,4 +948,4 @@ export class EditIdentityComponent implements OnInit {
   }
 
 
-}
+  }

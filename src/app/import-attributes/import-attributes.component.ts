@@ -57,38 +57,6 @@ export class ImportAttributesComponent implements OnInit {
     this.loadScopesFromLocalStorage()
     this.loadIdProviderFromLocalStorage();
     this.credentials = [];
-    if (this.newIdProvider.url !== ''){
-      const loginOptions: LoginOptions = {
-        customHashFragment: "?code="+localStorage.getItem("credentialCode") + "&state=" + localStorage.getItem("credentialState") + "&session_state="+ localStorage.getItem("credentialSession_State"),
-      }
-      this.configureOauthService();
-      this.inProgress = true;
-      if (!localStorage.getItem("credentialCode")){
-        this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
-          if (!success || (null == this.oauthService.getIdToken())) {
-            this.inProgress = false;
-            return;
-          }
-          console.log("Login successful: "+this.oauthService.getIdToken());
-          this.newCredential.name = this.newIdProvider.name + "oidcjwt";
-          this.newCredential.value = this.oauthService.getIdToken();
-          this.importAttributesFromCredential();
-        });
-
-      }
-      else{
-        this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
-          if (!success || (null == this.oauthService.getIdToken())) {
-            this.inProgress = false;
-            return;
-          }
-          console.log("Login successful: "+this.oauthService.getIdToken());
-          this.newCredential.name = this.newIdProvider.name + "oidcjwt";
-          this.newCredential.value = this.oauthService.getIdToken();
-          this.importAttributesFromCredential();
-        });
-      }
-    }
     this.activatedRoute.params.subscribe(p => {
       if (p['id'] === undefined) {
         return;
@@ -105,92 +73,8 @@ export class ImportAttributesComponent implements OnInit {
   }
 
   loadIdProviderFromLocalStorage(){
-    this.newIdProvider.url = localStorage.getItem("newIdProviderURL") || '';
-    this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
-  }
-
-  storeAttribute(attr: Attribute) {
-    this.reclaimService.addAttribute(this.identity, attr)
-  }
-
-  importAttributesFromCredential() {
-    this.inProgress = true;
-    this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
-      console.log("Stored credential");
-      this.reclaimService.getCredentials(this.identity).subscribe(creds => {
-        this.reclaimService.getAttributes(this.identity).subscribe(attrs => {
-
-        var promises = [];
-        var cred = null;
-        for (var c of creds) {
-          if (c.name == this.newCredential.name) {
-            cred = c;
-          }
-        }
-        if (null == cred) {
-          console.log("ERROR: credential was not added!");
-          this.inProgress = false;
-          return;
-        }
-        console.log("Trying to import " + cred.attributes.length + " attributes");
-
-        for (var attr of cred.attributes) {
-          if ((attr.name == "sub") ||
-              (attr.name == "nonce") ||
-              (attr.name == "email_verified") ||
-              (attr.name == "phone_number_verified")) {
-            continue;
-          }
-          //New attribute with name == claim name
-          var attestation = new Attribute(attr.name, '', cred.id, attr.name, 'STRING', '1');
-          for (let existAttr of attrs) {
-            /* Overwrite existing */
-            if (existAttr.name !== attr.name) {
-              continue;
-            }
-            attestation.id = existAttr.id;
-            break;
-          }
-
-          promises.push(
-            from(this.reclaimService.addAttribute(this.identity, attestation)));
-        }
-        forkJoin(promises)
-          .pipe(
-            finalize(() => {
-              this.newIdProvider.url = '';
-              this.newIdProvider.name = '';
-              localStorage.removeItem('newIdProviderURL');
-              localStorage.removeItem('credentialCode');
-              this.inProgress = false;
-              this.oauthService.logOut();
-            })
-          )
-          .subscribe(res => {
-            this.router.navigate(['/edit-identity', this.identity.name]);
-          },
-          err => {
-            console.log(err);
-          });
-        });
-      });
-    });
-  }
-
-  getNewIdProviderName(url: string){
-    return url.split('//')[1];
-  }
-
-  getNewCredentialExpiration(){
-    var exp = new Date(0);
-    exp.setMilliseconds(this.oauthService.getIdTokenExpiration());
-    return exp.toLocaleString();
-  }
-
-  resetNewIdProvider(){
-    this.newIdProvider.url = '';
-    this.newIdProvider.name = '';
-    localStorage.removeItem('newIdProviderURL');
+    this.newIdProvider.url = localStorage.getItem("importIdProviderURL") || '';
+    this.newIdProvider.name = this.newIdProvider.url.split('//')[1];
   }
 
   logOutFromOauthService(){
@@ -204,20 +88,11 @@ export class ImportAttributesComponent implements OnInit {
     return this.oauthService.hasValidAccessToken();
   }
 
-  cancelAdding(){
-    this.logOutFromOauthService();
-    this.resetNewIdProvider();
-    this.resetScopes();
-    this.newCredential.value = '';
-    this.newCredential.name = '';
-  }
-
-
   //Webfinger
-
   discoverIdProvider() {
     this.discoveringIdProvider = true;
     localStorage.setItem('userForCredential', this.identity.name);
+    localStorage.setItem('emailForCredential', this.webfingerEmail);
     let account = this.webfingerEmail;
     if (this.configService.get().experiments) {
       if (this.webfingerEmail.substr(this.webfingerEmail.indexOf('@')+1) === 'aisec.fraunhofer.de') {
@@ -230,8 +105,8 @@ export class ImportAttributesComponent implements OnInit {
     this.credentialService.getLink(account).subscribe (idProvider => {
       this.discoveringIdProvider = false;
       this.newIdProvider.url = (idProvider.links [0]).href;
-      localStorage.setItem('newIdProviderURL', this.newIdProvider.url);
-      this.newIdProvider.name = this.getNewIdProviderName(this.newIdProvider.url);
+      localStorage.setItem('importIdProviderURL', this.newIdProvider.url);
+      this.newIdProvider.name = this.newIdProvider.url.split('//')[1];
       console.log(this.newIdProvider.url);
       this.getScopes();
       this.errorMessage = '';
@@ -285,12 +160,7 @@ export class ImportAttributesComponent implements OnInit {
       );
   }
 
-  newIdProviderDiscovered(){
-    if (this.newIdProvider.url == ''){
-      return false;
-    }
-    return true;
-  }
+  
 
   validateEmail() {
     if (!this.webfingerEmail.includes('@')){
@@ -327,7 +197,6 @@ export class ImportAttributesComponent implements OnInit {
   }
 
   cancelLinking(){
-    this.resetNewIdProvider();
     this.resetScopes();
     this.webfingerEmail = '';
   }

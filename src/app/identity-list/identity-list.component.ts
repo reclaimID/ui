@@ -70,7 +70,7 @@ export class IdentityListComponent implements OnInit {
       var targetComponent = localStorage.getItem('importTargetComponent');
       if ((undefined === targetComponent) ||
           (null === targetComponent)) {
-        this.router.navigate(['/import-attributes', user]);
+        this.router.navigate(['/edit-identity', user]);
       } else {
         this.router.navigate(['/edit-identity', user]);
       }

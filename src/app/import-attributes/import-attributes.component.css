@@ -8,16 +8,18 @@
 }
 
 .invalid.email-status-wrapper:after {
-  font-family: 'FontAwesome';
+  font-family: 'Font Awesome 5 Free';
   content: '\f071';
+  font-weight: 900;
   position: absolute;
   right: 1.25em;
   top: 0.5em;
 }
 
 .valid.email-status-wrapper:after {
-  font-family: 'FontAwesome';
+  font-family: 'Font Awesome 5 Free';
   content: '\f00c';
+  font-weight: 900;
   position: absolute;
   right: 1.25em;
   top: 0.5em;

@@ -25,7 +25,7 @@ export class CredentialService {
         if (window.location.href.includes('localhost')){
             const user = localStorage.getItem('userForCredential');
             if (window.location.href.includes('import-attributes')){
-              redirectUri = 'http://localhost:4200/import-attributes/' + user;
+              redirectUri = 'http://localhost:4200/edit-identity/' + user;
             } else {
               redirectUri = 'http://localhost:4200/edit-identity/' + user;
             }
