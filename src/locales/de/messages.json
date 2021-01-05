@@ -108,6 +108,7 @@
     "identity_list_html@editId": "Identität ändern",
     "identity_list_html@moreAttributes": "… und {{ATTRIBUTENUMBER}} weitere Attribute",
     "identity_list_html@showAll": "Zeige alle Attribute",
+    "identity_list_html@showLess": "Zeige weniger Attribute",
     "identity_list_html@shareInfo1": "Teile hervorgehobene Informationen mit",
     "identity_list_html@shareInfo2": "von dieser Identität.",
     "identity_list_html@sharingDisabled": "Teilen nicht möglich",

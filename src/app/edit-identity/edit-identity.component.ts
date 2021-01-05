@@ -153,7 +153,7 @@ export class EditIdentityComponent implements OnInit {
       }
   }
 
-  sortAttributes(attrs: Attribute[]) {
+  private sortAttributes(attrs: Attribute[]) {
     return attrs.sort((a,b) => {
       if (this.getAttributePriority(a) > this.getAttributePriority(b)) {
         return -1;
