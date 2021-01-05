@@ -126,7 +126,7 @@
             </div>
             <div class="col-sm">
               <button [disabled]="!canAddAttribute(newRequestedAttribute)" class="btn btn-primary"  (click)="saveAttribute(newRequestedAttribute)">
-                <span class="fa fa-plus"></span>
+                <span class="fa fa-plus"></span> {{ getMessage("Add") }}
               </button>
             </div>
           </div>
@@ -174,7 +174,7 @@
               </div>
               <div class="col-sm">
                 <button [disabled]="!canAddAttribute(newStandardAttribute)" class="btn btn-primary"  (click)="saveAttribute(newStandardAttribute)">
-                  <span class="fa fa-plus"></span>
+                  <span class="fa fa-plus"></span> {{ getMessage("Add") }}
                 </button>
               </div>
             </div>
@@ -212,7 +212,7 @@
               </div>
               <div class="col-sm">
                 <button [disabled]="!canAddAttribute(newAttribute)" class="btn btn-primary"  (click)="saveAttribute(newAttribute)">
-                  <span class="fa fa-plus"></span>
+                  <span class="fa fa-plus"></span> {{ getMessage("Add") }}
                 </button>
               </div>
             </div>
@@ -229,6 +229,14 @@
                         class="card-subtitle mb-4"> {{getMessage("edit_identity_html@storedAttributes")}}</h3>
           <div *ngIf="attributes.length > 0"
                         class="table pb-1">
+            <div class="row head">
+              <div class="col-sm underline">{{getMessage("Name")}}</div>
+              <div class="col-sm underline">
+                <span>{{getMessage("Value")}}</span>
+                <span style="float:right">{{getMessage("edit_identity_html@attestedBy")}}</span>
+              </div>
+              <div class="col-sm"></div>
+            </div>
             <div class="row mb-3" [class.openid]="inOpenIdFlow()"
                  [class.inEdit]="claim == claimInEdit"
                  [class.text-primary]="isClaimRequested(claim)"
@@ -269,10 +277,10 @@
                   <span class="fa fa-save"></span>
                 </button>
                 <button class="btn btn-primary" (click)="editAttribute(claim)" *ngIf="claim != claimInEdit">
-                  <span class="fa fa-edit"></span>
+                  <span class="fa fa-edit"></span> {{ getMessage("Edit") }}
                 </button>
                 <button class="ml-2 btn btn-primary"  (click)="deleteAttribute(claim)">
-                  <span class="fa fa-trash"></span>
+                  <span class="fa fa-trash"></span> {{ getMessage("Delete") }}
                 </button>
 
               </div>
