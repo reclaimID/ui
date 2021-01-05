@@ -178,11 +178,11 @@
       </div>
     </div>
     <div *ngIf="inOpenIdFlow()">
-      <button [disabled]="!isClientVerified()" (click)="loginIdentity(identity)"
-        class="btn btn-primary mr-1 openid-login">
-        <span *ngIf="isClientVerified()">{{ getMessage("identity_list_html@shareInfo1") }} <i
-            class="fa fa-share-alt text-primary"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
-        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i>
+      <button [disabled]="!isClientVerified() || getIdentityAttributes(identity).length <= 0" (click)="loginIdentity(identity)"
+        class="btn btn-success btn-lg mr-1 openid-login">
+        <span *ngIf="isClientVerified() && getIdentityAttributes(identity).length > 0">{{ getMessage("identity_list_html@shareInfo1") }}
+          <i class="fa fa-share-alt"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
+        <span *ngIf="!isClientVerified() || getIdentityAttributes(identity).length <= 0"><i class="fa fa-exclamation-circle"></i>
           {{ getMessage("identity_list_html@sharingDisabled") }}</span>
       </button>
     </div>

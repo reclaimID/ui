@@ -212,6 +212,14 @@ export class EditIdentityComponent implements OnInit {
   resetAttributes() {
     this.resetStandardAttribute(this.newStandardAttribute);
     this.resetStandardAttribute(this.newRequestedAttribute);
+    if (this.newRequestedAttribute.name === '') {
+      let missing = this.getMissingClaims();
+      if (missing.length > 0) {
+        let firstMissing = this.getMissingClaims()[0];
+        this.newRequestedAttribute.name = firstMissing.name;
+        this.newRequestedAttribute.flag = firstMissing.flag;
+      }
+    }
     this.resetAttribute(this.newAttribute);
   }
 
