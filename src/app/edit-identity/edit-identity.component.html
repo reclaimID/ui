@@ -4,11 +4,11 @@
     <div class="card-avatar-character text-dark">
       <h2 class="fa-2x">
         <img style="border-radius: 50%; width: 1em"
-             [src]="getIdentityProfilePicture(identity)"
+             [src]="getIdentityProfilePicture()"
              *ngIf="identityHasProfilePicture()"
              class="pr-2">
         <i class="fa fa-user-circle"
-           *ngIf="!identityHasProfilePicture(identity)"></i>
+           *ngIf="!identityHasProfilePicture()"></i>
         {{ identity.name }}
       </h2>
     </div>
