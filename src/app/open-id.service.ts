@@ -53,6 +53,9 @@ export class OpenIdService {
   }
 
   getState() {
+    if (!this.clientNameVerified) {
+      return "";
+    }
     return JSON.stringify(this.params);
   }
 
@@ -60,6 +63,7 @@ export class OpenIdService {
     try {
       let state = JSON.parse(state_string);
       this.parseRouteParams(state);
+      this.clientNameVerified = true;
     } catch(e) {
       console.log("ERROR: unable to load state " + state_string + " " + e);
     }
