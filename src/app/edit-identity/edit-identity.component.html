@@ -2,7 +2,15 @@
 <div class="m-2 card">
   <div class="card-avatar card-img-top">
     <div class="card-avatar-character text-dark">
-      <h2 class="fa-2x"><i class="fa fa-user-circle pr-2"></i> {{ identity.name }}</h2>
+      <h2 class="fa-2x">
+        <img style="border-radius: 50%; width: 1em"
+             [src]="getIdentityProfilePicture(identity)"
+             *ngIf="identityHasProfilePicture()"
+             class="pr-2">
+        <i class="fa fa-user-circle"
+           *ngIf="!identityHasProfilePicture(identity)"></i>
+        {{ identity.name }}
+      </h2>
     </div>
   </div>
 

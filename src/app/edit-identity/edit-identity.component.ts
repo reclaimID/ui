@@ -910,4 +910,36 @@ export class EditIdentityComponent implements OnInit {
   }
 
   isClientVerified() { return this.oidcService.isClientVerified(); }
+
+  identityHasProfilePicture(): boolean {
+    if (undefined === this.attributes) { return false };
+    for (let attr of this.attributes) {
+      if (attr.name === 'picture') {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  getIdentityProfilePicture() {
+    if (undefined === this.attributes) { return '' };
+    for (let attr of this.attributes) {
+      if (attr.name === 'picture') {
+        for (let cred of this.credentials) {
+          if (cred.id == attr.credential) {
+            for (let cattr of cred.attributes) {
+              if (cattr.name != attr.value) {
+                continue;
+              }
+              return cattr.value.replace(/"/g, '');
+            }
+          }
+        }
+        return attr.value;
+      }
+    }
+    return '';
+  }
+
+
 }
