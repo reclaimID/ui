@@ -638,7 +638,6 @@ export class EditIdentityComponent implements OnInit {
     localStorage.removeItem('emailForCredential');
     localStorage.removeItem('credentialCode');
     localStorage.removeItem('oidcRequestState');
-    localStorage.removeItem('importTargetComponent');
     this.importInProgress = false;
     this.oauthService.logOut();
     this.updateAttributes();
@@ -670,7 +669,6 @@ export class EditIdentityComponent implements OnInit {
         localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
         localStorage.removeItem('oidcRequestState');
-        localStorage.removeItem('importTargetComponent');
         this.importInProgress = false;
         this.oauthService.logOut();
         this.updateAttributes();
@@ -829,7 +827,6 @@ export class EditIdentityComponent implements OnInit {
   import(){
     this.configureOauthService();
     this.oauthService.logOut(); //Make sure we logout before login
-    localStorage.setItem('importTargetComponent', 'edit-identity');
     /**
      * Save current openid request state (if any)
      */
