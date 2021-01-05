@@ -69,6 +69,7 @@
     "edit_identity_html@infoMissingClaims": "The website requests the following attributes. You may provide any of the requested attributes but are not required to. The website may require the attributes in the scope of its service offering.",
     "edit_identity_html@selfissued": "Self-issued",
     "edit_identity_html@importFrom": "Try import from ``{{ISSUERNAME}}''",
+    "edit_identity_html@identitySelection": "Identity selection",
     "import_attributes_html@importFor": "Import attributes for {{IDENTITYNAME}}",
     "edit_identity_html@unset": "Unset",
     "edit_identity_html@attribute": "Attribute",

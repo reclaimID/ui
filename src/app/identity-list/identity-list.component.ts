@@ -9,6 +9,7 @@ import { IdentityService } from '../identity.service';
 import { NamestoreService } from '../namestore.service';
 import { OpenIdService } from '../open-id.service';
 import { ReclaimService } from '../reclaim.service';
+import { ConfigService } from '../config.service';
 import { ModalService } from '../modal.service';
 import { finalize } from 'rxjs/operators';
 import { from, forkJoin, EMPTY } from 'rxjs';
@@ -47,6 +48,7 @@ export class IdentityListComponent implements OnInit {
     private namestoreService: NamestoreService,
     private gnsService: GnsService,
     private modalService: ModalService,
+    private configService: ConfigService,
     private languageService: LanguageService,
     private router: Router,) {
   }
@@ -378,6 +380,10 @@ export class IdentityListComponent implements OnInit {
       this.identities = [];
       let i;
       for (i = 0; i < identities.length; i++) {
+        let filteredIDs = this.configService.get().filteredIDs;
+        if (filteredIDs.indexOf(identities[i].name) !== -1) {
+          continue;
+        }
         this.identities.push(identities[i]);
       }
 

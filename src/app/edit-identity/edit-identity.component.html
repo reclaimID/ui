@@ -294,7 +294,7 @@
     <!-- Edit card buttons -->
     <div>
       <button class="btn btn-primary" (click)="goBack()">
-        <span class="fa fa-arrow-left"></span> {{ getMessage("Back") }}
+        <span class="fa fa-arrow-left"></span> {{ getMessage("edit_identity_html@identitySelection") }}
       </button>
       <button *ngIf="oidcService.inOpenIdFlow()" [disabled]="!isClientVerified() || attributes.length <= 0" (click)="loginIdentity(identity)"
         class="btn btn-success mr-1 openid-login">
