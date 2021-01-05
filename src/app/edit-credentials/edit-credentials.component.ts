@@ -23,6 +23,7 @@ export class EditCredentialsComponent implements OnInit {
   identity: Identity;
   credentials: Credential[];
   newCredential: Credential;
+  showConfirmDelete: Credential = null;
 
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,

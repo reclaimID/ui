@@ -37,6 +37,7 @@
     "edit_authorizations_html@BackTo": "Zurück zu {{IDENTITYNAME}}",
     "edit_authorizations_ts@unknown": "Unbekannt",
     "edit_credentials_html@credentialsFor": "Attestierungen durch Dritte für",
+     "edit_credentials_html@deleteCredential": "Diese Attestierung wirklich löschen?",
     "edit_credentials_html@linkAccount": "Konto verbinden:",
     "edit_credentials_html@notCompatible": "Dieses Konto ist nicht mit re:claimID kompatibel.",
     "edit_credentials_html@info": "INFO",

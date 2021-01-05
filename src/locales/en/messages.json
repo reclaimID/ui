@@ -37,6 +37,7 @@
     "edit_authorizations_html@BackTo": "Back to {{IDENTITYNAME}}",
     "edit_authorizations_ts@unknown": "Unknown",
     "edit_credentials_html@credentialsFor": "Third party credentials for",
+    "edit_credentials_html@deleteCredential": "Do you really want to delete this credential?",
     "edit_credentials_html@linkAccount": "Link account:",
     "edit_credentials_html@notCompatible": "This account is not compatible with re:claimID.",
     "edit_credentials_html@info": "INFO",
