@@ -181,11 +181,9 @@ export class IdentityListComponent implements OnInit {
   loginIdentity(identity) {
     this.oidcService.login(identity).subscribe(() => {
       console.log('Successfully logged in');
-      this.authorize();
+      this.oidcService.authorize();
     });
   }
-
-  authorize() { this.oidcService.authorize(); }
 
   openModal(id: string) {
     this.modalService.open(id);

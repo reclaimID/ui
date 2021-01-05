@@ -893,4 +893,13 @@ export class EditIdentityComponent implements OnInit {
       }
     }
   }
+
+  loginIdentity(identity) {
+    this.oidcService.login(identity).subscribe(() => {
+      console.log('Successfully logged in');
+      this.oidcService.authorize();
+    });
   }
+
+  isClientVerified() { return this.oidcService.isClientVerified(); }
+}
