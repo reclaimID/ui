@@ -70,12 +70,15 @@
       <i *ngIf="attributesToOverwriteOnImport.length == 0" class="fa fa-spinner fa-spin"></i>
     </div>
   </div>
-  <div *ngIf="validImportEmail && !importInProgress" class="col-sm alert alert-primary alert-dismissible fade show my-2" role="alert" >
+  <div *ngIf="validImportEmail && !importInProgress" class="col-sm alert alert-primary alert-dismissible show my-2" role="alert" >
     {{getMessage("edit_identity_html@importInfo", {ISSUERNAME: getImportIssuerName()})}}<br/>
     <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
     <br/>
     <button class="ml-1 btn btn-primary" (click)="import()">
       <span class="fa fa-download"></span> {{getMessage("edit_identity_html@importFrom", {ISSUERNAME: getImportIssuerName()})}}
+    </button>
+    <button type="button" class="btn btn-primary" (click)="validImportEmail = false">
+      <span class="fa fa-times"></span> {{ getMessage("Dismiss") }}
     </button>
   </div>
 
