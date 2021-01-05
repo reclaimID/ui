@@ -9,9 +9,9 @@ export class ConfigService {
   defaultConfig: Config;
 
   constructor(private http: HttpClient) {
-    this.config = new Config('',true);
+    this.config = new Config('',true, []);
     var confString = localStorage.getItem('reclaimSettings');
-    this.config = new Config('',true);
+    this.config = new Config('',true, []);
     try {
       var jsonConfig = JSON.parse(confString);
       if (jsonConfig == null) {

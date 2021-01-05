@@ -1,4 +1,5 @@
 {
     "apiUrl": "http://localhost:7776",
-    "experiments": true
+    "experiments": true,
+    "filteredIDs": ["wootaler-shop"]
 }
