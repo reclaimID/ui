@@ -296,13 +296,17 @@
       <button class="btn btn-primary" (click)="goBack()">
         <span class="fa fa-arrow-left"></span> {{ getMessage("Back") }}
       </button>
-      <button *ngIf="oidcService.inOpenIdFlow()" [disabled]="!isClientVerified()" (click)="loginIdentity(identity)"
-        class="btn btn-primary mr-1 openid-login">
-        <span *ngIf="isClientVerified()">{{ getMessage("identity_list_html@shareInfo1") }} <i
-            class="fa fa-share-alt text-primary"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
-        <span *ngIf="!isClientVerified()"><i class="fa fa-exclamation-circle"></i>
+      <button *ngIf="oidcService.inOpenIdFlow()" [disabled]="!isClientVerified() || attributes.length <= 0" (click)="loginIdentity(identity)"
+        class="btn btn-success btn-lg mr-1 openid-login">
+        <span *ngIf="isClientVerified() && attributes.length > 0">{{ getMessage("identity_list_html@shareInfo1") }} <i
+            class="fa fa-share-alt"></i> {{ getMessage("identity_list_html@shareInfo2") }}</span>
+        <span *ngIf="!isClientVerified() || attributes.length <= 0"><i class="fa fa-exclamation-circle"></i>
           {{ getMessage("identity_list_html@sharingDisabled") }}</span>
       </button>
+      <button *ngIf="oidcService.inOpenIdFlow() && oidcService.isClientVerified()" class="btn btn-danger mt-2" (click)="oidcService.cancelAuthorization()">
+        <span class="fa fa-ban"></span> {{ getMessage("identity_list_html@declineRequest") }}
+      </button>
+
       <button *ngIf="!inOpenIdFlow()" class="btn btn-primary" [routerLink]="['/edit-authorizations', identity.name]" [style.float]="'right'">
         <span class="fa fa-share-alt"></span>
         {{ getMessage("edit_identity_html@manageAuths") }}
