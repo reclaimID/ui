@@ -56,6 +56,7 @@ export class EditIdentityComponent implements OnInit {
   attributesToOverwriteOnImport: any[] = [];
   overwriteRequiresDecision: boolean = false;
   validImportEmail: boolean = false;
+  importBannerDismissed: boolean = false;
   scopes: Scope[];
   newCredential: Credential;
 
@@ -593,7 +594,24 @@ export class EditIdentityComponent implements OnInit {
     this.importIdProvider.name = this.importIdProvider.url.split('//')[1];
   }
 
-  tryImportCredential() {
+  private handleLoginResponse(success: any) {
+    if (!success || (null == this.oauthService.getIdToken())) {
+      return;
+    }
+    console.log("Login successful: "+this.oauthService.getIdToken());
+    this.newCredential.name = this.importIdProvider.name + "oidcjwt";
+    this.newCredential.value = this.oauthService.getIdToken();
+    for (let existCred of this.credentials) {
+      if (existCred.name == this.newCredential.name) {
+        this.newCredential.id = existCred.id;
+        console.log("Overwriting credential ID " + this.newCredential.id);
+        break;
+      }
+    }
+    this.importAttributesFromCredential();
+  }
+
+  private tryImportCredential() {
     if (this.importIdProvider.url === '') {
       console.log("No ID provider flow to pick up from...")
       return;
@@ -604,23 +622,11 @@ export class EditIdentityComponent implements OnInit {
     this.configureOauthService();
     if (!localStorage.getItem("credentialCode")){
       this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
-        if (!success || (null == this.oauthService.getIdToken())) {
-          return;
-        }
-        console.log("Login successful: "+this.oauthService.getIdToken());
-        this.newCredential.name = this.importIdProvider.name + "oidcjwt";
-        this.newCredential.value = this.oauthService.getIdToken();
-        this.importAttributesFromCredential();
+        this.handleLoginResponse(success);
       });
     } else {
       this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
-        if (!success || (null == this.oauthService.getIdToken())) {
-          return;
-        }
-        console.log("Login successful: "+this.oauthService.getIdToken());
-        this.newCredential.name = this.importIdProvider.name + "oidcjwt";
-        this.newCredential.value = this.oauthService.getIdToken();
-        this.importAttributesFromCredential();
+        this.handleLoginResponse(success);
       });
     }
   }
@@ -662,6 +668,7 @@ export class EditIdentityComponent implements OnInit {
         this.attributesToImport = [];
         this.attributesToOverwriteOnImport = [];
         this.overwriteRequiresDecision = false;
+        this.importBannerDismissed = true;
         localStorage.removeItem('importIdProviderURL');
         localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
@@ -751,7 +758,7 @@ export class EditIdentityComponent implements OnInit {
           if ((this.attributesToOverwriteOnImport.length > 0) &&
               this.overwriteRequiresDecision) {
             console.log("Wait for user input");
-            return;
+          return;
           }
           this.proceedAttributeImport();
         });

@@ -52,6 +52,9 @@ export class ReclaimService {
       "value": credential.value,
       "type": credential.type
     }
+    if ((undefined !==credential.id) && ('' !== credential.id)) {
+      json["id"] = credential.id;
+    }
     return this.http.post(this.config.get().apiUrl +
       '/reclaim/credential/' + identity.name,
       json);
