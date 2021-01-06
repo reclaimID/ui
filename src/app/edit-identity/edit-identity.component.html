@@ -65,14 +65,16 @@
       <span class="fa fa-download"></span> {{getMessage("import") }}
     </button>
   </div>
-  <div *ngIf="validImportEmail" class="col-sm alert alert-primary alert-dismissible show my-2" role="alert" >
+
+  <div *ngIf="validImportEmail && !overwriteRequiresDecision && !importBannerDismissed"
+    class="col-sm alert alert-primary alert-dismissible show my-2" role="alert" >
     {{getMessage("edit_identity_html@importInfo", {ISSUERNAME: getImportIssuerName()})}}<br/>
     <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
     <br/>
     <button class="ml-1 btn btn-primary" (click)="import()">
       <span class="fa fa-download"></span> {{getMessage("edit_identity_html@importFrom", {ISSUERNAME: getImportIssuerName()})}}
     </button>
-    <button type="button" class="btn btn-primary" (click)="validImportEmail = false">
+    <button type="button" class="btn btn-primary" (click)="importBannerDismissed = true">
       <span class="fa fa-times"></span> {{ getMessage("Dismiss") }}
     </button>
   </div>
@@ -297,7 +299,10 @@
                 <button class="ml-2 btn btn-primary"  (click)="deleteAttribute(claim)">
                   <span class="fa fa-trash"></span> {{ getMessage("Delete") }}
                 </button>
-
+                <button class="ml-2 btn btn-primary" (click)="import()"
+                  *ngIf="claim.name == 'email' && validImportEmail">
+                  <span class="fa fa-download"></span> {{getMessage("edit_identity_html@importFrom", {ISSUERNAME: getImportIssuerName()})}}
+                </button>
               </div>
             </div>
           </div>
