@@ -54,6 +54,7 @@ export class EditIdentityComponent implements OnInit {
   importIdProvider: IdProvider;
   attributesToImport: Attribute[] = [];
   attributesToOverwriteOnImport: any[] = [];
+  overwriteRequiresDecision: boolean = false;
   validImportEmail: boolean = false;
   scopes: Scope[];
   newCredential: Credential;
@@ -629,6 +630,7 @@ export class EditIdentityComponent implements OnInit {
     this.importIdProvider.name = '';
     this.attributesToImport = [];
     this.attributesToOverwriteOnImport = [];
+    this.overwriteRequiresDecision = false;
     localStorage.removeItem('importIdProviderURL');
     localStorage.removeItem('emailForCredential');
     localStorage.removeItem('credentialCode');
@@ -659,6 +661,7 @@ export class EditIdentityComponent implements OnInit {
         this.importIdProvider.name = '';
         this.attributesToImport = [];
         this.attributesToOverwriteOnImport = [];
+        this.overwriteRequiresDecision = false;
         localStorage.removeItem('importIdProviderURL');
         localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
@@ -717,7 +720,6 @@ export class EditIdentityComponent implements OnInit {
           }
           console.log("Trying to import " + cred.attributes.length + " attributes");
 
-          var needsUserInteraction = false;
           for (let attr of cred.attributes) {
             if ((attr.name == "sub") ||
                 (attr.name == "nonce") ||
@@ -740,14 +742,14 @@ export class EditIdentityComponent implements OnInit {
                * make a decision
                */
               if (this.isClaimCred(existAttr)) {
-                needsUserInteraction = true;
+                this.overwriteRequiresDecision = true;
               }
               break;
             }
             this.attributesToImport.push(attestation);
           }
           if ((this.attributesToOverwriteOnImport.length > 0) &&
-              needsUserInteraction) {
+              this.overwriteRequiresDecision) {
             console.log("Wait for user input");
             return;
           }
