@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="card-body" *ngIf="importInProgress && attributesToOverwriteOnImport.length > 0">
+  <div class="card-body" *ngIf="attributesToOverwriteOnImport.length > 0">
     <div class="alert alert-warning">{{ getMessage("edit_identity_html@importOverwriteInfo") }}</div>
     <div class="table">
       <div class="row">
@@ -65,12 +65,7 @@
       <span class="fa fa-download"></span> {{getMessage("import") }}
     </button>
   </div>
-  <div class="text-center card-body" *ngIf="importInProgress && attributesToOverwriteOnImport.length == 0">
-    <div class="text-center fa fa-4x">
-      <i *ngIf="attributesToOverwriteOnImport.length == 0" class="fa fa-spinner fa-spin"></i>
-    </div>
-  </div>
-  <div *ngIf="validImportEmail && !importInProgress" class="col-sm alert alert-primary alert-dismissible show my-2" role="alert" >
+  <div *ngIf="validImportEmail" class="col-sm alert alert-primary alert-dismissible show my-2" role="alert" >
     {{getMessage("edit_identity_html@importInfo", {ISSUERNAME: getImportIssuerName()})}}<br/>
     <i>{{getMessage("Note")}}</i>{{getMessage("edit_credentials_html@linkAccountInfo2")}}
     <br/>
@@ -83,7 +78,7 @@
   </div>
 
   <!-- Attribute table -->
-  <div class="card-body" *ngIf="!importInProgress">
+  <div class="card-body">
     <div>
       <h3 class="mb-2"> {{getMessage("edit_identity_html@addAttributes")}}</h3>
       <p *ngIf="getMissingClaims().length > 0"> {{getMessage("edit_identity_html@addRequestedMissingClaim")}} <span (click)="showMissingInfo = !showMissingInfo" class="fa fa-question-circle"></span></p>
@@ -193,8 +188,8 @@
               </div>
             </div>
           </div>
-          <p class="mb-2"> {{getMessage("edit_identity_html@addCustomClaim")}}</p>
-          <div class="table pb-1">
+          <p class="mb-2" *ngIf="getMissingClaims().length == 0"> {{getMessage("edit_identity_html@addCustomClaim")}}</p>
+          <div class="table pb-1" *ngIf="getMissingClaims().length == 0">
             <!-- Add custom attribute -->
 
             <div class="row mb-3"

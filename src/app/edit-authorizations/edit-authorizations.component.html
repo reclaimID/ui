@@ -6,53 +6,46 @@
     </div>
   </div>
   <div class="card-body">
+    <div class="alert alert-secondary" *ngIf="tickets.length == 0">
+      {{ getMessage("edit_authorizations_html@noAuthorizations") }}
+    </div>
     <!-- Authorized entities -->
-    <div style="margin-top: 1.5em;">
-      <table class="table pb-1">
-        <thead style="border-top-style: hidden">
-          <tr>
-            <th scope="col">
-              <h6 class="card-subtitle mb-2">
-                {{getMessage("edit_authorizations_html@authEntity")}}
-              </h6>
-            </th>
-            <th scope="col">
-              <h6 class="card-subtitle mb-2">
-                {{getMessage("edit_authorizations_html@sharedAttributes")}}
-              </h6>
-            </th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let ticket of tickets">
-            <td>
-              <div style="min-width: 15em">
-                {{getAudienceName(ticket)}}
-              </div>
-            </td>
-            <td>
-              <div style="min-width: 15em">
-                {{ticketAttributeMapper[ticket.audience]}}
-              </div>
-            </td>
-            <td>
-              <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
-                <span class="fa fa-unlink"></span> {{getMessage("Revoke")}}
-              </button>
-              <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
-                {{getMessage("edit_authorizations_html@revokeVerifikation")}}<br/><br/>
-                <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
-                  <span class="fa fa-check"></span> {{getMessage("Yes")}}
-                </button>
-                <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
-                  <span class="fa fa-times"></span> {{getMessage("No")}}
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="table mt-1" *ngIf="tickets.length > 0">
+      <div class="row">
+        <div class="col-sm underline">
+          {{getMessage("edit_authorizations_html@authEntity")}}
+        </div>
+        <div class="col-sm underline">
+          {{getMessage("edit_authorizations_html@sharedAttributes")}}
+        </div>
+        <div class="col-sm"></div>
+      </div>
+      <div class="row" *ngFor="let ticket of tickets">
+        <div class="col-sm">
+          {{getAudienceName(ticket)}}
+        </div>
+        <div class="col-sm">
+          <ul>
+            <li *ngFor="let desc of ticketAttributeMapper[ticket.audience]">
+              {{desc}}
+            </li>
+          </ul>
+        </div>
+        <div class="col-sm">
+          <button class="btn btn-primary" *ngIf="showConfirmRevoke != ticket" (click)="confirmRevoke(ticket)">
+            <span class="fa fa-unlink"></span> {{getMessage("Revoke")}}
+          </button>
+          <div class="alert alert-danger fade show" *ngIf="showConfirmRevoke == ticket">
+            {{getMessage("edit_authorizations_html@revokeVerifikation")}}<br/><br/>
+            <button class="btn btn-primary m-2" (click)="revokeTicket(ticket)">
+              <span class="fa fa-check"></span> {{getMessage("Yes")}}
+            </button>
+            <button class="btn btn-primary m-2" (click)="hideConfirmRevoke()">
+              <span class="fa fa-times"></span> {{getMessage("No")}}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     <!-- Edit card buttons -->
     <div>

@@ -6,6 +6,7 @@ import { ReclaimService } from '../reclaim.service';
 import { ActivatedRoute } from '@angular/router';
 import { IdentityService } from '../identity.service';
 import { GnsService } from '../gns.service';
+import { OpenIdService } from '../open-id.service';
 import { NamestoreService } from '../namestore.service';
 import { LanguageService } from '../language.service';
 
@@ -27,6 +28,7 @@ export class EditAuthorizationsComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private identityService: IdentityService,
               private gnsService: GnsService,
+              private oidcService: OpenIdService,
               private namestoreService: NamestoreService,
               private languageService: LanguageService,) { }
 
@@ -86,11 +88,11 @@ export class EditAuthorizationsComponent implements OnInit {
       names = names.filter(name => name.record_name === ticket.rnd.toLowerCase());
       for (let i = 0; i < names.length; i++) {
         names[i].data.forEach(record => {
-          if (record.record_type === 'RECLAIM_ATTR_REF') {
+          if (record.record_type === 'RECLAIM_ATTRIBUTE_REF') {
             this.attributes
               .filter(attr => attr.id === record.value)
               .map(attr => {
-                this.ticketAttributeMapper[ticket.audience].push(attr.name);
+                this.ticketAttributeMapper[ticket.audience].push(this.oidcService.getClaimDescription(attr));
               });
           }
         });
