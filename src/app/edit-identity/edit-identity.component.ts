@@ -55,7 +55,6 @@ export class EditIdentityComponent implements OnInit {
   attributesToImport: Attribute[] = [];
   attributesToOverwriteOnImport: any[] = [];
   validImportEmail: boolean = false;
-  importInProgress: boolean = false;
   scopes: Scope[];
   newCredential: Credential;
 
@@ -83,7 +82,6 @@ export class EditIdentityComponent implements OnInit {
     this.newCredential = new Credential('', '', '', 'JWT', '', 0, []);
     this.loadImportScopesFromLocalStorage()
     this.loadImportIdProviderFromLocalStorage();
-    this.importInProgress = true;
     let oidcState = localStorage.getItem('oidcRequestState');
     if (oidcState) {
       this.oidcService.loadState(oidcState);
@@ -597,7 +595,6 @@ export class EditIdentityComponent implements OnInit {
   tryImportCredential() {
     if (this.importIdProvider.url === '') {
       console.log("No ID provider flow to pick up from...")
-      this.importInProgress = false;
       return;
     }
     const loginOptions: LoginOptions = {
@@ -607,7 +604,6 @@ export class EditIdentityComponent implements OnInit {
     if (!localStorage.getItem("credentialCode")){
       this.oauthService.loadDiscoveryDocumentAndTryLogin().then(success => {
         if (!success || (null == this.oauthService.getIdToken())) {
-          this.importInProgress = false;
           return;
         }
         console.log("Login successful: "+this.oauthService.getIdToken());
@@ -618,7 +614,6 @@ export class EditIdentityComponent implements OnInit {
     } else {
       this.oauthService.loadDiscoveryDocumentAndTryLogin(loginOptions).then(success => {
         if (!success || (null == this.oauthService.getIdToken())) {
-          this.importInProgress = false;
           return;
         }
         console.log("Login successful: "+this.oauthService.getIdToken());
@@ -638,7 +633,6 @@ export class EditIdentityComponent implements OnInit {
     localStorage.removeItem('emailForCredential');
     localStorage.removeItem('credentialCode');
     localStorage.removeItem('oidcRequestState');
-    this.importInProgress = false;
     this.oauthService.logOut();
     this.updateAttributes();
   }
@@ -669,7 +663,6 @@ export class EditIdentityComponent implements OnInit {
         localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
         localStorage.removeItem('oidcRequestState');
-        this.importInProgress = false;
         this.oauthService.logOut();
         this.updateAttributes();
       })
@@ -706,7 +699,6 @@ export class EditIdentityComponent implements OnInit {
   }
 
   importAttributesFromCredential() {
-    this.importInProgress = true;
     this.reclaimService.addCredential(this.identity, this.newCredential).subscribe(res => {
       console.log("Stored credential");
       this.reclaimService.getCredentials(this.identity).subscribe(creds => {
@@ -721,7 +713,6 @@ export class EditIdentityComponent implements OnInit {
           }
           if (null == cred) {
             console.log("ERROR: credential was not added!");
-            this.importInProgress = false;
             return;
           }
           console.log("Trying to import " + cred.attributes.length + " attributes");
@@ -768,7 +759,6 @@ export class EditIdentityComponent implements OnInit {
 
   private validateEmailForImport() {
     var emailAddr = localStorage.getItem('emailForCredential');
-    this.importInProgress = false;
     if ((undefined === emailAddr) || (null == emailAddr)) {
       for (let attr of this.attributes) {
         if (attr.name !== 'email') {
@@ -789,7 +779,6 @@ export class EditIdentityComponent implements OnInit {
       this.validImportEmail = false;
       return;
     }
-    this.importInProgress = true;
     this.discoverIdProvider(emailAddr);
   }
 
@@ -813,7 +802,6 @@ export class EditIdentityComponent implements OnInit {
                                              this.tryImportCredential();
     },
     error => {
-      this.importInProgress = false;
       this.validImportEmail = false;
       console.log (error);
     });

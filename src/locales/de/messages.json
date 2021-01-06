@@ -33,6 +33,7 @@
     "authorization_request_html@cancelRequest": "Verifikation abbrechen",
     "authorization_request_html@requestCancelled": "Anfrage abgebrochen",
     "edit_authorizations_html@manageAuths": "Autorisierungen verwalten für",
+    "edit_authorizations_html@noAuthorizations": "Du hast noch keine Autorisierungen gegeben.",
     "edit_authorizations_html@authEntity": "Autorisierte Partei:",
     "edit_authorizations_html@sharedAttributes": "Geteilte Attribute:",
     "edit_authorizations_html@revokeVerifikation": "Willst du diese Autorisierung wirklich aufheben?",

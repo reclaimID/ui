@@ -33,6 +33,7 @@
     "authorization_request_html@cancelRequest": "Cancel verification request",
     "authorization_request_html@requestCancelled": "Request cancelled",
     "edit_authorizations_html@manageAuths": "Manage authorizations for",
+    "edit_authorizations_html@noAuthorizations": "You have not yet given any authorizations.",
     "edit_authorizations_html@authEntity": "Authorized Entity:",
     "edit_authorizations_html@sharedAttributes": "Shared attributes:",
     "edit_authorizations_html@revokeVerifikation": "Do you really want to revoke this authorization?",
