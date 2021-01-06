@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="card-body" *ngIf="attributesToOverwriteOnImport.length > 0">
+  <div class="card-body" *ngIf="overwriteRequiresDecision">
     <div class="alert alert-warning">{{ getMessage("edit_identity_html@importOverwriteInfo") }}</div>
     <div class="table">
       <div class="row">
@@ -78,7 +78,7 @@
   </div>
 
   <!-- Attribute table -->
-  <div class="card-body">
+  <div class="card-body" *ngIf="!overwriteRequiresDecision">
     <div>
       <h3 class="mb-2"> {{getMessage("edit_identity_html@addAttributes")}}</h3>
       <p *ngIf="getMissingClaims().length > 0"> {{getMessage("edit_identity_html@addRequestedMissingClaim")}} <span (click)="showMissingInfo = !showMissingInfo" class="fa fa-question-circle"></span></p>
@@ -315,7 +315,7 @@
     <hr/>
 
     <!-- Edit card buttons -->
-    <div>
+    <div *ngIf="!overwriteRequiresDecision">
       <button class="btn btn-primary" (click)="goBack()">
         <span class="fa fa-arrow-left"></span> {{ getMessage("edit_identity_html@identitySelection") }}
       </button>
