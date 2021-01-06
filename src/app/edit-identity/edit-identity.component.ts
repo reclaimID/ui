@@ -61,7 +61,7 @@ export class EditIdentityComponent implements OnInit {
   constructor(private reclaimService: ReclaimService,
               private identityService: IdentityService,
               private gnsService: GnsService,
-              private oidcService: OpenIdService,
+              public oidcService: OpenIdService,
               private namestoreService: NamestoreService,
               private activatedRoute: ActivatedRoute,
               private configService: ConfigService,
