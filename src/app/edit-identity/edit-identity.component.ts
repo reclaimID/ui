@@ -48,6 +48,7 @@ export class EditIdentityComponent implements OnInit {
   missingNonStandardClaims: Attribute[] = [];
   showMissingInfo: boolean = false;
   showGeneralInfo: boolean = false;
+  attributeUpdateInProgress: boolean = true;
   claimInEdit: Attribute = null;
 
   //Attribute import
@@ -57,6 +58,7 @@ export class EditIdentityComponent implements OnInit {
   overwriteRequiresDecision: boolean = false;
   validImportEmail: boolean = false;
   importBannerDismissed: boolean = false;
+  importInProgress: boolean = false;
   scopes: Scope[];
   newCredential: Credential;
 
@@ -172,6 +174,7 @@ export class EditIdentityComponent implements OnInit {
   }
 
   private updateAttributes() {
+    this.attributeUpdateInProgress = true;
     this.reclaimService.getAttributes(this.identity).subscribe(attributes => {
       this.reclaimService.getCredentials(this.identity).subscribe(credentials => {
         this.credentials = credentials;
@@ -201,11 +204,17 @@ export class EditIdentityComponent implements OnInit {
         this.updateMissingAttributes();
         this.validateEmailForImport();
         this.resetAttributes();
+        this.attributeUpdateInProgress = false;
       },
       err => {
         //this.errorInfos.push("Error retrieving attributes for ``" + identity.name + "''");
+        this.attributeUpdateInProgress = false;
         console.log(err);
       });
+    },
+    err => {
+      this.attributeUpdateInProgress = false;
+      console.log(err);
     });
   }
 
@@ -596,6 +605,7 @@ export class EditIdentityComponent implements OnInit {
 
   private handleLoginResponse(success: any) {
     if (!success || (null == this.oauthService.getIdToken())) {
+      this.importInProgress = false;
       return;
     }
     console.log("Login successful: "+this.oauthService.getIdToken());
@@ -669,6 +679,7 @@ export class EditIdentityComponent implements OnInit {
         this.attributesToOverwriteOnImport = [];
         this.overwriteRequiresDecision = false;
         this.importBannerDismissed = true;
+        this.importInProgress = false;
         localStorage.removeItem('importIdProviderURL');
         localStorage.removeItem('emailForCredential');
         localStorage.removeItem('credentialCode');
@@ -801,6 +812,7 @@ export class EditIdentityComponent implements OnInit {
         account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'omejdn.nslab.ch';
       }
     }
+    this.importInProgress = true;
     this.credentialService.getLink(account).subscribe (idProvider => {
       this.importIdProvider = new IdProvider((idProvider.links[0]).href,
                                              (idProvider.links[0]).href.split('//')[1]);
@@ -941,5 +953,12 @@ export class EditIdentityComponent implements OnInit {
     return '';
   }
 
+  isImportInProgress(): boolean {
+    return this.importInProgress;
+  }
+
+  isAttributeTableShown(): boolean {
+    return !this.overwriteRequiresDecision && !this.isImportInProgress() && !this.attributeUpdateInProgress;
+  }
 
   }
