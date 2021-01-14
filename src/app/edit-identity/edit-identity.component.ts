@@ -810,6 +810,8 @@ export class EditIdentityComponent implements OnInit {
         account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'as.aisec.fraunhofer.de';
       } else if (emailAddr.substr(emailAddr.indexOf('@')+1) === 'bfh.ch') {
         account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'omejdn.nslab.ch';
+      } else if (emailAddr.substr(emailAddr.indexOf('@')+1) === 'students.bfh.ch') {
+        account = emailAddr.substr(0, emailAddr.indexOf('@')+1) + 'omejdn.nslab.ch';
       }
     }
     this.importInProgress = true;
