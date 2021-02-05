@@ -29,8 +29,8 @@ export class ConfigService {
 
   loadDefaults() {
     this.http.get<Config>('assets/config.json').subscribe(cnf => {
-      this.config = cnf;
       console.log("Got default settings: " + cnf);
+      this.save(cnf);
     });
   }
 

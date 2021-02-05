@@ -23,7 +23,7 @@ export class CredentialService {
     getOauthConfig(idProvider: IdProvider, scopes: Scope[]){
         var redirectUri;
         if (window.location.href.includes('localhost')){
-            const user = localStorage.getItem('userForCredential');
+            let user = localStorage.getItem('userForCredential');
             redirectUri = 'http://localhost:4200/edit-identity/' + user;
         }
         else {
