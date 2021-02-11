@@ -40,11 +40,11 @@
     "edit_authorizations_html@BackTo": "Zurück zu {{IDENTITYNAME}}",
     "edit_authorizations_ts@unknown": "Unbekannt",
     "edit_credentials_html@credentialsFor": "Attestierungen durch Dritte für",
-     "edit_credentials_html@deleteCredential": "Diese Attestierung wirklich löschen?",
+    "edit_credentials_html@deleteCredential": "Diese Attestierung wirklich löschen?",
     "edit_credentials_html@linkAccount": "Konto verbinden:",
     "edit_credentials_html@notCompatible": "Dieses Konto ist nicht mit re:claimID kompatibel.",
     "edit_credentials_html@info": "INFO",
-    "edit_credentials_html@linkAccountInfo1": "Es ist möglich eines deiner externen Konten\n mit einer re:claimID Identität zu verbinden. Trage dafür deine\nE-Mail Adresse unten ein und klicke auf \"Kompatibilität prüfen\".",
+    "edit_credentials_html@linkAccountInfo1": "Es ist möglich aus einen deiner externen Konten\n Attribute in diese re:claimID Identität zu importieren. Trage dafür deine\nE-Mail Adresse unten ein und klicke auf \"Importieren\".",
     "edit_credentials_html@linkAccountInfo2": "Nicht alle Konten unterstützen das Verbinden mit re:claimID.",
     "edit_credentials_html@checkCompatability": "Kompatibilität prüfen",
     "edit_credentials_html@availableClaims": "Verfügbare attestierungen:",
@@ -86,8 +86,8 @@
     "edit_identity_html@name": "Name",
     "edit_identity_html@plain": "Text",
     "edit_identity_html@credential": "Attestierung",
-    "edit_identity_html@selectSource": "Quelle der Attestierung",
-    "edit_identity_html@noCredentialSource": "Du hast noch keine Attestierungsquellen",
+    "edit_identity_html@selectSource": "<Quelle der Attestierung>",
+    "edit_identity_html@noCredentialSource": "Du hast noch keine Attestierungsquellen.",
     "edit_identity_html@selectClaim": "Attestierung auswählen",
     "edit_identity_html@additionalInfo": "Mehr Informationen",
     "edit_identity_html@non_standardClaims": "Nicht-standartisierte attribute welche nicht explizit in OpenID Connect definiert sind.",
@@ -146,5 +146,5 @@
     "scope_description@profile": "Benutzerprofil Zugang wie Mailadresse, Name, Pseudonym, Geschlecht oder Geburtstag.",
     "scope_description@email": "Deine Maildaten.",
     "scope_description@address": "Deine physischen Anschriftdaten.",
-    "scope_description@phone_number": "Deine Telefonnummer"
+    "scope_description@phone_number": "Deine Telefonnummer."
 }
