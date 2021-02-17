@@ -1,1 +1,12 @@
-{}
+{
+    "Yes": "Sim",
+    "No": "Não",
+    "Cancel": "Cancelar",
+    "Back": "Voltar",
+    "SaveAndBack": "Salvar e voltar",
+    "Delete": "Apagar",
+    "Edit": "Editar",
+    "Add": "Adicionar",
+    "Decline": "Declínio",
+    "Name": "Nome"
+}
