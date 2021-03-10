@@ -129,5 +129,22 @@
     "claim@country": "Stato",
     "scope_description@email": "Le tue informazioni mail.",
     "scope_description@address": "Informazioni sul tuo indirizzo fisico.",
-    "scope_description@phone_number": "Il tuo numero di telefono."
+    "scope_description@phone_number": "Il tuo numero di telefono.",
+    "edit_identity_html@infoMissingClaims": "Il sito richiede i seguenti requisiti. L'utente può fornire uno qualsiasi dei dati richiesti, ma non è obbligato a farlo. Il sito web può richiederli nell'ambito della sua offerta di servizi.",
+    "edit_identity_html@selfissued": "Auto-emesso",
+    "edit_identity_html@selectClaim": "Selezionare la richiesta",
+    "edit_credentials_html@note3": "Tipi e Valori non possono essere svuotati!",
+    "edit_identity_html@addStandardClaim": "Mancano attributi comuni e standardizzati:",
+    "edit_identity_html@addCustomClaim": "Caratteristiche personalizzate:",
+    "edit_identity_html@non_standardClaims": "Rivendicazioni non previste dalle specifiche di base di OpenID Connect.",
+    "edit_identity_html@note3": "Tipi e valori non possono essere svuotati!",
+    "identity_list_ts@errorReferences": "Errore nel recupero dei riferimenti per ``{{IDNAME}}´´",
+    "new_identity_html@inputSpecification": "Solo inserimento dati alfanumerici. Non sono consentiti spazi o caratteri speciali.",
+    "edit_identity_html@standardScopes": "Le caratteristiche che seguono corrispondono agli scopi standard della specifica\nOpenID Connect: ``profilo'', ``email'', ``telefono'' e ``indirizzo''.",
+    "identity_list_ts@errorAttributes": "Errore nel recupero degli elementi per ``{{IDNAME}}´´",
+    "app_html@experimentalEnabled": "Funzionalità sperimentali abilitate",
+    "claim@preferred_username": "Nome utente predefinito",
+    "claim@picture": "URL immagine",
+    "claim@profile": "URL profilo",
+    "scope_description@profile": "Accesso al profilo dell'utente come email, (nick)name, sesso e data di nascita."
 }
