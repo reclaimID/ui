@@ -132,5 +132,6 @@
     "claim@website": "URL du site internet",
     "scope_description@email": "Votre adresse email.",
     "identity_list_html@addId": "Cliquer pour ajouter une nouvelle identité.",
-    "new_identity_html@inputSpecification": "Ne saisissez que des caractères alphanumériques. Les espaces ou les caractères spéciaux ne sont pas autorisés."
+    "new_identity_html@inputSpecification": "Ne saisissez que des caractères alphanumériques. Les espaces ou les caractères spéciaux ne sont pas autorisés.",
+    "edit_identity_html@unset": "Non activé"
 }
