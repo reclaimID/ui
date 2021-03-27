@@ -6,7 +6,7 @@
     "edit_credentials_ts@noAccount": "Aucun compte trouvé avec cet email",
     "edit_identity_html@newAttribute": "Attributs à importer",
     "edit_identity_html@importOverwriteInfo": "Vous avez déjà défini certains des attributs à importer. Sélectionnez ci-dessous les attributs que vous souhaitez remplacer par les nouvelles valeurs importées.",
-    "edit_identity_html@importInfo": "Votre adresse électronique indique que vous pouvez importer des attributs à partir d'un compte externe à \"{{{ISSUERNAME}}\".",
+    "edit_identity_html@importInfo": "Votre adresse email indique que vous pouvez importer des attributs à partir d'un compte externe à \"{{ISSUERNAME}}\".",
     "edit_identity_html@infoMissingClaims": "Le site Web demande les attributs suivants. Vous pouvez fournir tous les attributs demandés, mais vous n'êtes pas tenu de le faire. Le site Web peut avoir besoin de ces attributs dans le cadre de son offre de services.",
     "Decline": "Diminution",
     "Yes": "Oui",
@@ -88,5 +88,10 @@
     "scope_description@phone_number": "Votre numéro de téléphone.",
     "claim@email": "Adresse mail",
     "edit_identity_html@attestedBy": "Approuvé par",
-    "identity_list_html@verifyDelete": "Souhaitez-vous vraiment supprimer cette identité ?"
+    "identity_list_html@verifyDelete": "Souhaitez-vous vraiment supprimer cette identité ?",
+    "authorization_request_html@attributes": "ainsi que les attributs additionnels suivants :",
+    "edit_identity_html@importFrom": "Essayez d'importer à partir de \"{{ISSUERNAME}}\"",
+    "edit_identity_html@selectAttribute": "<Sélectionnez l'attribut du nom >",
+    "edit_identity_html@storedAttributes": "Les attributs stockés",
+    "scope_description@address": "Votre adresse postale."
 }
