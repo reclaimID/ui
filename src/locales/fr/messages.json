@@ -133,5 +133,17 @@
     "scope_description@email": "Votre adresse email.",
     "identity_list_html@addId": "Cliquer pour ajouter une nouvelle identité.",
     "new_identity_html@inputSpecification": "Ne saisissez que des caractères alphanumériques. Les espaces ou les caractères spéciaux ne sont pas autorisés.",
-    "edit_identity_html@unset": "Non activé"
+    "edit_identity_html@unset": "non-installé",
+    "edit_identity_html@manageCreds": "gérer les identifiants",
+    "identity_list_html@searchbarPlaceholder": "Recherche d'identités",
+    "identity_list_html@noId": "vous n'avez pas encore d'identifiant",
+    "identity_list_html@addFirstId": "ajouter votre premier identifiant",
+    "identity_list_html@noAttributes1": "cet identifiant n'a pas été attribué.",
+    "identity_list_html@noAttributes2": "Essayez peut-être d'en ajouter ?",
+    "identity_list_html@shareInfo1": "Partage d'information marquée de",
+    "identity_list_ts@errorReferences": "Erreur lors de la récupération des références pour \"{{IDNAME}} ´´",
+    "identity_list_ts@errorAttributes": "Erreur lors de la récupération des attributions pour \"{{IDNAME}} ´´",
+    "claim@gender": "Genre",
+    "claim@region": "État, province ou préfecture",
+    "scope_description@profile": "Accès au profil utilisateur tel que courriel, (pseudo) nom, sexe et date de naissance."
 }
