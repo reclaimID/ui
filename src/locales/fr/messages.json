@@ -8,7 +8,7 @@
     "edit_identity_html@importOverwriteInfo": "Vous avez déjà défini certains des attributs à importer. Sélectionnez ci-dessous les attributs que vous souhaitez remplacer par les nouvelles valeurs importées.",
     "edit_identity_html@importInfo": "Votre adresse email indique que vous pouvez importer des attributs à partir d'un compte externe à \"{{ISSUERNAME}}\".",
     "edit_identity_html@infoMissingClaims": "Le site Web demande les attributs suivants. Vous pouvez fournir tous les attributs demandés, mais vous n'êtes pas tenu de le faire. Le site Web peut avoir besoin de ces attributs dans le cadre de son offre de services.",
-    "Decline": "Diminution",
+    "Decline": "décliner",
     "Yes": "Oui",
     "No": "Non",
     "Revoke": "Retirer",
