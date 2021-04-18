@@ -8,7 +8,7 @@
     "edit_identity_html@importOverwriteInfo": "Vous avez déjà défini certains des attributs à importer. Sélectionnez ci-dessous les attributs que vous souhaitez remplacer par les nouvelles valeurs importées.",
     "edit_identity_html@importInfo": "Votre adresse email indique que vous pouvez importer des attributs à partir d'un compte externe à \"{{ISSUERNAME}}\".",
     "edit_identity_html@infoMissingClaims": "Le site Web demande les attributs suivants. Vous pouvez fournir tous les attributs demandés, mais vous n'êtes pas tenu de le faire. Le site Web peut avoir besoin de ces attributs dans le cadre de son offre de services.",
-    "Decline": "décliner",
+    "Decline": "Décliner",
     "Yes": "Oui",
     "No": "Non",
     "Revoke": "Retirer",
@@ -72,7 +72,7 @@
     "edit_identity_html@addRequestedMissingClaim": "Attributs demandés mais manquants :",
     "edit_identity_html@linkAccount": "Importation des attributs",
     "edit_identity_html@credentialRequired": "Cet attribut nécessite une attestation mais vous n'avez pas d'accréditation.",
-    "edit_identity_html@standardScopes": "Les attributs ci-dessous correspondent aux champs d'application standard de la spécification\nspécification OpenID Connect : \"profil\", \"email\", \"téléphone\" et \"adresse\".",
+    "edit_identity_html@standardScopes": "Les attributs ci-dessous correspondent aux champs d'application standard de la \nspécification OpenID Connect : \"profil\", \"email\", \"téléphone\" et \"adresse\".",
     "edit_identity_html@selfissued": "Auto-généré",
     "edit_identity_html@name": "Nom",
     "edit_identity_html@additionalInfo": "Information additionnelle",
@@ -134,10 +134,10 @@
     "identity_list_html@addId": "Cliquer pour ajouter une nouvelle identité.",
     "new_identity_html@inputSpecification": "Ne saisissez que des caractères alphanumériques. Les espaces ou les caractères spéciaux ne sont pas autorisés.",
     "edit_identity_html@unset": "non-installé",
-    "edit_identity_html@manageCreds": "gérer les identifiants",
+    "edit_identity_html@manageCreds": "Gérer les identifiants",
     "identity_list_html@searchbarPlaceholder": "Recherche d'identités",
     "identity_list_html@noId": "vous n'avez pas encore d'identifiant",
-    "identity_list_html@addFirstId": "ajouter votre premier identifiant",
+    "identity_list_html@addFirstId": "ajouter votre premier identifiant !",
     "identity_list_html@noAttributes1": "cet identifiant n'a pas été attribué.",
     "identity_list_html@noAttributes2": "Essayez peut-être d'en ajouter ?",
     "identity_list_html@shareInfo1": "Partage d'information marquée de",
@@ -145,5 +145,6 @@
     "identity_list_ts@errorAttributes": "Erreur lors de la récupération des attributions pour \"{{IDNAME}} ´´",
     "claim@gender": "Genre",
     "claim@region": "État, province ou préfecture",
-    "scope_description@profile": "Accès au profil utilisateur tel que courriel, (pseudo) nom, sexe et date de naissance."
+    "scope_description@profile": "Accès au profil utilisateur tel que courriel, (pseudo) nom, sexe et date de naissance.",
+    "edit_identity_html@non_standardClaims": "Revendications non conformes qui ne sont pas couverts à la spécification de OpenID Connect."
 }
