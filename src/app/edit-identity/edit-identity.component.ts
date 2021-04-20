@@ -17,6 +17,7 @@ import { LanguageService } from '../language.service';
 import { IdProvider } from '../idProvider';
 import { Scope } from '../scope';
 import { OAuthService, LoginOptions } from 'angular-oauth2-oidc';
+import { PabcService } from '../pabc.service';
 
 @Component({
   selector: 'app-edit-identity',
@@ -72,6 +73,7 @@ export class EditIdentityComponent implements OnInit {
               private languageService: LanguageService,
               private credentialService: CredentialService,
               private oauthService: OAuthService,
+              private pabcService: PabcService,
               private router: Router,) {}
 
   ngOnInit() {
@@ -618,7 +620,39 @@ export class EditIdentityComponent implements OnInit {
         break;
       }
     }
-    this.importAttributesFromCredential();
+    /**
+     * Check for privacy credential support
+     */
+    let grantedScopes = this.oauthService.getGrantedScopes();
+    if (!Array.isArray(grantedScopes) ||
+        !grantedScopes.includes("pabc")) {
+      this.importAttributesFromCredential();
+      return;
+    }
+    console.log("Privacy credentials supported. Trying...");
+    this.pabcService.getNonceFromIssuer(this.oauthService
+                                        .issuer).subscribe(nonceParams => {
+      console.log("Got metadata: " + JSON.stringify(nonceParams));
+      /* Get credential request */
+      let crMetadata = {
+        nonce: nonceParams.nonce,
+        public_params: nonceParams.public_params,
+        issuer: this.oauthService.issuer,
+        id_token: this.oauthService.getIdToken(),
+        identity: this.identity
+      }
+      this.pabcService.getCredentialRequest(crMetadata).subscribe(cr => {
+        console.log("Got CR: " + JSON.stringify (cr));
+        this.pabcService.getPrivacyCredential(this.oauthService.issuer,
+                                              cr).subscribe(cred => {
+          console.log("Got Credential: " + JSON.stringify (cred));
+          this.newCredential.value = cred;
+          this.newCredential.name = this.importIdProvider.name + "pabc";
+          this.newCredential.type = 'pabc';
+          this.importAttributesFromCredential();
+        });
+      });
+    });
   }
 
   private tryImportCredential() {

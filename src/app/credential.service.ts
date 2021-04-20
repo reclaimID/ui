@@ -90,4 +90,12 @@ export class CredentialService {
     getIssuerName(cred: Credential) {
       return this.mapIssuerName(cred.name);
     }
+
+    getIssuerPicture(cred: Credential): string {
+      let name = this.mapIssuerName(cred.name);
+      if (name == cred.name) {
+        return null;
+      }
+      return "assets/" + name.replace(" ", "-").toLowerCase() + ".png";
+    }
 }
