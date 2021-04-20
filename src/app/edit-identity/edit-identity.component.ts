@@ -622,30 +622,34 @@ export class EditIdentityComponent implements OnInit {
     }
     /**
      * Check for privacy credential support
+     * FIXME this is a bug in the angular plugin.
      */
     let grantedScopes = this.oauthService.getGrantedScopes();
+    console.log("Granted scopes are " + grantedScopes);
     if (!Array.isArray(grantedScopes) ||
-        !grantedScopes.includes("pabc")) {
+        !grantedScopes[0].split(' ').includes("pabc")) {
       this.importAttributesFromCredential();
       return;
     }
     console.log("Privacy credentials supported. Trying...");
-    this.pabcService.getNonceFromIssuer(this.oauthService
-                                        .issuer).subscribe(nonceParams => {
+    //FIXME the omejdn suffix is... problematic
+    this.pabcService.getNonceFromIssuer(this.oauthService.issuer + '/omejdn',
+                                       this.oauthService.getAccessToken()).subscribe(nonceParams => {
       console.log("Got metadata: " + JSON.stringify(nonceParams));
       /* Get credential request */
       let crMetadata = {
         nonce: nonceParams.nonce,
         public_params: nonceParams.public_params,
-        issuer: this.oauthService.issuer,
+        issuer: encodeURIComponent(this.oauthService.issuer),
         id_token: this.oauthService.getIdToken(),
-        identity: this.identity
+        identity: this.identity.pubkey
       }
       this.pabcService.getCredentialRequest(crMetadata).subscribe(cr => {
         console.log("Got CR: " + JSON.stringify (cr));
-        this.pabcService.getPrivacyCredential(this.oauthService.issuer,
-                                              cr).subscribe(cred => {
-          console.log("Got Credential: " + JSON.stringify (cred));
+        this.pabcService.getPrivacyCredential(this.oauthService.issuer + '/omejdn',
+                                              cr,
+                                             this.oauthService.getAccessToken()).subscribe(cred => {
+          console.log("Got Credential: " + JSON.stringify(cred));
           this.newCredential.value = cred;
           this.newCredential.name = this.importIdProvider.name + "pabc";
           this.newCredential.type = 'pabc';
