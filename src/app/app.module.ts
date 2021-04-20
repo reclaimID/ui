@@ -17,6 +17,7 @@ import { ModalService } from './modal.service';
 import { SearchPipe } from './search.pipe';
 import { OpenIdService } from './open-id.service';
 import { CredentialService } from './credential.service';
+import { PabcService } from './pabc.service';
 import { NewIdentityComponent } from './new-identity/new-identity.component';
 import { EditIdentityComponent } from './edit-identity/edit-identity.component';
 import { AuthorizationRequestComponent } from './authorization-request/authorization-request.component';
@@ -57,6 +58,7 @@ import { ConfigComponent } from './config/config.component';
     OpenIdService,
     ConfigService,
     CredentialService,
+    PabcService,
     {
       provide: APP_INITIALIZER,
       useFactory: (config: ConfigService) => () => config.load(),
