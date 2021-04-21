@@ -640,9 +640,9 @@ export class EditIdentityComponent implements OnInit {
       let crMetadata = {
         nonce: nonceParams.nonce,
         public_params: nonceParams.public_params,
-        issuer: encodeURIComponent(this.oauthService.issuer),
+        issuer: this.oauthService.issuer,
         id_token: this.oauthService.getIdToken(),
-        identity: this.identity.pubkey
+        identity: this.oauthService.getIdentityClaims()['sub']
       }
       this.pabcService.getCredentialRequest(crMetadata).subscribe(cr => {
         console.log("Got CR: " + JSON.stringify (cr));
