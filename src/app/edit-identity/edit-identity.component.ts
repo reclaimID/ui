@@ -864,6 +864,7 @@ export class EditIdentityComponent implements OnInit {
     },
     error => {
       this.validImportEmail = false;
+      this.importInProgress = false;
       console.log (error);
     });
   }
